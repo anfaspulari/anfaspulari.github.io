@@ -1,0 +1,29 @@
+[
+  {
+    "id": "phishscan",
+    "emoji": "🎣",
+    "name": "PhishScan — Phishing Detection CLI",
+    "origin": "Built after spending hours manually parsing phishing emails in SOC workflows — this automates the repetitive parts.",
+    "description": "A Python CLI tool that analyzes email headers, URLs, and domain patterns to score phishing likelihood. Extracts IOCs and generates incident-ready reports.",
+    "stack": ["Python", "Email Parsing", "VirusTotal API", "IOC Extraction"],
+    "github": "https://github.com/anfaspulari"
+  },
+  {
+    "id": "threatboard",
+    "emoji": "📊",
+    "name": "ThreatBoard — IOC Dashboard",
+    "origin": "Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.",
+    "description": "A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Built as a mock TI platform.",
+    "stack": ["JavaScript", "D3.js", "Threat Intel", "Data Viz"],
+    "github": "https://github.com/anfaspulari"
+  },
+  {
+    "id": "loglens",
+    "emoji": "📋",
+    "name": "LogLens — SIEM Log Correlator",
+    "origin": "Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.",
+    "description": "A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.",
+    "stack": ["Python", "Bash", "Log Parsing", "Anomaly Detection"],
+    "github": "https://github.com/anfaspulari"
+  }
+]

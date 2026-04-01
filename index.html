@@ -3,624 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Anfas Pulari — Cybersecurity Analyst specializing in phishing, threat intelligence, and incident response at ZeroFox." />
   <title>Anfas Pulari — Cybersecurity Analyst</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Reset ── */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ── Variables ── */
-    :root {
-      --bg:     #0d0d0d;
-      --bg2:    #141414;
-      --border: #222;
-      --cyan:   #00d4ff;
-      --text:   #e0e0e0;
-      --muted:  #888;
-      --mono:   'JetBrains Mono', monospace;
-      --sans:   'Inter', sans-serif;
-    }
-
-    /* ── Base ── */
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
-
-    a { color: var(--cyan); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    ul { list-style: none; }
-
-    /* ── Layout ── */
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    section { padding: 80px 0; }
-
-    .section-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .section-label {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--cyan);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .section-desc {
-      color: var(--muted);
-      margin-bottom: 40px;
-      max-width: 560px;
-    }
-
-    hr.divider {
-      border: none;
-      border-top: 1px solid var(--border);
-    }
-
-    /* ── Navbar ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: rgba(13, 13, 13, 0.95);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      padding: 14px 0;
-    }
-
-    nav .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-logo {
-      font-family: var(--mono);
-      font-size: 0.9rem;
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .nav-links a:hover {
-      color: var(--cyan);
-      text-decoration: none;
-    }
-
-    /* ── Hero ── */
-    #hero {
-      padding-top: 140px;
-      padding-bottom: 80px;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-    }
-
-    .hero-tag {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      color: var(--cyan);
-      margin-bottom: 16px;
-    }
-
-    .hero-name {
-      font-size: 3rem;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 12px;
-    }
-
-    .hero-subtitle {
-      font-size: 1.3rem;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    .hero-desc {
-      color: var(--muted);
-      max-width: 520px;
-      margin-bottom: 32px;
-      font-size: 1rem;
-    }
-
-    /* Terminal block */
-    .terminal {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px 20px;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      max-width: 460px;
-      margin-bottom: 32px;
-    }
-
-    .terminal-dots {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-
-    .dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-    }
-    .dot-r { background: #ff5f57; }
-    .dot-y { background: #febc2e; }
-    .dot-g { background: #28c840; }
-
-    .t-line { margin-bottom: 4px; }
-    .t-prompt { color: var(--cyan); }
-    .t-out { color: #4ade80; }
-    .t-cursor {
-      display: inline-block;
-      width: 7px; height: 13px;
-      background: var(--cyan);
-      vertical-align: middle;
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-
-    /* Buttons */
-    .btn-row {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      padding: 10px 22px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
-      display: inline-block;
-    }
-
-    .btn:hover { opacity: 0.9; text-decoration: none; transform: translateY(-2px); }
-
-    .btn-fill {
-      background: var(--cyan);
-      color: #0d0d0d;
-    }
-
-    .btn-fill:hover {
-      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.25);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--cyan);
-      border: 1px solid var(--cyan);
-    }
-
-    /* ── About ── */
-    #about { background: var(--bg2); }
-
-    .about-text p {
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .about-text p strong { color: var(--text); }
-
-    .stats-row {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
-
-    .stat-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 20px;
-      min-width: 130px;
-      text-align: center;
-    }
-
-    .stat-num {
-      font-family: var(--mono);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--cyan);
-      display: block;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* ── Experience ── */
-    .exp-item {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-      margin-bottom: 20px;
-      background: var(--bg2);
-    }
-
-    .exp-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .exp-role {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
-    .exp-period {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 3px 10px;
-      border-radius: 4px;
-    }
-
-    .exp-company {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--cyan);
-      margin-bottom: 14px;
-    }
-
-    .exp-points li {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-      padding-left: 14px;
-      position: relative;
-    }
-
-    .exp-points li::before {
-      content: '▸';
-      position: absolute;
-      left: 0;
-      color: var(--cyan);
-      font-size: 0.7rem;
-      top: 4px;
-    }
-
-    /* ── Skills ── */
-    #skills { background: var(--bg2); }
-
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .skill-group {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 22px;
-    }
-
-    .skill-group-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 14px;
-      color: var(--text);
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      padding: 4px 10px;
-      border-radius: 4px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-
-    .tag.active {
-      color: var(--cyan);
-      border-color: rgba(0, 212, 255, 0.3);
-      background: rgba(0, 212, 255, 0.06);
-    }
-
-    /* ── Projects ── */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .project-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-    }
-
-    .project-card:hover {
-      border-color: rgba(0, 212, 255, 0.35);
-      box-shadow: 0 4px 24px rgba(0, 212, 255, 0.07);
-      transform: translateY(-3px);
-    }
-
-    .project-emoji {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
-    }
-
-    .project-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .project-origin {
-      font-size: 0.78rem;
-      color: rgba(0, 212, 255, 0.6);
-      font-style: italic;
-      margin-bottom: 10px;
-    }
-
-    .project-desc {
-      font-size: 0.88rem;
-      color: var(--muted);
-      flex: 1;
-      margin-bottom: 16px;
-    }
-
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .project-tag {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      padding: 3px 8px;
-      border-radius: 3px;
-      color: var(--cyan);
-      border: 1px solid rgba(0, 212, 255, 0.25);
-      background: rgba(0, 212, 255, 0.05);
-    }
-
-    /* ── Training ── */
-    #training { background: var(--bg2); }
-
-    .training-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .training-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 22px;
-    }
-
-    .training-num {
-      font-family: var(--mono);
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: rgba(0, 212, 255, 0.15);
-      margin-bottom: 10px;
-    }
-
-    .training-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .training-desc {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    /* ── Contact ── */
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.4fr;
-      gap: 48px;
-      align-items: start;
-    }
-
-    .contact-info p {
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
-
-    .contact-links {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--muted);
-      padding: 10px 14px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-    }
-
-    .contact-link:hover {
-      color: var(--cyan);
-      border-color: rgba(0, 212, 255, 0.3);
-      text-decoration: none;
-    }
-
-    /* Form */
-    .form-group { margin-bottom: 16px; }
-
-    label {
-      display: block;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    input:focus, textarea:focus {
-      border-color: rgba(0, 212, 255, 0.4);
-    }
-
-    textarea { min-height: 120px; resize: vertical; }
-
-    /* ── Footer ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 28px 0;
-    }
-
-    footer .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-copy {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .footer-copy span { color: var(--cyan); }
-
-    .footer-links {
-      display: flex;
-      gap: 20px;
-    }
-
-    .footer-links a {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .footer-links a:hover { color: var(--cyan); text-decoration: none; }
-
-    /* ── Hero focus line ── */
-    .hero-focus {
-      font-size: 0.92rem;
-      color: var(--cyan);
-      font-family: var(--mono);
-      margin-top: -20px;
-      margin-bottom: 32px;
-      opacity: 0.85;
-    }
-
-    /* ── Mindset section ── */
-    #mindset { background: var(--bg2); }
-
-    .mindset-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 640px;
-    }
-
-    .mindset-item {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    .mindset-item::before {
-      content: '//';
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--cyan);
-      opacity: 0.7;
-      padding-top: 3px;
-      flex-shrink: 0;
-    }
-
-    .mindset-item strong { color: var(--text); }
-
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero-name { font-size: 2rem; }
-      .skills-grid { grid-template-columns: 1fr; }
-      .training-grid { grid-template-columns: 1fr; }
-      .contact-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 600px) {
-      .stats-row { flex-direction: column; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- ── NAVBAR ─────────────────────────────────────────── -->
   <nav>
     <div class="container">
       <span class="nav-logo">~/anfas.sec</span>
@@ -630,12 +20,13 @@
         <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#training">Training</a></li>
+        <li><a href="#threat-sim">Threats</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- ── HERO ───────────────────────────────────────────── -->
   <section id="hero">
     <div class="container">
       <p class="hero-tag">// Cybersecurity Analyst</p>
@@ -643,28 +34,30 @@
       <p class="hero-subtitle">Tier 2 SOC Analyst — phishing campaigns, brand threats &amp; digital risk investigations</p>
       <p class="hero-desc">
         Triaging escalated alerts, dissecting phishing infrastructure, and correlating threat
-        actor behavior at <strong style="color: var(--text)">ZeroFox</strong>. Building toward a
-        future in security tooling and education.
+        actor behavior at <strong>ZeroFox</strong>. Building toward a future in security tooling and education.
       </p>
       <p class="hero-focus">→ Focused on understanding attacker behavior — not just closing alerts.</p>
 
-      <div class="terminal">
+      <!-- Interactive Terminal -->
+      <div class="terminal" id="interactive-terminal">
         <div class="terminal-dots">
           <div class="dot dot-r"></div>
           <div class="dot dot-y"></div>
           <div class="dot dot-g"></div>
         </div>
-        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> whoami</p>
-        <p class="t-line"><span class="t-out">Cybersecurity Analyst | Tier 2 SOC | ZeroFox</span></p>
-        <br />
-        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> analyze --case phishing_campaign_4821</p>
-        <p class="t-line"><span class="t-out">[2024-11-14 09:32] Credential harvesting page detected</span></p>
-        <p class="t-line"><span class="t-out">[2024-11-14 09:32] Domain flagged: spoofed login portal | IOCs extracted</span></p>
-        <br />
-        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> grep -i "impersonation" alerts.log | wc -l</p>
-        <p class="t-line"><span class="t-out">312</span></p>
-        <br />
-        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> <span class="t-cursor"></span></p>
+        <!-- JS populates history and handles input -->
+        <div class="terminal-history" id="terminal-history"></div>
+        <div class="terminal-input-line">
+          <span class="t-prompt">anfas@sec:~$</span>
+          <input
+            type="text"
+            id="terminal-input"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="type a command... (try: help)"
+            aria-label="Terminal input"
+          />
+        </div>
       </div>
 
       <div class="btn-row">
@@ -676,7 +69,7 @@
 
   <hr class="divider" />
 
-  <!-- ABOUT -->
+  <!-- ── ABOUT ──────────────────────────────────────────── -->
   <section id="about">
     <div class="container">
       <p class="section-label">About Me</p>
@@ -722,7 +115,7 @@
 
   <hr class="divider" />
 
-  <!-- EXPERIENCE -->
+  <!-- ── EXPERIENCE ─────────────────────────────────────── -->
   <section id="experience">
     <div class="container">
       <p class="section-label">Experience</p>
@@ -761,7 +154,7 @@
 
   <hr class="divider" />
 
-  <!-- SKILLS -->
+  <!-- ── SKILLS ─────────────────────────────────────────── -->
   <section id="skills">
     <div class="container">
       <p class="section-label">Skills</p>
@@ -819,7 +212,7 @@
 
   <hr class="divider" />
 
-  <!-- HOW I THINK ABOUT SECURITY -->
+  <!-- ── MINDSET ────────────────────────────────────────── -->
   <section id="mindset">
     <div class="container">
       <p class="section-label">Mindset</p>
@@ -835,23 +228,21 @@
 
   <hr class="divider" />
 
-  <!-- PROJECTS -->
+  <!-- ── PROJECTS ───────────────────────────────────────── -->
   <section id="projects">
     <div class="container">
       <p class="section-label">Projects</p>
       <h2 class="section-title">Security Projects</h2>
       <p class="section-desc">Built to solve real problems — phishing detection, threat visualization, log correlation.</p>
 
-      <div class="projects-grid">
+      <!-- JS replaces this content from projects.json; static cards are the fallback -->
+      <div class="projects-grid" id="projects-grid">
 
         <div class="project-card">
           <div class="project-emoji">🎣</div>
           <p class="project-title">PhishScan — Phishing Detection CLI</p>
           <p class="project-origin">Built after spending hours manually parsing phishing emails in SOC workflows — this automates the repetitive parts.</p>
-          <p class="project-desc">
-            A Python CLI tool that analyzes email headers, URLs, and domain patterns to score
-            phishing likelihood. Extracts IOCs and generates incident-ready reports.
-          </p>
+          <p class="project-desc">A Python CLI tool that analyzes email headers, URLs, and domain patterns to score phishing likelihood. Extracts IOCs and generates incident-ready reports.</p>
           <div class="project-tags">
             <span class="project-tag">Python</span>
             <span class="project-tag">Email Parsing</span>
@@ -864,10 +255,7 @@
           <div class="project-emoji">📊</div>
           <p class="project-title">ThreatBoard — IOC Dashboard</p>
           <p class="project-origin">Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.</p>
-          <p class="project-desc">
-            A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign
-            timelines, and attacker infrastructure relationships. Built as a mock TI platform.
-          </p>
+          <p class="project-desc">A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Built as a mock TI platform.</p>
           <div class="project-tags">
             <span class="project-tag">JavaScript</span>
             <span class="project-tag">D3.js</span>
@@ -880,10 +268,7 @@
           <div class="project-emoji">📋</div>
           <p class="project-title">LogLens — SIEM Log Correlator</p>
           <p class="project-origin">Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.</p>
-          <p class="project-desc">
-            A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies
-            anomalous login patterns, privilege escalations, and lateral movement indicators.
-          </p>
+          <p class="project-desc">A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.</p>
           <div class="project-tags">
             <span class="project-tag">Python</span>
             <span class="project-tag">Bash</span>
@@ -898,7 +283,7 @@
 
   <hr class="divider" />
 
-  <!-- TRAINING -->
+  <!-- ── TRAINING ───────────────────────────────────────── -->
   <section id="training">
     <div class="container">
       <p class="section-label">Training</p>
@@ -913,13 +298,11 @@
           <p class="training-title">Data Structures &amp; Algorithms</p>
           <p class="training-desc">Problem-solving patterns — arrays, trees, graphs, dynamic programming. Built around real interview problems.</p>
         </div>
-
         <div class="training-card">
           <div class="training-num">02</div>
           <p class="training-title">Web Development</p>
           <p class="training-desc">HTML, CSS, JavaScript from first principles. Students build real projects — no copy-paste tutorials.</p>
         </div>
-
         <div class="training-card">
           <div class="training-num">03</div>
           <p class="training-title">Git &amp; Professional Workflow</p>
@@ -931,7 +314,21 @@
 
   <hr class="divider" />
 
-  <!-- CONTACT -->
+  <!-- ── THREAT ALERT STREAM ────────────────────────────── -->
+  <section id="threat-sim">
+    <div class="container">
+      <p class="section-label">Live Simulation</p>
+      <h2 class="section-title">Threat Alert Stream</h2>
+      <p class="section-desc">A simulated SOC alert queue — the kind of noise a real analyst filters through daily.</p>
+
+      <!-- JS populates and auto-updates this stream -->
+      <div class="alert-stream" id="alert-stream"></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── CONTACT ────────────────────────────────────────── -->
   <section id="contact">
     <div class="container">
       <p class="section-label">Contact</p>
@@ -967,7 +364,7 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
   <footer>
     <div class="container">
       <p class="footer-copy">Built by <span>Anfas Pulari</span> &middot; <span id="year"></span></p>
@@ -979,23 +376,7 @@
     </div>
   </footer>
 
-  <script>
-    // Footer year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Contact form feedback
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var btn = this.querySelector('button[type="submit"]');
-      btn.textContent = 'Message sent ✓';
-      btn.style.background = '#4ade80';
-      setTimeout(function() {
-        btn.textContent = 'Send Message';
-        btn.style.background = '';
-        e.target.reset();
-      }, 3000);
-    });
-  </script>
+  <script src="assets/js/main.js"></script>
 
 </body>
 </html>
