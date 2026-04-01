@@ -392,6 +392,59 @@ function disableResumeLinks(links) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// PARTICLE EFFECT — hero background
+// ─────────────────────────────────────────────────────────────
+
+function initParticles() {
+  var canvas = document.getElementById('particle-canvas');
+  if (!canvas || !canvas.getContext) return;
+
+  var ctx   = canvas.getContext('2d');
+  var COUNT = 50;
+  var particles = [];
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (var i = 0; i < COUNT; i++) {
+    particles.push({
+      x:  Math.random() * canvas.width,
+      y:  Math.random() * canvas.height,
+      r:  Math.random() * 1.2 + 0.3,
+      vy: -(Math.random() * 0.3 + 0.08),
+      vx: (Math.random() - 0.5) * 0.12,
+      o:  Math.random() * 0.3 + 0.06,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(function (p) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,212,255,' + p.o + ')';
+      ctx.fill();
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.y < -4)                { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
+      if (p.x < -4)                  p.x = canvas.width + 4;
+      if (p.x > canvas.width + 4)  p.x = -4;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+// ─────────────────────────────────────────────────────────────
 // UTILITIES
 // ─────────────────────────────────────────────────────────────
 
@@ -413,6 +466,7 @@ function escapeHtml(str) {
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('year').textContent = new Date().getFullYear();
+  initParticles();
   initMobileNav();
   initTerminal();
   loadProjects();

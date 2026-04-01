@@ -54,15 +54,17 @@
 
   <!-- ── HERO ───────────────────────────────────────────── -->
   <section id="hero">
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
     <div class="container">
       <p class="hero-tag">// Cybersecurity Analyst</p>
       <h1 class="hero-name">Anfas Pulari</h1>
-      <p class="hero-subtitle">Tier 2 SOC Analyst — phishing campaigns, brand threats &amp; digital risk investigations</p>
+      <p class="hero-subtitle">Tier 2 SOC Analyst. Phishing investigations, brand threat analysis &amp; digital risk operations.</p>
       <p class="hero-desc">
-        Triaging escalated alerts, dissecting phishing infrastructure, and correlating threat
-        actor behavior at <strong>ZeroFox</strong>. Building toward a future in security tooling and education.
+        Handling escalated alerts at <strong>ZeroFox</strong>, focused on phishing campaigns,
+        brand impersonation, and attacker infrastructure correlation. Working toward building
+        security tools and training the next generation of defenders.
       </p>
-      <p class="hero-focus">→ Focused on understanding attacker behavior — not just closing alerts.</p>
+      <p class="hero-focus">→ Every alert is a signal. The pattern is the intelligence.</p>
 
       <!-- Interactive Terminal -->
       <div class="terminal" id="interactive-terminal">
@@ -99,29 +101,25 @@
   <section id="about">
     <div class="container">
       <p class="section-label">About Me</p>
-      <h2 class="section-title">Security by day. Builder by design.</h2>
-      <p class="section-desc">A quick background on who I am and what I do.</p>
+      <h2 class="section-title">Turn noise into intelligence.</h2>
+      <p class="section-desc">Cybersecurity analyst, security tooling builder, and educator.</p>
 
       <div class="about-text">
         <p>
-          I'm a Cybersecurity Analyst at <strong>ZeroFox</strong>, working Tier 2 alerts —
-          investigating phishing campaigns, brand impersonation, and social media threat vectors
-          across enterprise client environments.
+          I'm a Cybersecurity Analyst at <strong>ZeroFox</strong>, handling Tier 2 alerts across phishing campaigns, brand impersonation, and social media threat investigations for enterprise clients.
         </p>
         <p>
-          Beyond the SOC, I'm building toward founding a cybersecurity-focused company —
-          focused on automation, tooling, and making security accessible. I also run a
-          training initiative helping engineering students with DSA, Web Development, and Git.
+          Outside the SOC, I'm building toward a cybersecurity company focused on automation and tooling. I also run a training initiative for cybersecurity and CS students covering the technical foundations that matter in real security work.
         </p>
         <p>
-          I believe in understanding <strong>why</strong> attacks succeed — not just blocking them.
+          Understanding <strong>why</strong> attacks succeed is more useful than just blocking them.
         </p>
       </div>
 
       <div class="stats-row">
         <div class="stat-box">
-          <span class="stat-num">1+</span>
-          <span class="stat-label">Year at ZeroFox</span>
+          <span class="stat-num">2+</span>
+          <span class="stat-label">Years at ZeroFox</span>
         </div>
         <div class="stat-box">
           <span class="stat-num">500+</span>
@@ -151,14 +149,14 @@
       <div class="exp-item">
         <div class="exp-header">
           <span class="exp-role">Cybersecurity Analyst — Tier 2</span>
-          <span class="exp-period">2024 – Present</span>
+          <span class="exp-period">2022 – Present</span>
         </div>
         <p class="exp-company">ZeroFox — Digital Risk Protection</p>
         <ul class="exp-points">
-          <li>Handle 300+ alerts/month across phishing, brand impersonation, and account takeover — triaging, escalating, and closing cases across enterprise client environments.</li>
-          <li>Identified and documented malicious infrastructure across multiple phishing campaigns, directly contributing to confirmed takedowns of spoofed login portals and credential harvesting pages.</li>
+          <li>Handle 300+ alerts/month across phishing, brand impersonation, and account takeover. Triage, escalate, and close cases across enterprise client environments.</li>
+          <li>Identified and documented malicious infrastructure across multiple phishing campaigns, contributing to confirmed takedowns of spoofed login portals and credential harvesting pages.</li>
           <li>Correlate multi-source threat data in SIEM to surface attacker patterns, map TTPs to MITRE ATT&amp;CK, and distinguish coordinated campaigns from isolated incidents.</li>
-          <li>Investigate phishing kit infrastructure end-to-end — from lookalike domain registration to kit hosting, extraction artifacts, and attacker reuse patterns.</li>
+          <li>Investigate phishing kit infrastructure from domain registration through kit hosting, artifact extraction, and attacker reuse patterns.</li>
           <li>Collaborate with Tier 3 analysts on escalated cases; produce client-facing incident summaries with IOC lists and remediation steps.</li>
         </ul>
       </div>
@@ -244,10 +242,10 @@
       <p class="section-label">Mindset</p>
       <h2 class="section-title">How I Think About Security</h2>
       <div class="mindset-list">
-        <p class="mindset-item"><strong>Security is not just detection</strong> — it's understanding why an attack worked, what the attacker was after, and how to make the next attempt harder.</p>
-        <p class="mindset-item">I focus on <strong>patterns across alerts</strong>, not isolated incidents. One phishing kit showing up across five campaigns tells a more useful story than five separate case closes.</p>
-        <p class="mindset-item">Manual analysis doesn't scale. I'm interested in <strong>automating the repetitive parts</strong> — enrichment, correlation, reporting — so analysts can spend time on what actually requires judgment.</p>
-        <p class="mindset-item">The best defense is built by people who've studied the offense. I read attacker infrastructure the same way an architect reads blueprints.</p>
+        <p class="mindset-item">Detection is table stakes. Understanding <strong>why an attack worked</strong>, what the attacker was after, and how they'll adapt is the actual job.</p>
+        <p class="mindset-item">One phishing kit appearing across five campaigns tells a better story than five closed cases. I focus on <strong>patterns across alerts</strong>, not individual alert counts.</p>
+        <p class="mindset-item">Repetitive enrichment and correlation should be automated. Analysts should spend their time on <strong>decisions</strong>, not data cleaning.</p>
+        <p class="mindset-item">Most phishing incidents aren't one-offs. They're evidence of <strong>infrastructure worth tracking</strong> and campaigns worth attributing.</p>
       </div>
     </div>
   </section>
@@ -259,7 +257,7 @@
     <div class="container">
       <p class="section-label">Projects</p>
       <h2 class="section-title">Security Projects</h2>
-      <p class="section-desc">Built to solve real problems — phishing detection, threat visualization, log correlation.</p>
+      <p class="section-desc">Built to solve real problems: phishing detection, threat visualization, log correlation.</p>
 
       <!-- JS replaces this content from projects.json; static cards are the fallback -->
       <div class="projects-grid" id="projects-grid">
@@ -315,24 +313,24 @@
       <p class="section-label">Training</p>
       <h2 class="section-title">Training &amp; Mentorship</h2>
       <p class="section-desc">
-        An independent initiative for engineering students — hands-on, project-driven, adapted to each level.
+        An independent initiative for cybersecurity and CS students. Hands-on and project-driven, adapted to each level.
       </p>
 
       <div class="training-grid">
         <div class="training-card">
           <div class="training-num">01</div>
           <p class="training-title">Data Structures &amp; Algorithms</p>
-          <p class="training-desc">Problem-solving patterns — arrays, trees, graphs, dynamic programming. Built around real interview problems.</p>
+          <p class="training-desc">Problem-solving patterns covering arrays, trees, graphs, and dynamic programming. Security engineers write code. This builds that instinct.</p>
         </div>
         <div class="training-card">
           <div class="training-num">02</div>
           <p class="training-title">Web Development</p>
-          <p class="training-desc">HTML, CSS, JavaScript from first principles. Students build real projects — no copy-paste tutorials.</p>
+          <p class="training-desc">HTML, CSS, JavaScript from first principles. Understanding how web apps are built is foundational to understanding how they get attacked.</p>
         </div>
         <div class="training-card">
           <div class="training-num">03</div>
           <p class="training-title">Git &amp; Professional Workflow</p>
-          <p class="training-desc">Version control, branching, pull requests, and collaborative development — the workflow skills that matter professionally.</p>
+          <p class="training-desc">Version control, branching, and collaborative development. The workflow skills that separate students from working professionals.</p>
         </div>
       </div>
     </div>
@@ -345,7 +343,7 @@
     <div class="container">
       <p class="section-label">Live Simulation</p>
       <h2 class="section-title">Threat Alert Stream</h2>
-      <p class="section-desc">A simulated SOC alert queue — the kind of noise a real analyst filters through daily.</p>
+      <p class="section-desc">A simulated SOC alert queue. The kind of noise a real analyst filters through daily.</p>
 
       <!-- JS populates and auto-updates this stream -->
       <div class="alert-stream" id="alert-stream"></div>
@@ -363,16 +361,15 @@
 
       <div class="contact-grid">
         <div class="contact-info">
-          <p>Whether you're hiring a security analyst, want to collaborate on tooling, or have a training inquiry — I'm reachable and responsive.</p>
+          <p>Open to security analyst roles, tooling collaborations, and training inquiries.</p>
           <div class="contact-links">
             <a href="mailto:anfaspulari@gmail.com" class="contact-link">✉ anfaspulari@gmail.com</a>
             <a href="https://github.com/anfaspulari" target="_blank" rel="noopener" class="contact-link">&#9447; github.com/anfaspulari</a>
-            <a href="https://linkedin.com/in/anfaspulari" target="_blank" rel="noopener" class="contact-link">in linkedin.com/in/anfaspulari</a>
+            <a href="https://linkedin.com/in/anfas-pulari" target="_blank" rel="noopener" class="contact-link">in linkedin.com/in/anfas-pulari</a>
           </div>
         </div>
 
-        <!-- Replace YOUR_FORM_ID with your Formspree form ID -->
-        <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <form id="contact-form" action="https://formspree.io/f/mojplwal" method="POST">
           <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" placeholder="Your name" required />
@@ -397,7 +394,7 @@
       <p class="footer-copy">Built by <span>Anfas Pulari</span> &middot; <span id="year"></span></p>
       <div class="footer-links">
         <a href="https://github.com/anfaspulari" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://linkedin.com/in/anfaspulari" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://linkedin.com/in/anfas-pulari" target="_blank" rel="noopener">LinkedIn</a>
         <a href="resume.pdf" download>Resume</a>
       </div>
     </div>
