@@ -196,15 +196,19 @@
       border-radius: 4px;
       cursor: pointer;
       border: none;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
       display: inline-block;
     }
 
-    .btn:hover { opacity: 0.85; text-decoration: none; }
+    .btn:hover { opacity: 0.9; text-decoration: none; transform: translateY(-2px); }
 
     .btn-fill {
       background: var(--cyan);
       color: #0d0d0d;
+    }
+
+    .btn-fill:hover {
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.25);
     }
 
     .btn-outline {
@@ -370,10 +374,13 @@
       padding: 24px;
       display: flex;
       flex-direction: column;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
 
     .project-card:hover {
-      border-color: rgba(0, 212, 255, 0.3);
+      border-color: rgba(0, 212, 255, 0.35);
+      box-shadow: 0 4px 24px rgba(0, 212, 255, 0.07);
+      transform: translateY(-3px);
     }
 
     .project-emoji {
@@ -385,6 +392,13 @@
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 8px;
+    }
+
+    .project-origin {
+      font-size: 0.78rem;
+      color: rgba(0, 212, 255, 0.6);
+      font-style: italic;
+      margin-bottom: 10px;
     }
 
     .project-desc {
@@ -549,6 +563,47 @@
 
     .footer-links a:hover { color: var(--cyan); text-decoration: none; }
 
+    /* ── Hero focus line ── */
+    .hero-focus {
+      font-size: 0.92rem;
+      color: var(--cyan);
+      font-family: var(--mono);
+      margin-top: -20px;
+      margin-bottom: 32px;
+      opacity: 0.85;
+    }
+
+    /* ── Mindset section ── */
+    #mindset { background: var(--bg2); }
+
+    .mindset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 640px;
+    }
+
+    .mindset-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .mindset-item::before {
+      content: '//';
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      opacity: 0.7;
+      padding-top: 3px;
+      flex-shrink: 0;
+    }
+
+    .mindset-item strong { color: var(--text); }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -585,12 +640,13 @@
     <div class="container">
       <p class="hero-tag">// Cybersecurity Analyst</p>
       <h1 class="hero-name">Anfas Pulari</h1>
-      <p class="hero-subtitle">Threat Hunter &middot; SOC Analyst &middot; Mentor</p>
+      <p class="hero-subtitle">Tier 2 SOC Analyst — phishing campaigns, brand threats &amp; digital risk investigations</p>
       <p class="hero-desc">
-        Triaging escalated alerts, investigating phishing campaigns, and mapping threat actor
-        infrastructure at <strong style="color: var(--text)">ZeroFox</strong>. Building toward a
+        Triaging escalated alerts, dissecting phishing infrastructure, and correlating threat
+        actor behavior at <strong style="color: var(--text)">ZeroFox</strong>. Building toward a
         future in security tooling and education.
       </p>
+      <p class="hero-focus">→ Focused on understanding attacker behavior — not just closing alerts.</p>
 
       <div class="terminal">
         <div class="terminal-dots">
@@ -601,8 +657,12 @@
         <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> whoami</p>
         <p class="t-line"><span class="t-out">Cybersecurity Analyst | Tier 2 SOC | ZeroFox</span></p>
         <br />
-        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> cat skills.txt</p>
-        <p class="t-line"><span class="t-out">phishing &middot; threat-intel &middot; SIEM &middot; incident-response</span></p>
+        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> analyze --case phishing_campaign_4821</p>
+        <p class="t-line"><span class="t-out">[2024-11-14 09:32] Credential harvesting page detected</span></p>
+        <p class="t-line"><span class="t-out">[2024-11-14 09:32] Domain flagged: spoofed login portal | IOCs extracted</span></p>
+        <br />
+        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> grep -i "impersonation" alerts.log | wc -l</p>
+        <p class="t-line"><span class="t-out">312</span></p>
         <br />
         <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> <span class="t-cursor"></span></p>
       </div>
@@ -676,11 +736,11 @@
         </div>
         <p class="exp-company">ZeroFox — Digital Risk Protection</p>
         <ul class="exp-points">
-          <li>Triage and investigate escalated Tier 2 alerts covering phishing, brand impersonation, and account takeover across enterprise client environments.</li>
-          <li>Analyze malicious URLs, spoofed domains, and social media campaigns — documenting IOCs and providing remediation recommendations.</li>
-          <li>Correlate threat data using SIEM tools to identify patterns and map attacker TTPs to MITRE ATT&amp;CK.</li>
-          <li>Collaborate with Tier 3 analysts and client security teams on incident escalation and response workflows.</li>
-          <li>Investigate phishing kit infrastructure, credential harvesting pages, and lookalike domains targeting client brands.</li>
+          <li>Handle 300+ alerts/month across phishing, brand impersonation, and account takeover — triaging, escalating, and closing cases across enterprise client environments.</li>
+          <li>Identified and documented malicious infrastructure across multiple phishing campaigns, directly contributing to confirmed takedowns of spoofed login portals and credential harvesting pages.</li>
+          <li>Correlate multi-source threat data in SIEM to surface attacker patterns, map TTPs to MITRE ATT&amp;CK, and distinguish coordinated campaigns from isolated incidents.</li>
+          <li>Investigate phishing kit infrastructure end-to-end — from lookalike domain registration to kit hosting, extraction artifacts, and attacker reuse patterns.</li>
+          <li>Collaborate with Tier 3 analysts on escalated cases; produce client-facing incident summaries with IOC lists and remediation steps.</li>
         </ul>
       </div>
 
@@ -712,24 +772,24 @@
         <div class="skill-group">
           <p class="skill-group-title">🛡️ Security</p>
           <div class="tags">
-            <span class="tag active">Threat Intelligence</span>
             <span class="tag active">Phishing Analysis</span>
+            <span class="tag active">Threat Intelligence</span>
             <span class="tag active">Incident Response</span>
-            <span class="tag active">Brand Impersonation</span>
-            <span class="tag">OSINT</span>
+            <span class="tag">Brand Impersonation</span>
             <span class="tag">IOC Analysis</span>
-            <span class="tag">MITRE ATT&amp;CK</span>
-            <span class="tag">Log Analysis</span>
             <span class="tag">SIEM</span>
+            <span class="tag">MITRE ATT&amp;CK</span>
+            <span class="tag">OSINT</span>
             <span class="tag">Digital Risk Monitoring</span>
+            <span class="tag">Log Analysis</span>
           </div>
         </div>
 
         <div class="skill-group">
           <p class="skill-group-title">🔧 Tools</p>
           <div class="tags">
-            <span class="tag active">ZeroFox Platform</span>
             <span class="tag active">Splunk</span>
+            <span class="tag active">ZeroFox Platform</span>
             <span class="tag">VirusTotal</span>
             <span class="tag">Shodan</span>
             <span class="tag">URLScan.io</span>
@@ -759,6 +819,22 @@
 
   <hr class="divider" />
 
+  <!-- HOW I THINK ABOUT SECURITY -->
+  <section id="mindset">
+    <div class="container">
+      <p class="section-label">Mindset</p>
+      <h2 class="section-title">How I Think About Security</h2>
+      <div class="mindset-list">
+        <p class="mindset-item"><strong>Security is not just detection</strong> — it's understanding why an attack worked, what the attacker was after, and how to make the next attempt harder.</p>
+        <p class="mindset-item">I focus on <strong>patterns across alerts</strong>, not isolated incidents. One phishing kit showing up across five campaigns tells a more useful story than five separate case closes.</p>
+        <p class="mindset-item">Manual analysis doesn't scale. I'm interested in <strong>automating the repetitive parts</strong> — enrichment, correlation, reporting — so analysts can spend time on what actually requires judgment.</p>
+        <p class="mindset-item">The best defense is built by people who've studied the offense. I read attacker infrastructure the same way an architect reads blueprints.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
   <!-- PROJECTS -->
   <section id="projects">
     <div class="container">
@@ -771,6 +847,7 @@
         <div class="project-card">
           <div class="project-emoji">🎣</div>
           <p class="project-title">PhishScan — Phishing Detection CLI</p>
+          <p class="project-origin">Built after spending hours manually parsing phishing emails in SOC workflows — this automates the repetitive parts.</p>
           <p class="project-desc">
             A Python CLI tool that analyzes email headers, URLs, and domain patterns to score
             phishing likelihood. Extracts IOCs and generates incident-ready reports.
@@ -786,9 +863,10 @@
         <div class="project-card">
           <div class="project-emoji">📊</div>
           <p class="project-title">ThreatBoard — IOC Dashboard</p>
+          <p class="project-origin">Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.</p>
           <p class="project-desc">
             A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign
-            timelines, and attacker infrastructure. Built as a mock TI platform.
+            timelines, and attacker infrastructure relationships. Built as a mock TI platform.
           </p>
           <div class="project-tags">
             <span class="project-tag">JavaScript</span>
@@ -801,6 +879,7 @@
         <div class="project-card">
           <div class="project-emoji">📋</div>
           <p class="project-title">LogLens — SIEM Log Correlator</p>
+          <p class="project-origin">Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.</p>
           <p class="project-desc">
             A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies
             anomalous login patterns, privilege escalations, and lateral movement indicators.
@@ -857,11 +936,11 @@
     <div class="container">
       <p class="section-label">Contact</p>
       <h2 class="section-title">Get In Touch</h2>
-      <p class="section-desc">Open to security roles, collaborations, and mentorship inquiries.</p>
+      <p class="section-desc">Currently open to cybersecurity roles, collaborations, and building impactful security tools.</p>
 
       <div class="contact-grid">
         <div class="contact-info">
-          <p>Whether you're looking for a security analyst, want to collaborate on a project, or have a training inquiry — reach out.</p>
+          <p>Whether you're hiring a security analyst, want to collaborate on tooling, or have a training inquiry — I'm reachable and responsive.</p>
           <div class="contact-links">
             <a href="mailto:anfaspulari@gmail.com" class="contact-link">✉ anfaspulari@gmail.com</a>
             <a href="https://github.com/anfaspulari" target="_blank" rel="noopener" class="contact-link">&#9447; github.com/anfaspulari</a>
