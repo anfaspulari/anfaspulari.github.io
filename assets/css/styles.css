@@ -484,6 +484,30 @@ nav .container {
   background: rgba(0, 212, 255, 0.05);
 }
 
+.project-links {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-link {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--cyan);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.project-link:hover { opacity: 1; }
+
+.project-link--demo {
+  color: var(--green);
+}
+
+.project-link-sep { color: var(--muted); font-size: 0.7rem; }
+
 /* ── Training ── */
 #training { background: var(--bg2); }
 
