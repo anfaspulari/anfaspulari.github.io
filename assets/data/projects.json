@@ -3,7 +3,7 @@
     "id": "phishscan",
     "emoji": "🎣",
     "name": "PhishScan — Phishing Detection CLI",
-    "origin": "Built after spending hours manually parsing phishing emails in SOC workflows — this automates the repetitive parts.",
+    "origin": "Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.",
     "description": "A Python CLI tool that analyzes email headers, URLs, and domain patterns to score phishing likelihood. Extracts IOCs and generates incident-ready reports.",
     "stack": ["Python", "Email Parsing", "VirusTotal API", "IOC Extraction"],
     "github": "https://github.com/anfaspulari"
