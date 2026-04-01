@@ -1,406 +1,922 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Start your development with Meyawo landing page.">
-    <meta name="author" content="Devcrud">
-    <title>Meyawo Landing page | Free Bootstrap 4.3.x landing page</title>
-    <!-- font icons -->
-    <link rel="stylesheet" href="assets/vendors/themify-icons/css/themify-icons.css">
-    <!-- Bootstrap + Meyawo main styles -->
-	<link rel="stylesheet" href="assets/css/meyawo.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anfas Pulari — Cybersecurity Analyst</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Variables ── */
+    :root {
+      --bg:     #0d0d0d;
+      --bg2:    #141414;
+      --border: #222;
+      --cyan:   #00d4ff;
+      --text:   #e0e0e0;
+      --muted:  #888;
+      --mono:   'JetBrains Mono', monospace;
+      --sans:   'Inter', sans-serif;
+    }
+
+    /* ── Base ── */
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    ul { list-style: none; }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section { padding: 80px 0; }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      margin-bottom: 40px;
+      max-width: 560px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Navbar ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(13, 13, 13, 0.95);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 14px 0;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      padding-top: 140px;
+      padding-bottom: 80px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--cyan);
+      margin-bottom: 16px;
+    }
+
+    .hero-name {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .hero-desc {
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 32px;
+      font-size: 1rem;
+    }
+
+    /* Terminal block */
+    .terminal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      max-width: 460px;
+      margin-bottom: 32px;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .t-line { margin-bottom: 4px; }
+    .t-prompt { color: var(--cyan); }
+    .t-out { color: #4ade80; }
+    .t-cursor {
+      display: inline-block;
+      width: 7px; height: 13px;
+      background: var(--cyan);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 10px 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+      display: inline-block;
+    }
+
+    .btn:hover { opacity: 0.85; text-decoration: none; }
+
+    .btn-fill {
+      background: var(--cyan);
+      color: #0d0d0d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+    }
+
+    /* ── About ── */
+    #about { background: var(--bg2); }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .about-text p strong { color: var(--text); }
+
+    .stats-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      min-width: 130px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cyan);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ── Experience ── */
+    .exp-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+      background: var(--bg2);
+    }
+
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .exp-role {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .exp-period {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .exp-company {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--cyan);
+      margin-bottom: 14px;
+    }
+
+    .exp-points li {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .exp-points li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-size: 0.7rem;
+      top: 4px;
+    }
+
+    /* ── Skills ── */
+    #skills { background: var(--bg2); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .skill-group {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .skill-group-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .tag.active {
+      color: var(--cyan);
+      border-color: rgba(0, 212, 255, 0.3);
+      background: rgba(0, 212, 255, 0.06);
+    }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-card:hover {
+      border-color: rgba(0, 212, 255, 0.3);
+    }
+
+    .project-emoji {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+
+    .project-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      flex: 1;
+      margin-bottom: 16px;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+      color: var(--cyan);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    /* ── Training ── */
+    #training { background: var(--bg2); }
+
+    .training-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .training-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .training-num {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: rgba(0, 212, 255, 0.15);
+      margin-bottom: 10px;
+    }
+
+    .training-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .training-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* ── Contact ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .contact-info p {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 10px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .contact-link:hover {
+      color: var(--cyan);
+      border-color: rgba(0, 212, 255, 0.3);
+      text-decoration: none;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: rgba(0, 212, 255, 0.4);
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .footer-copy span { color: var(--cyan); }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .footer-links a:hover { color: var(--cyan); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-name { font-size: 2rem; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .training-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-row { flex-direction: column; }
+    }
+  </style>
 </head>
-<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+<body>
 
-    <!-- Page Navbar -->
-    <nav class="custom-navbar" data-spy="affix" data-offset-top="20">
-        <div class="container">
-            <a class="logo" href="#">Meyawo</a>         
-            <ul class="nav">
-                <li class="item">
-                    <a class="link" href="#home">Home</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#about">About</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#portfolio">Portfolio</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#testmonial">Testmonial</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#blog">Blog</a>
-                </li>
-                <li class="item">
-                    <a class="link" href="#contact">Contact</a>
-                </li>
-                <li class="item ml-md-3">
-                    <a href="components.html" class="btn btn-primary">Components</a>
-                </li>
-            </ul>
-            <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
-                <div class="hamburger-box">
-                  <div class="hamburger-inner"></div>
-                </div>
-            </a>
-        </div>          
-    </nav><!-- End of Page Navbar -->
-
-    <!-- page header -->
-    <header id="home" class="header">
-        <div class="overlay"></div>
-        <div class="header-content container">
-            <h1 class="header-title">
-                <span class="up">HI!</span>
-                <span class="down">I am Anfas K</span>
-            </h1>
-            <p class="header-subtitle">FRONTEND WEB DESIGNER</p>            
-
-            <button class="btn btn-primary">Visit My Works</button>
-        </div>              
-    </header><!-- end of page header -->
-
-    <!-- about section -->
-    <section class="section pt-0" id="about">
-        <!-- container -->
-        <div class="container text-center">
-            <!-- about wrapper -->
-            <div class="about">
-                <div class="about-img-holder">
-                    <img src="assets/imgs/man.png" class="about-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                </div>
-                <div class="about-caption">
-                    <p class="section-subtitle">Who Am I ?</p>
-                    <h2 class="section-title mb-3">About Me</h2>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae aliquid ad provident aut fuga animi soluta quae eos non cupiditate voluptates dolorem, doloremque quos dicta quibusdam impedit iure nemo a iste 
-                        <br>culpa! Quasi quibusdam hic recusandae delectus velit officiis explicabo voluptatibus! Nemo esse similique, voluptates labore distinctio, placeat explicabo facilis molestias, blanditiis culpa iusto voluptatem ratione eligendi a, quia temporibus velit vero ipsa sint ex voluptatum expedita aliquid! Debitis, nam!              
-                    </p>
-                    <button class="btn-rounded btn btn-outline-primary mt-4">Download CV</button>
-                </div>              
-            </div><!-- end of about wrapper -->
-        </div><!-- end of container -->
-    </section> <!-- end of about section -->
-
-    <!-- service section -->
-    <section class="section" id="service">
-        <div class="container text-center">
-            <p class="section-subtitle">What I Do ?</p>
-            <h6 class="section-title mb-6">Service</h6>
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/pencil-case.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page" class="icon">
-                            <h6 class="title">Adipisicing</h6>
-                            <p class="subtitle">Labore velit culpa adipisci excepturi consequuntur itaque in nam molestias dolorem iste quod.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/responsive.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page" class="icon">
-                            <h6 class="title">Sapiente</h6>
-                            <p class="subtitle">Labore velit culpa adipisci excepturi consequuntur itaque in nam molestias dolorem iste quod.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/toolbox.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page" class="icon">
-                            <h6 class="title">Placeat</h6>
-                            <p class="subtitle">Labore velit culpa adipisci excepturi consequuntur itaque in nam molestias dolorem iste quod.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <div class="body">
-                            <img src="assets/imgs/analytics.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page" class="icon">
-                            <h6 class="title">Iusto</h6>
-                            <p class="subtitle">Labore velit culpa adipisci excepturi consequuntur itaque in nam molestias dolorem iste quod.</p>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- end of row -->
-        </div>
-    </section><!-- end of service section -->
-
-    <!-- portfolio section -->
-    <section class="section" id="portfolio">
-        <div class="container text-center">
-            <p class="section-subtitle">What I Did ?</p>
-            <h6 class="section-title mb-6">Portfolio</h6>
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-4">
-                    <a href="#" class="portfolio-card">
-                        <img src="assets/imgs/folio-1.jpg" class="portfolio-card-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">    
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>Web Designing</h5>
-                                <p class="font-weight-normal">Category: Web Templates</p>
-                            </span>                         
-                        </span>                     
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="#" class="portfolio-card">
-                        <img class="portfolio-card-img" src="assets/imgs/folio-2.jpg" class="img-responsive rounded" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>Web Designing</h5>
-                                <p class="font-weight-normal">Category: Web Templates</p>
-                            </span>                         
-                        </span>                         
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="#" class="portfolio-card">
-                        <img class="portfolio-card-img" src="assets/imgs/folio-3.jpg" class="img-responsive rounded" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">    
-                        <span class="portfolio-card-overlay">
-                            <span class="portfolio-card-caption">
-                                <h4>Web Designing</h5>
-                                <p class="font-weight-normal">Category: Web Templates</p>
-                            </span>                         
-                        </span>                     
-                    </a>
-                </div>
-            </div><!-- end of row -->
-        </div><!-- end of container -->
-    </section> <!-- end of portfolio section -->
-
-    <!-- pricing section -->
-    <section class="section" id="pricing">
-        <div class="container text-center">
-            <p class="section-subtitle">How Much I Charge ?</p>
-            <h6 class="section-title mb-6">My Pricing</h6>
-            <!-- row -->
-            <div class="pricing-wrapper">
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <img class="pricing-card-icon" src="assets/imgs/scooter.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                    </div>
-                    <div class="pricing-card-body">
-                        <h6 class="pricing-card-title">Free</h6>
-                        <div class="pricing-card-list">
-                            <p>accusamus reprehenderit</p>
-                            <p>provident dolorem </p>
-                            <p>quos neque</p>
-                            <p>fugiat quibusdam</p>
-                            <p><i class="ti-close"></i></p>
-                            <p><i class="ti-close"></i></p>
-                        </div>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <span>$</span>
-                        <span>0.00/Month</span>
-                    </div>
-                    <a href="#" class="btn btn-primary mt-3 pricing-card-btn">Subscribe</a>
-                </div>
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <img class="pricing-card-icon" src="assets/imgs/shipped.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                    </div>
-                    <div class="pricing-card-body">
-                        <h6 class="pricing-card-title">Basic</h6>
-                        <div class="pricing-card-list">
-                            <p>accusamus reprehenderit</p>
-                            <p>provident dolorem </p>
-                            <p>quos neque</p>
-                            <p>fugiat quibusdam</p>
-                            <p>accusamus laboriosam</p>
-                            <p><i class="ti-close"></i></p>
-                        </div>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <span>$</span>
-                        <span>9.99/Month</span>
-                    </div>
-                    <a href="#" class="btn btn-primary mt-3 pricing-card-btn">Subscribe</a>
-                </div>
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <img class="pricing-card-icon" src="assets/imgs/startup.svg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                    </div>
-                    <div class="pricing-card-body">
-                        <h6 class="pricing-card-title">Premium</h6>
-                        <div class="pricing-card-list">
-                            <p>accusamus reprehenderit</p>
-                            <p>provident dolorem </p>
-                            <p>quos neque</p>
-                            <p>fugiat quibusdam</p>
-                            <p>accusamus laboriosam</p>
-                            <p>inventore omnis</p>
-                        </div>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <span>$</span>
-                        <span>99.9/Month</span>
-                    </div>
-                    <a href="#" class="btn btn-primary mt-3 pricing-card-btn">Subscribe</a>
-                </div>
-
-            </div><!-- end of pricing wrapper -->
-        </div> <!-- end of container -->
-    </section><!-- end of pricing section -->
-
-    <!-- section -->
-    <section class="section-sm bg-primary">
-        <!-- container -->
-        <div class="container text-center text-sm-left">
-            <!-- row -->
-            <div class="row align-items-center">
-                <div class="col-sm offset-md-1 mb-4 mb-md-0">
-                    <h6 class="title text-light">Want to work with me?</h6>
-                    <p class="m-0 text-light">Always feel Free to Contact & Hire me</p>
-                </div>
-                <div class="col-sm offset-sm-2 offset-md-3">
-                    <button class="btn btn-lg my-font btn-light rounded">Hire Me</button>
-                </div>
-            </div> <!-- end of row -->
-        </div> <!-- end of container -->
-    </section> <!-- end of section -->
-
-    <!-- testimonial section -->
-    <section class="section" id="testmonial">
-        <div class="container text-center">
-            <p class="section-subtitle">What Think Client About Me ?</p>
-            <h6 class="section-title mb-6">Testmonial</h6>
-
-            <!-- row -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-card-img-holder">
-                            <img src="assets/imgs/avatar2.jpg" class="testimonial-card-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">                           
-                        </div>
-                        <div class="testimonial-card-body">
-                            <p class="testimonial-card-subtitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque doloribus autem aperiam earum nostrum omnis blanditiis corporis perspiciatis adipisci nihil.</p>
-                            <h6 class="testimonial-card-title">Emily Reb</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="testimonial-card">
-                        <div class="testimonial-card-img-holder">
-                            <img src="assets/imgs/avatar3.jpg" class="testimonial-card-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">                        
-                        </div>
-                        <div class="testimonial-card-body">
-                            <p class="testimonial-card-subtitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque doloribus autem aperiam earum nostrum omnis blanditiis corporis perspiciatis adipisci nihil.</p>
-                            <h6 class="testimonial-card-title">Emily Reb</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- end of container -->
-    </section> <!-- end of testimonial section -->
-    
-    <!-- blog section -->
-    <section class="section" id="blog">
-        <!-- container -->
-        <div class="container text-center">
-            <p class="section-subtitle">Recent Posts?</p>
-            <h6 class="section-title mb-6">Blog</h6>
-            <!-- blog-wrapper -->
-            <div class="blog-card">
-                <div class="blog-card-header">
-                    <img src="assets/imgs/img-1.jpg" class="blog-card-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                </div>
-                <div class="blog-card-body">
-                    <h5 class="blog-card-title">Consectetur adipisicing elit</h6>
-
-                    <p class="blog-card-caption">
-                        <a href="#">By: Admin</a>
-                        <a href="#"><i class="ti-heart text-danger"></i> 234</a>
-                        <a href="#"><i class="ti-comment"></i> 123</a>
-                    </p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet nesciunt qui sit velit delectus voluptates, repellat ipsum culpa id deleniti. Rerum debitis facilis accusantium neque numquam mollitia modi quasi distinctio.</p>
-
-                    <p><b>Necessitatibus nihil impedit! Ex nisi eveniet, dolor aliquid consequuntur repudiandae.</b></p>
-                    <p>Magnam in repellat enim harum omnis aperiam! Explicabo illo, commodi, dolor blanditiis cupiditate harum nisi vero accusamus laudantium voluptatibus dolores quae obcaecati.</p>
-
-                    <a href="#" class="blog-card-link">Read more <i class="ti-angle-double-right"></i></a>
-                </div>
-            </div><!-- end of blog wrapper -->
-
-            <!-- blog-wrapper -->
-            <div class="blog-card">
-                <div class="blog-card-header">
-                    <img src="assets/imgs/img-2.jpg" class="blog-card-img" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, meyawo Landing page">
-                </div>
-                <div class="blog-card-body">
-                    <h5 class="blog-card-title">Explicabo illo</h6>
-
-                    <p class="blog-card-caption">
-                        <a href="#">By: Admin</a>
-                        <a href="#"><i class="ti-heart text-danger"></i> 456</a>
-                        <a href="#"><i class="ti-comment"></i> 264</a>
-                    </p>
-                    
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit excepturi laborum enim, vitae ipsam atque eum, ad iusto consequuntur voluptas, esse doloribus. Perferendis porro quisquam vitae exercitationem aliquid, minus eos laborum repudiandae, cumque debitis iusto omnis praesentium? Laborum placeat sit adipisci illum tempore maxime, esse qui quae? Molestias excepturi corporis similique doloribus. Esse vitae earum architecto nulla non dolores illum at perspiciatis quod, et deleniti cupiditate reiciendis harum facere, delectus eum commodi soluta distinctio sit repudiandae possimus sunt. Ipsum, rem.</p>
-
-                    <a href="#" class="blog-card-link">Read more <i class="ti-angle-double-right"></i></a>
-                </div>
-            </div><!-- end of blog wrapper -->
-
-        </div><!-- end of container -->
-    </section><!-- end of blog section -->
-
-    <!-- contact section -->
-    <section class="section" id="contact">
-        <div class="container text-center">
-            <p class="section-subtitle">How can you communicate?</p>
-            <h6 class="section-title mb-5">Contact Me</h6>
-            <!-- contact form -->
-            <form action="" class="contact-form col-md-10 col-lg-8 m-auto">
-                <div class="form-row">
-                    <div class="form-group col-sm-6">
-                        <input type="text" size="50" class="form-control" placeholder="Your Name" required>                 
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <input type="email" class="form-control" placeholder="Enter Email"requried>                 
-                    </div>
-                    <div class="form-group col-sm-12">
-                        <textarea name="comment" id="comment" rows="6"   class="form-control" placeholder="Write Something"></textarea>
-                    </div>
-                    <div class="form-group col-sm-12 mt-3">
-                        <input type="submit" value="Send Message" class="btn btn-outline-primary rounded">                  
-                    </div>
-                </div>  
-            </form><!-- end of contact form -->
-        </div><!-- end of container -->
-    </section><!-- end of contact section -->
-
-    <!-- footer -->
+  <!-- NAVBAR -->
+  <nav>
     <div class="container">
-        <footer class="footer">       
-            <p class="mb-0">Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a href="http://www.devcrud.com">DevCRUD</a></p>
-            <div class="social-links text-right m-auto ml-sm-auto">
-                <a href="javascript:void(0)" class="link"><i class="ti-facebook"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-twitter-alt"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-google"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-pinterest-alt"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-instagram"></i></a>
-                <a href="javascript:void(0)" class="link"><i class="ti-rss"></i></a>
-            </div>
-        </footer>
-    </div> <!-- end of page footer -->
-	
-	<!-- core  -->
-    <script src="assets/vendors/jquery/jquery-3.4.1.js"></script>
-    <script src="assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+      <span class="nav-logo">~/anfas.sec</span>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#training">Training</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
 
-    <!-- bootstrap 3 affix -->
-	<script src="assets/vendors/bootstrap/bootstrap.affix.js"></script>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <p class="hero-tag">// Cybersecurity Analyst</p>
+      <h1 class="hero-name">Anfas Pulari</h1>
+      <p class="hero-subtitle">Threat Hunter &middot; SOC Analyst &middot; Mentor</p>
+      <p class="hero-desc">
+        Triaging escalated alerts, investigating phishing campaigns, and mapping threat actor
+        infrastructure at <strong style="color: var(--text)">ZeroFox</strong>. Building toward a
+        future in security tooling and education.
+      </p>
 
-    <!-- Meyawo js -->
-    <script src="assets/js/meyawo.js"></script>
+      <div class="terminal">
+        <div class="terminal-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> whoami</p>
+        <p class="t-line"><span class="t-out">Cybersecurity Analyst | Tier 2 SOC | ZeroFox</span></p>
+        <br />
+        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> cat skills.txt</p>
+        <p class="t-line"><span class="t-out">phishing &middot; threat-intel &middot; SIEM &middot; incident-response</span></p>
+        <br />
+        <p class="t-line"><span class="t-prompt">anfas@sec:~$</span> <span class="t-cursor"></span></p>
+      </div>
+
+      <div class="btn-row">
+        <a href="#projects" class="btn btn-fill">View My Work</a>
+        <a href="resume.pdf" class="btn btn-outline" download>Download Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <p class="section-label">About Me</p>
+      <h2 class="section-title">Security by day. Builder by design.</h2>
+      <p class="section-desc">A quick background on who I am and what I do.</p>
+
+      <div class="about-text">
+        <p>
+          I'm a Cybersecurity Analyst at <strong>ZeroFox</strong>, working Tier 2 alerts —
+          investigating phishing campaigns, brand impersonation, and social media threat vectors
+          across enterprise client environments.
+        </p>
+        <p>
+          Beyond the SOC, I'm building toward founding a cybersecurity-focused company —
+          focused on automation, tooling, and making security accessible. I also run a
+          training initiative helping engineering students with DSA, Web Development, and Git.
+        </p>
+        <p>
+          I believe in understanding <strong>why</strong> attacks succeed — not just blocking them.
+        </p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-num">1+</span>
+          <span class="stat-label">Year at ZeroFox</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">500+</span>
+          <span class="stat-label">Alerts Triaged</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">Tier 2</span>
+          <span class="stat-label">SOC Level</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">30+</span>
+          <span class="stat-label">Students Mentored</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container">
+      <p class="section-label">Experience</p>
+      <h2 class="section-title">Where I've Worked</h2>
+      <p class="section-desc">Real-world security operations across threat intelligence and incident response.</p>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">Cybersecurity Analyst — Tier 2</span>
+          <span class="exp-period">2024 – Present</span>
+        </div>
+        <p class="exp-company">ZeroFox — Digital Risk Protection</p>
+        <ul class="exp-points">
+          <li>Triage and investigate escalated Tier 2 alerts covering phishing, brand impersonation, and account takeover across enterprise client environments.</li>
+          <li>Analyze malicious URLs, spoofed domains, and social media campaigns — documenting IOCs and providing remediation recommendations.</li>
+          <li>Correlate threat data using SIEM tools to identify patterns and map attacker TTPs to MITRE ATT&amp;CK.</li>
+          <li>Collaborate with Tier 3 analysts and client security teams on incident escalation and response workflows.</li>
+          <li>Investigate phishing kit infrastructure, credential harvesting pages, and lookalike domains targeting client brands.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="exp-role">Security Training Lead</span>
+          <span class="exp-period">2023 – Present</span>
+        </div>
+        <p class="exp-company">Independent — Training &amp; Mentorship Initiative</p>
+        <ul class="exp-points">
+          <li>Designed and delivered training sessions for engineering students covering DSA, Web Development, and Git workflows.</li>
+          <li>Created project-based curricula adapted to beginner and intermediate levels.</li>
+          <li>Mentored students through technical interview prep and first open-source contributions.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-label">Skills</p>
+      <h2 class="section-title">Technical Expertise</h2>
+      <p class="section-desc">Tools and areas I work with daily.</p>
+
+      <div class="skills-grid">
+        <div class="skill-group">
+          <p class="skill-group-title">🛡️ Security</p>
+          <div class="tags">
+            <span class="tag active">Threat Intelligence</span>
+            <span class="tag active">Phishing Analysis</span>
+            <span class="tag active">Incident Response</span>
+            <span class="tag active">Brand Impersonation</span>
+            <span class="tag">OSINT</span>
+            <span class="tag">IOC Analysis</span>
+            <span class="tag">MITRE ATT&amp;CK</span>
+            <span class="tag">Log Analysis</span>
+            <span class="tag">SIEM</span>
+            <span class="tag">Digital Risk Monitoring</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">🔧 Tools</p>
+          <div class="tags">
+            <span class="tag active">ZeroFox Platform</span>
+            <span class="tag active">Splunk</span>
+            <span class="tag">VirusTotal</span>
+            <span class="tag">Shodan</span>
+            <span class="tag">URLScan.io</span>
+            <span class="tag">Wireshark</span>
+            <span class="tag">Burp Suite</span>
+            <span class="tag">MISP</span>
+            <span class="tag">Linux</span>
+            <span class="tag">Git</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">💻 Programming</p>
+          <div class="tags">
+            <span class="tag active">Python</span>
+            <span class="tag active">Bash</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">SQL</span>
+            <span class="tag">HTML / CSS</span>
+            <span class="tag">Regex</span>
+            <span class="tag">YARA Rules</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <p class="section-label">Projects</p>
+      <h2 class="section-title">Security Projects</h2>
+      <p class="section-desc">Built to solve real problems — phishing detection, threat visualization, log correlation.</p>
+
+      <div class="projects-grid">
+
+        <div class="project-card">
+          <div class="project-emoji">🎣</div>
+          <p class="project-title">PhishScan — Phishing Detection CLI</p>
+          <p class="project-desc">
+            A Python CLI tool that analyzes email headers, URLs, and domain patterns to score
+            phishing likelihood. Extracts IOCs and generates incident-ready reports.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">Email Parsing</span>
+            <span class="project-tag">VirusTotal API</span>
+            <span class="project-tag">IOC Extraction</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-emoji">📊</div>
+          <p class="project-title">ThreatBoard — IOC Dashboard</p>
+          <p class="project-desc">
+            A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign
+            timelines, and attacker infrastructure. Built as a mock TI platform.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">JavaScript</span>
+            <span class="project-tag">D3.js</span>
+            <span class="project-tag">Threat Intel</span>
+            <span class="project-tag">Data Viz</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-emoji">📋</div>
+          <p class="project-title">LogLens — SIEM Log Correlator</p>
+          <p class="project-desc">
+            A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies
+            anomalous login patterns, privilege escalations, and lateral movement indicators.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">Bash</span>
+            <span class="project-tag">Log Parsing</span>
+            <span class="project-tag">Anomaly Detection</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- TRAINING -->
+  <section id="training">
+    <div class="container">
+      <p class="section-label">Training</p>
+      <h2 class="section-title">Training &amp; Mentorship</h2>
+      <p class="section-desc">
+        An independent initiative for engineering students — hands-on, project-driven, adapted to each level.
+      </p>
+
+      <div class="training-grid">
+        <div class="training-card">
+          <div class="training-num">01</div>
+          <p class="training-title">Data Structures &amp; Algorithms</p>
+          <p class="training-desc">Problem-solving patterns — arrays, trees, graphs, dynamic programming. Built around real interview problems.</p>
+        </div>
+
+        <div class="training-card">
+          <div class="training-num">02</div>
+          <p class="training-title">Web Development</p>
+          <p class="training-desc">HTML, CSS, JavaScript from first principles. Students build real projects — no copy-paste tutorials.</p>
+        </div>
+
+        <div class="training-card">
+          <div class="training-num">03</div>
+          <p class="training-title">Git &amp; Professional Workflow</p>
+          <p class="training-desc">Version control, branching, pull requests, and collaborative development — the workflow skills that matter professionally.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label">Contact</p>
+      <h2 class="section-title">Get In Touch</h2>
+      <p class="section-desc">Open to security roles, collaborations, and mentorship inquiries.</p>
+
+      <div class="contact-grid">
+        <div class="contact-info">
+          <p>Whether you're looking for a security analyst, want to collaborate on a project, or have a training inquiry — reach out.</p>
+          <div class="contact-links">
+            <a href="mailto:anfaspulari@gmail.com" class="contact-link">✉ anfaspulari@gmail.com</a>
+            <a href="https://github.com/anfaspulari" target="_blank" rel="noopener" class="contact-link">&#9447; github.com/anfaspulari</a>
+            <a href="https://linkedin.com/in/anfaspulari" target="_blank" rel="noopener" class="contact-link">in linkedin.com/in/anfaspulari</a>
+          </div>
+        </div>
+
+        <form id="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" placeholder="Your name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="Your message..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-fill" style="width: 100%;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p class="footer-copy">Built by <span>Anfas Pulari</span> &middot; <span id="year"></span></p>
+      <div class="footer-links">
+        <a href="https://github.com/anfaspulari" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com/in/anfaspulari" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="resume.pdf" download>Resume</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form feedback
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type="submit"]');
+      btn.textContent = 'Message sent ✓';
+      btn.style.background = '#4ade80';
+      setTimeout(function() {
+        btn.textContent = 'Send Message';
+        btn.style.background = '';
+        e.target.reset();
+      }, 3000);
+    });
+  </script>
 
 </body>
 </html>
