@@ -8,41 +8,41 @@ var COMMANDS = {
 
   whoami: function () {
     return [
-      { text: 'Anfas Pulari',                                              type: 'info' },
-      { text: 'Role    : Cybersecurity Analyst, Tier 2 SOC',              type: 'out'  },
-      { text: 'Company : ZeroFox — Digital Risk Protection',              type: 'out'  },
-      { text: 'Focus   : Phishing | Threat Intel | Incident Response',    type: 'out'  },
+      { text: 'Anfas Pulari',                                            type: 'info'   },
+      { text: 'Role    : Cybersecurity Analyst, Tier 2 SOC',            type: 'out'    },
+      { text: 'Company : ZeroFox — Digital Risk Protection',            type: 'out'    },
+      { text: 'Focus   : Phishing | Threat Intel | Incident Response',  type: 'out'    },
     ];
   },
 
   help: function () {
     return [
-      { text: 'Available commands:',                                            type: 'info' },
-      { text: '  whoami                — current operator profile',             type: 'out'  },
-      { text: '  skills                — list core competencies',               type: 'out'  },
-      { text: '  projects              — active security projects',             type: 'out'  },
-      { text: '  analyze phishing_case — run a sample SOC analysis',           type: 'out'  },
-      { text: '  status                — current alert queue',                  type: 'out'  },
-      { text: '  clear                 — clear terminal output',                type: 'out'  },
+      { text: 'Available commands:',                                          type: 'info' },
+      { text: '  whoami                — current operator profile',           type: 'out'  },
+      { text: '  skills                — list core competencies',             type: 'out'  },
+      { text: '  projects              — active security projects',           type: 'out'  },
+      { text: '  analyze phishing_case — run a sample SOC analysis',         type: 'out'  },
+      { text: '  status                — current alert queue',                type: 'out'  },
+      { text: '  clear                 — clear terminal output',              type: 'out'  },
     ];
   },
 
   skills: function () {
     return [
-      { text: 'Core competencies:',                                                       type: 'info' },
-      { text: '  [SECURITY]   Phishing Analysis · Threat Intelligence · IR',             type: 'out'  },
-      { text: '  [TOOLS]      Splunk · ZeroFox Platform · VirusTotal · Shodan',          type: 'out'  },
-      { text: '  [CODE]       Python · Bash · Regex · YARA Rules',                       type: 'out'  },
-      { text: '  [FRAMEWORK]  MITRE ATT&CK · IOC Analysis · OSINT',                     type: 'out'  },
+      { text: 'Core competencies:',                                                     type: 'info' },
+      { text: '  [SECURITY]   Phishing Analysis · Threat Intelligence · IR',           type: 'out'  },
+      { text: '  [TOOLS]      Splunk · ZeroFox Platform · VirusTotal · Shodan',        type: 'out'  },
+      { text: '  [CODE]       Python · Bash · Regex · YARA Rules',                     type: 'out'  },
+      { text: '  [FRAMEWORK]  MITRE ATT&CK · IOC Analysis · OSINT',                   type: 'out'  },
     ];
   },
 
   projects: function () {
     return [
-      { text: 'Security projects:',                                                   type: 'info' },
-      { text: '  [01] PhishScan    — Phishing detection CLI (Python)',               type: 'out'  },
-      { text: '  [02] ThreatBoard  — IOC visualization dashboard (JS/D3)',           type: 'out'  },
-      { text: '  [03] LogLens      — SIEM log correlator (Python/Bash)',             type: 'out'  },
+      { text: 'Security projects:',                                                 type: 'info' },
+      { text: '  [01] PhishScan    — Phishing detection CLI (Python)',             type: 'out'  },
+      { text: '  [02] ThreatBoard  — IOC visualization dashboard (JS/D3)',         type: 'out'  },
+      { text: '  [03] LogLens      — SIEM log correlator (Python/Bash)',           type: 'out'  },
     ];
   },
 
@@ -59,20 +59,20 @@ var COMMANDS = {
 
   'analyze phishing_case': function () {
     return [
-      { text: '[CASE-4821] Initializing analysis...',                                      type: 'info'   },
-      { text: '  Sender       : support@secure-update-portal[.]com',                      type: 'out'    },
-      { text: '  Subject      : "Urgent: Verify your account credentials"',               type: 'out'    },
-      { text: '  URL flagged  : hxxps://secure-login-update[.]com/verify',                type: 'warn'   },
-      { text: '  IP resolved  : 185.220.101.x  (TOR exit node)',                          type: 'warn'   },
-      { text: '  Kit pattern  : credential_harvester_v3 (matched 4 prior campaigns)',     type: 'warn'   },
-      { text: '  VERDICT      : PHISHING CONFIRMED — takedown request submitted',         type: 'threat' },
+      { text: '[CASE-4821] Initializing analysis...',                                    type: 'info'   },
+      { text: '  Sender       : support@secure-update-portal[.]com',                    type: 'out'    },
+      { text: '  Subject      : "Urgent: Verify your account credentials"',             type: 'out'    },
+      { text: '  URL flagged  : hxxps://secure-login-update[.]com/verify',              type: 'warn'   },
+      { text: '  IP resolved  : 185.220.101.x  (TOR exit node)',                        type: 'warn'   },
+      { text: '  Kit pattern  : credential_harvester_v3 (4 prior campaigns matched)',   type: 'warn'   },
+      { text: '  VERDICT      : PHISHING CONFIRMED — takedown request submitted',       type: 'threat' },
     ];
   },
 
 };
 
 // ─────────────────────────────────────────────────────────────
-// TERMINAL — core functions
+// TERMINAL — init + handlers
 // ─────────────────────────────────────────────────────────────
 
 function initTerminal() {
@@ -82,48 +82,52 @@ function initTerminal() {
 
   if (!historyEl || !inputEl || !wrapEl) return;
 
-  // Pre-populate with realistic boot sequence
-  var boot = [
-    { cmd: 'whoami',               output: COMMANDS.whoami()                    },
-    { cmd: 'analyze phishing_case', output: COMMANDS['analyze phishing_case']() },
-  ];
-
-  boot.forEach(function (item) {
+  // Pre-populate with boot sequence
+  [
+    { cmd: 'whoami',               fn: COMMANDS.whoami               },
+    { cmd: 'analyze phishing_case', fn: COMMANDS['analyze phishing_case'] },
+  ].forEach(function (item) {
     appendCmd(historyEl, item.cmd);
-    item.output.forEach(function (line) { appendOut(historyEl, line.text, line.type); });
+    item.fn().forEach(function (line) { appendOut(historyEl, line.text, line.type); });
     appendBlank(historyEl);
   });
 
   scrollBottom(historyEl);
 
-  // Click anywhere on terminal → focus input
+  // Focus input when clicking anywhere on terminal
   wrapEl.addEventListener('click', function () { inputEl.focus(); });
 
-  // Handle Enter
+  // Handle command submission
   inputEl.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter') return;
+
     var raw = inputEl.value.trim();
     inputEl.value = '';
     if (!raw) return;
 
-    var cmd = raw.toLowerCase();
-    appendCmd(historyEl, raw);
-
-    if (cmd === 'clear') {
-      historyEl.innerHTML = '';
-      return;
-    }
-
-    var handler = COMMANDS[cmd];
-    if (handler) {
-      handler().forEach(function (line) { appendOut(historyEl, line.text, line.type); });
-    } else {
-      appendOut(historyEl, 'command not found: "' + escapeHtml(raw) + '"  —  try help', 'error');
-    }
-
-    appendBlank(historyEl);
+    handleTerminalCommand(historyEl, raw);
     scrollBottom(historyEl);
   });
+}
+
+function handleTerminalCommand(historyEl, raw) {
+  var cmd = raw.toLowerCase();
+  appendCmd(historyEl, raw);
+
+  if (cmd === 'clear') {
+    historyEl.innerHTML = '';
+    return;
+  }
+
+  var handler = COMMANDS[cmd];
+  if (handler) {
+    handler().forEach(function (line) { appendOut(historyEl, line.text, line.type); });
+  } else {
+    appendOut(historyEl, 'command not recognized: "' + escapeHtml(raw) + '"', 'error');
+    appendOut(historyEl, 'type "help" to see available commands', 'info');
+  }
+
+  appendBlank(historyEl);
 }
 
 function appendCmd(container, cmd) {
@@ -162,8 +166,8 @@ async function loadProjects() {
     var projects = await res.json();
     renderProjects(grid, projects);
   } catch (err) {
-    // Static HTML fallback remains intact
-    console.warn('[portfolio] projects.json not loaded — using static fallback:', err.message);
+    console.warn('[portfolio] projects.json unavailable — static fallback active:', err.message);
+    // Static HTML cards already in the DOM — no further action needed
   }
 }
 
@@ -175,14 +179,17 @@ function renderProjects(grid, projects) {
 
     return (
       '<div class="project-card">' +
-        '<div class="project-emoji">' + p.emoji + '</div>' +
-        '<p class="project-title">'  + escapeHtml(p.name)        + '</p>' +
-        '<p class="project-origin">' + escapeHtml(p.origin)      + '</p>' +
-        '<p class="project-desc">'   + escapeHtml(p.description) + '</p>' +
-        '<div class="project-tags">' + tags + '</div>' +
+        '<div class="project-emoji">'  + p.emoji + '</div>' +
+        '<p class="project-title">'    + escapeHtml(p.name)        + '</p>' +
+        '<p class="project-origin">'   + escapeHtml(p.origin)      + '</p>' +
+        '<p class="project-desc">'     + escapeHtml(p.description) + '</p>' +
+        '<div class="project-tags">'   + tags + '</div>' +
       '</div>'
     );
   }).join('');
+
+  // Re-run scroll observer on newly rendered cards
+  observeElements(document.querySelectorAll('#projects-grid .project-card'));
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -190,20 +197,20 @@ function renderProjects(grid, projects) {
 // ─────────────────────────────────────────────────────────────
 
 var ALERT_POOL = [
-  { level: 'info',   label: '[INFO]  ',   msg: 'Domain reputation check initiated'                          },
-  { level: 'info',   label: '[INFO]  ',   msg: 'New alert assigned — Case #'                                },
-  { level: 'info',   label: '[INFO]  ',   msg: 'IOC enrichment complete — 4 indicators added to feed'       },
-  { level: 'info',   label: '[INFO]  ',   msg: 'SIEM correlation rule matched — reviewing for escalation'   },
-  { level: 'info',   label: '[INFO]  ',   msg: 'Case #4830 closed — false positive confirmed'               },
-  { level: 'warn',   label: '[WARN]  ',   msg: 'Suspicious redirect chain detected'                         },
-  { level: 'warn',   label: '[WARN]  ',   msg: 'Lookalike domain registered: paypa1-secure[.]com'           },
-  { level: 'warn',   label: '[WARN]  ',   msg: 'High-volume campaign — 3 client brands targeted'            },
-  { level: 'warn',   label: '[WARN]  ',   msg: 'Social media impersonation detected: LinkedIn'              },
-  { level: 'warn',   label: '[WARN]  ',   msg: 'Phishing URL submitted via threat feed — analyzing'         },
-  { level: 'threat', label: '[THREAT]',   msg: 'Credential harvesting page confirmed — takedown requested'  },
-  { level: 'threat', label: '[THREAT]',   msg: 'Active phishing kit identified on shared host'              },
-  { level: 'threat', label: '[THREAT]',   msg: 'Executive impersonation campaign — CRITICAL priority'       },
-  { level: 'threat', label: '[THREAT]',   msg: 'Malicious attachment detonated in sandbox — C2 beacon seen' },
+  { level: 'info',   label: '[INFO]  ', msg: 'Domain reputation check initiated'                           },
+  { level: 'info',   label: '[INFO]  ', msg: 'New alert assigned — Case #'                                 },
+  { level: 'info',   label: '[INFO]  ', msg: 'IOC enrichment complete — 4 indicators added to feed'        },
+  { level: 'info',   label: '[INFO]  ', msg: 'SIEM rule matched — reviewing for escalation'                },
+  { level: 'info',   label: '[INFO]  ', msg: 'Case #4830 closed — false positive confirmed'                },
+  { level: 'warn',   label: '[WARN]  ', msg: 'Suspicious redirect chain detected'                          },
+  { level: 'warn',   label: '[WARN]  ', msg: 'Lookalike domain registered: paypa1-secure[.]com'            },
+  { level: 'warn',   label: '[WARN]  ', msg: 'High-volume campaign — 3 client brands targeted'             },
+  { level: 'warn',   label: '[WARN]  ', msg: 'Social media impersonation detected: LinkedIn'               },
+  { level: 'warn',   label: '[WARN]  ', msg: 'Phishing URL submitted via threat feed — analyzing'          },
+  { level: 'threat', label: '[THREAT]', msg: 'Credential harvesting page confirmed — takedown requested'   },
+  { level: 'threat', label: '[THREAT]', msg: 'Active phishing kit identified on shared host'               },
+  { level: 'threat', label: '[THREAT]', msg: 'Executive impersonation campaign — CRITICAL priority'        },
+  { level: 'threat', label: '[THREAT]', msg: 'Malicious attachment detonated — C2 beacon observed'         },
 ];
 
 function initAlertStream() {
@@ -213,10 +220,9 @@ function initAlertStream() {
   // Seed with 5 entries
   for (var i = 0; i < 5; i++) { addAlertEntry(stream); }
 
-  // New entry every 3.5 seconds
+  // Append a new entry every 3.5 seconds, keep max 10 visible
   setInterval(function () {
     addAlertEntry(stream);
-    // Keep at most 10 visible
     while (stream.children.length > 10) {
       stream.removeChild(stream.firstChild);
     }
@@ -224,9 +230,10 @@ function initAlertStream() {
 }
 
 function addAlertEntry(stream) {
-  var item  = ALERT_POOL[Math.floor(Math.random() * ALERT_POOL.length)];
-  var msg   = item.msg;
-  if (msg.endsWith('#')) { msg += (Math.floor(Math.random() * 900) + 4800); }
+  var item = ALERT_POOL[Math.floor(Math.random() * ALERT_POOL.length)];
+  var msg  = item.msg.endsWith('#')
+    ? item.msg + (Math.floor(Math.random() * 900) + 4800)
+    : item.msg;
 
   var el = document.createElement('div');
   el.className = 'alert-entry alert-' + item.level + ' alert-new';
@@ -240,25 +247,147 @@ function addAlertEntry(stream) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// CONTACT FORM
+// MOBILE NAV
+// ─────────────────────────────────────────────────────────────
+
+function initMobileNav() {
+  var btn   = document.getElementById('hamburger-btn');
+  var links = document.getElementById('nav-links');
+  if (!btn || !links) return;
+
+  btn.addEventListener('click', function () {
+    var isOpen = links.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close on any nav link click
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// SCROLL ANIMATIONS
+// ─────────────────────────────────────────────────────────────
+
+function initScrollAnimations() {
+  var targets = document.querySelectorAll(
+    '.stat-box, .exp-item, .skill-group, .project-card, ' +
+    '.training-card, .mindset-item, .alert-stream'
+  );
+
+  // Stagger siblings within the same grid
+  document.querySelectorAll('.skills-grid, .projects-grid, .training-grid, .stats-row').forEach(function (grid) {
+    Array.from(grid.children).forEach(function (child, i) {
+      child.style.transitionDelay = (i * 0.07) + 's';
+    });
+  });
+
+  observeElements(targets);
+}
+
+function observeElements(elements) {
+  if (!('IntersectionObserver' in window)) {
+    // Fallback: just show everything
+    elements.forEach(function (el) { el.classList.add('fade-in', 'is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  elements.forEach(function (el) {
+    el.classList.add('fade-in');
+    observer.observe(el);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// CONTACT FORM — Formspree AJAX submission
 // ─────────────────────────────────────────────────────────────
 
 function initContactForm() {
   var form = document.getElementById('contact-form');
   if (!form) return;
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    var btn = form.querySelector('button[type="submit"]');
-    btn.textContent = 'Message sent ✓';
-    btn.style.background = '#4ade80';
-    btn.style.color = '#0d0d0d';
-    setTimeout(function () {
-      btn.textContent = 'Send Message';
-      btn.style.background = '';
-      btn.style.color = '';
-      form.reset();
-    }, 3000);
+
+    var btn          = form.querySelector('button[type="submit"]');
+    var originalText = btn.textContent;
+
+    btn.textContent = 'Sending...';
+    btn.disabled    = true;
+    btn.style.opacity = '0.7';
+
+    try {
+      var res = await fetch(form.action, {
+        method:  'POST',
+        body:    new FormData(form),
+        headers: { 'Accept': 'application/json' },
+      });
+
+      if (res.ok) {
+        btn.textContent      = 'Message sent ✓';
+        btn.style.background = '#4ade80';
+        btn.style.color      = '#0d0d0d';
+        btn.style.opacity    = '1';
+        form.reset();
+        setTimeout(function () { resetBtn(btn, originalText); }, 4000);
+      } else {
+        throw new Error('Server returned ' + res.status);
+      }
+    } catch (err) {
+      console.error('[contact]', err.message);
+      btn.textContent      = 'Failed — email me directly';
+      btn.style.background = '#f87171';
+      btn.style.color      = '#fff';
+      btn.style.opacity    = '1';
+      setTimeout(function () { resetBtn(btn, originalText); }, 4000);
+    }
+  });
+}
+
+function resetBtn(btn, text) {
+  btn.textContent      = text;
+  btn.style.background = '';
+  btn.style.color      = '';
+  btn.style.opacity    = '';
+  btn.disabled         = false;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RESUME — graceful disable if file missing
+// ─────────────────────────────────────────────────────────────
+
+function checkResume() {
+  var links = document.querySelectorAll('a[href="resume.pdf"]');
+  if (!links.length) return;
+
+  fetch('resume.pdf', { method: 'HEAD' })
+    .then(function (res) {
+      if (!res.ok) disableResumeLinks(links);
+    })
+    .catch(function () { disableResumeLinks(links); });
+}
+
+function disableResumeLinks(links) {
+  links.forEach(function (link) {
+    link.removeAttribute('download');
+    link.setAttribute('href', '#contact');
+    link.title   = 'Resume not yet uploaded — contact me directly';
+    link.style.opacity = '0.45';
   });
 }
 
@@ -279,13 +408,16 @@ function escapeHtml(str) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// BOOT
+// BOOT — DOMContentLoaded
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('year').textContent = new Date().getFullYear();
+  initMobileNav();
   initTerminal();
   loadProjects();
   initAlertStream();
+  initScrollAnimations();
   initContactForm();
+  checkResume();
 });
