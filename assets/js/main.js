@@ -177,6 +177,11 @@ function renderProjects(grid, projects) {
       return '<span class="project-tag">' + escapeHtml(t) + '</span>';
     }).join('');
 
+    var links = '<a href="' + escapeHtml(p.github) + '" target="_blank" rel="noopener" class="project-link">GitHub</a>';
+    if (p.demo) {
+      links += ' <span class="project-link-sep">·</span> <a href="' + escapeHtml(p.demo) + '" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>';
+    }
+
     return (
       '<div class="project-card">' +
         '<div class="project-emoji">'  + p.emoji + '</div>' +
@@ -184,6 +189,7 @@ function renderProjects(grid, projects) {
         '<p class="project-origin">'   + escapeHtml(p.origin)      + '</p>' +
         '<p class="project-desc">'     + escapeHtml(p.description) + '</p>' +
         '<div class="project-tags">'   + tags + '</div>' +
+        '<div class="project-links">'  + links + '</div>' +
       '</div>'
     );
   }).join('');

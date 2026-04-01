@@ -13,9 +13,10 @@
     "emoji": "📊",
     "name": "ThreatBoard — IOC Dashboard",
     "origin": "Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.",
-    "description": "A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Built as a mock TI platform.",
-    "stack": ["JavaScript", "D3.js", "Threat Intel", "Data Viz"],
-    "github": "https://github.com/anfaspulari"
+    "description": "A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Searchable IOC table, ATT&CK-mapped campaigns, severity chart.",
+    "stack": ["JavaScript", "Threat Intel", "IOC Analysis", "ATT&CK TTPs"],
+    "github": "https://github.com/anfaspulari/threatboard",
+    "demo": "https://anfaspulari.github.io/threatboard"
   },
   {
     "id": "loglens",
