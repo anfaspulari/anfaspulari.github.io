@@ -8,10 +8,10 @@ var COMMANDS = {
 
   whoami: function () {
     return [
-      { text: 'Anfas Pulari',                                            type: 'info'   },
-      { text: 'Role    : Cybersecurity Analyst, Tier 2 SOC',            type: 'out'    },
-      { text: 'Company : ZeroFox — Digital Risk Protection',            type: 'out'    },
-      { text: 'Focus   : Phishing | Threat Intel | Incident Response',  type: 'out'    },
+      { text: 'Anfas Pulari',                                                       type: 'info'   },
+      { text: 'Role    : Cybersecurity Analyst, Tier 2 SOC',                       type: 'out'    },
+      { text: 'Company : Leading Digital Risk Protection Platform',                 type: 'out'    },
+      { text: 'Focus   : Phishing | Threat Intel | Incident Response',             type: 'out'    },
     ];
   },
 
@@ -31,7 +31,7 @@ var COMMANDS = {
     return [
       { text: 'Core competencies:',                                                     type: 'info' },
       { text: '  [SECURITY]   Phishing Analysis · Threat Intelligence · IR',           type: 'out'  },
-      { text: '  [TOOLS]      Splunk · ZeroFox Platform · VirusTotal · Shodan',        type: 'out'  },
+      { text: '  [TOOLS]      Splunk · VirusTotal · Shodan · URLScan.io · MISP',        type: 'out'  },
       { text: '  [CODE]       Python · Bash · Regex · YARA Rules',                     type: 'out'  },
       { text: '  [FRAMEWORK]  MITRE ATT&CK · IOC Analysis · OSINT',                   type: 'out'  },
     ];
@@ -63,7 +63,7 @@ var COMMANDS = {
       { text: '  Sender       : support@secure-update-portal[.]com',                    type: 'out'    },
       { text: '  Subject      : "Urgent: Verify your account credentials"',             type: 'out'    },
       { text: '  URL flagged  : hxxps://secure-login-update[.]com/verify',              type: 'warn'   },
-      { text: '  IP resolved  : 185.220.101.x  (TOR exit node)',                        type: 'warn'   },
+      { text: '  IP resolved  : anonymized infrastructure (TOR/Proxy detected)',        type: 'warn'   },
       { text: '  Kit pattern  : credential_harvester_v3 (4 prior campaigns matched)',   type: 'warn'   },
       { text: '  VERDICT      : PHISHING CONFIRMED — takedown request submitted',       type: 'threat' },
     ];
@@ -82,17 +82,19 @@ function initTerminal() {
 
   if (!historyEl || !inputEl || !wrapEl) return;
 
-  // Pre-populate with boot sequence
-  [
-    { cmd: 'whoami',               fn: COMMANDS.whoami               },
-    { cmd: 'analyze phishing_case', fn: COMMANDS['analyze phishing_case'] },
-  ].forEach(function (item) {
-    appendCmd(historyEl, item.cmd);
-    item.fn().forEach(function (line) { appendOut(historyEl, line.text, line.type); });
-    appendBlank(historyEl);
-  });
-
+  // Boot: whoami immediately, then type-animate the phishing analysis command
+  appendCmd(historyEl, 'whoami');
+  COMMANDS.whoami().forEach(function (line) { appendOut(historyEl, line.text, line.type); });
+  appendBlank(historyEl);
   scrollBottom(historyEl);
+
+  typeCommand(historyEl, 'analyze phishing_case', 52).then(function () {
+    COMMANDS['analyze phishing_case']().forEach(function (line) {
+      appendOut(historyEl, line.text, line.type);
+    });
+    appendBlank(historyEl);
+    scrollBottom(historyEl);
+  });
 
   // Focus input when clicking anywhere on terminal
   wrapEl.addEventListener('click', function () { inputEl.focus(); });
@@ -107,6 +109,32 @@ function initTerminal() {
 
     handleTerminalCommand(historyEl, raw);
     scrollBottom(historyEl);
+  });
+}
+
+// Typing animation — types a command char-by-char, returns a Promise
+function typeCommand(container, cmd, speed) {
+  return new Promise(function (resolve) {
+    var el = document.createElement('p');
+    el.className = 't-line';
+    container.appendChild(el);
+
+    var i = 0;
+    var prefix = '<span class="t-prompt">anfas@sec:~$</span> ';
+
+    function tick() {
+      i++;
+      el.innerHTML = prefix + escapeHtml(cmd.slice(0, i));
+      scrollBottom(container);
+      if (i < cmd.length) {
+        setTimeout(tick, speed);
+      } else {
+        resolve();
+      }
+    }
+
+    // Small initial delay before typing starts
+    setTimeout(tick, 600);
   });
 }
 
