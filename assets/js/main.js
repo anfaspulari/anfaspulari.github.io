@@ -10,7 +10,7 @@ var COMMANDS = {
     return [
       { text: 'Anfas Pulari',                                            type: 'info'   },
       { text: 'Role    : Cybersecurity Analyst, Tier 2 SOC',            type: 'out'    },
-      { text: 'Company : ZeroFox — Digital Risk Protection',            type: 'out'    },
+      { text: 'Company : Leading Digital Risk Protection Platform',      type: 'out'    },
       { text: 'Focus   : Phishing | Threat Intel | Incident Response',  type: 'out'    },
     ];
   },
@@ -31,7 +31,7 @@ var COMMANDS = {
     return [
       { text: 'Core competencies:',                                                     type: 'info' },
       { text: '  [SECURITY]   Phishing Analysis · Threat Intelligence · IR',           type: 'out'  },
-      { text: '  [TOOLS]      Splunk · ZeroFox Platform · VirusTotal · Shodan',        type: 'out'  },
+      { text: '  [TOOLS]      Splunk · DRP Platforms · VirusTotal · Shodan',            type: 'out'  },
       { text: '  [CODE]       Python · Bash · Regex · YARA Rules',                     type: 'out'  },
       { text: '  [FRAMEWORK]  MITRE ATT&CK · IOC Analysis · OSINT',                   type: 'out'  },
     ];
@@ -327,14 +327,57 @@ function initContactForm() {
   var form = document.getElementById('contact-form');
   if (!form) return;
 
+  var statusEl = document.getElementById('form-status');
+
+  function showStatus(msg, type) {
+    if (!statusEl) return;
+    statusEl.textContent  = msg;
+    statusEl.style.display = 'block';
+    statusEl.style.padding = '0.6rem 0.8rem';
+    statusEl.style.marginBottom = '0.75rem';
+    statusEl.style.borderRadius = '4px';
+    statusEl.style.fontSize = '0.875rem';
+    statusEl.style.fontFamily = 'var(--font-mono, monospace)';
+    if (type === 'success') {
+      statusEl.style.background = 'rgba(74,222,128,0.12)';
+      statusEl.style.color      = '#4ade80';
+      statusEl.style.border     = '1px solid rgba(74,222,128,0.3)';
+    } else {
+      statusEl.style.background = 'rgba(248,113,113,0.12)';
+      statusEl.style.color      = '#f87171';
+      statusEl.style.border     = '1px solid rgba(248,113,113,0.3)';
+    }
+  }
+
+  function hideStatus() {
+    if (statusEl) statusEl.style.display = 'none';
+  }
+
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    hideStatus();
+
+    // Frontend validation
+    var nameVal    = form.querySelector('[name="name"]').value.trim();
+    var emailVal   = form.querySelector('[name="email"]').value.trim();
+    var messageVal = form.querySelector('[name="message"]').value.trim();
+
+    if (!nameVal || !emailVal || !messageVal) {
+      showStatus('All fields are required.', 'error');
+      return;
+    }
+
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(emailVal)) {
+      showStatus('Please enter a valid email address.', 'error');
+      return;
+    }
 
     var btn          = form.querySelector('button[type="submit"]');
     var originalText = btn.textContent;
 
-    btn.textContent = 'Sending...';
-    btn.disabled    = true;
+    btn.textContent   = 'Sending...';
+    btn.disabled      = true;
     btn.style.opacity = '0.7';
 
     try {
@@ -345,22 +388,16 @@ function initContactForm() {
       });
 
       if (res.ok) {
-        btn.textContent      = 'Message sent ✓';
-        btn.style.background = '#4ade80';
-        btn.style.color      = '#0d0d0d';
-        btn.style.opacity    = '1';
+        showStatus('Message sent. I\'ll get back to you shortly.', 'success');
         form.reset();
-        setTimeout(function () { resetBtn(btn, originalText); }, 4000);
+        setTimeout(function () { hideStatus(); resetBtn(btn, originalText); }, 5000);
       } else {
         throw new Error('Server returned ' + res.status);
       }
     } catch (err) {
       console.error('[contact]', err.message);
-      btn.textContent      = 'Failed — email me directly';
-      btn.style.background = '#f87171';
-      btn.style.color      = '#fff';
-      btn.style.opacity    = '1';
-      setTimeout(function () { resetBtn(btn, originalText); }, 4000);
+      showStatus('Submission failed — email me directly at anfaspulari@gmail.com', 'error');
+      setTimeout(function () { hideStatus(); resetBtn(btn, originalText); }, 6000);
     }
   });
 }
