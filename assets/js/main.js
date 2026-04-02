@@ -284,11 +284,11 @@ function initMobileNav() {
 function initScrollAnimations() {
   var targets = document.querySelectorAll(
     '.stat-box, .exp-item, .skill-group, .project-card, ' +
-    '.training-card, .mindset-item, .alert-stream'
+    '.training-card, .mindset-card, .alert-stream'
   );
 
   // Stagger siblings within the same grid
-  document.querySelectorAll('.skills-grid, .projects-grid, .training-grid, .stats-row').forEach(function (grid) {
+  document.querySelectorAll('.skills-grid, .projects-grid, .training-grid, .stats-row, .mindset-cards').forEach(function (grid) {
     Array.from(grid.children).forEach(function (child, i) {
       child.style.transitionDelay = (i * 0.07) + 's';
     });
