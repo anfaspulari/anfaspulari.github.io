@@ -835,9 +835,12 @@ footer .container {
   .skills-grid { grid-template-columns: 1fr; }
   .principles-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+  .mindset-cards { grid-template-columns: repeat(2, 1fr); }
+  .mindset-heading { font-size: 1.6rem; }
 }
 
 @media (max-width: 600px) {
   .stats-row { flex-direction: column; }
   .terminal { max-width: 100%; }
+  .mindset-cards { grid-template-columns: 1fr; }
 }
