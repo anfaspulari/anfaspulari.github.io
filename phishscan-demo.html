@@ -512,9 +512,7 @@
     }
     if (!spf) {
       var rspf = getHeader(headers, 'received-spf');
-      if (rspf) {
-        spf = rspf.trim().split(/[\s;]/)[0].toLowerCase();
-      }
+      if (rspf) { spf = rspf.trim().split(/[\s;]/)[0].toLowerCase(); }
     }
 
     // DKIM
@@ -524,15 +522,51 @@
       if (dm) dkim = dm[1].toLowerCase();
     }
 
+    // DMARC
+    var dmarc = '';
+    var dmarc_weak = false;
+    if (authResults) {
+      var dmarc_m = authResults.match(/dmarc=(\w+)/i);
+      if (dmarc_m) dmarc = dmarc_m[1].toLowerCase();
+    }
+    dmarc_weak = !dmarc || dmarc === 'none' || dmarc === 'bestguesspass';
+
+    // Microsoft Exchange anti-spam headers
+    var ms_report = getHeader(headers, 'x-forefront-antispam-report');
+    var ms_scl = 0, ms_sfv = '', ms_cat = '', ms_spam_high = false;
+    if (ms_report) {
+      var scl_m = ms_report.match(/SCL:(\d+)/i);
+      if (scl_m) ms_scl = parseInt(scl_m[1], 10);
+      var sfv_m = ms_report.match(/SFV:(\w+)/i);
+      if (sfv_m) ms_sfv = sfv_m[1].toUpperCase();
+      var cat_m = ms_report.match(/CAT:(\w+)/i);
+      if (cat_m) ms_cat = cat_m[1].toUpperCase();
+      ms_spam_high = ms_scl >= 5 || ms_sfv === 'SPM' || ms_sfv === 'PHSH' ||
+                     ms_cat === 'SPM' || ms_cat === 'PHSH' || ms_cat === 'MALW';
+    }
+
     var received = getAllHeaders(headers, 'received');
-    var subject  = getHeader(headers, 'subject');
-    var date     = getHeader(headers, 'date');
+    // Gmail API relay detection — business email via gmailapi.google.com is suspicious
+    var gmail_api_hops = received.filter(function(r) { return /gmailapi\.google\.com/i.test(r); });
+    var gmail_api_relay = gmail_api_hops.length > 0;
+    var repeated_sends  = gmail_api_hops.length > 1;
+
+    // Sender domain lookalike
+    var sender_lookalike = lookalikeBrand(from_domain);
+
+    var subject    = getHeader(headers, 'subject');
+    var date       = getHeader(headers, 'date');
     var message_id = getHeader(headers, 'message-id');
 
     return {
       from_raw, from_addr, from_domain,
       reply_to, reply_to_domain, reply_to_mismatch,
-      spf, dkim, received, subject, date, message_id
+      spf, dkim,
+      dmarc, dmarc_weak,
+      ms_scl, ms_sfv, ms_cat, ms_spam_high,
+      gmail_api_relay, gmail_api_hops: gmail_api_hops.length, repeated_sends,
+      sender_lookalike,
+      received, subject, date, message_id
     };
   }
 
@@ -571,12 +605,53 @@
     'facebook','instagram','twitter','linkedin','dropbox','chase',
     'wellsfargo','bankofamerica','citibank','hsbc','zelle','venmo',
     'cashapp','coinbase','binance','outlook','office365','docusign',
-    'fedex','dhl','ups','usps'];
+    'fedex','dhl','ups','usps',
+    'zendesk','freshdesk','servicenow','jira','confluence',
+    'github','gitlab','bitbucket','salesforce','slack','zoom','webex',
+    'stripe','wise','revolut','adobe','oracle','ibm','cisco',
+    'googledrive','onedrive','sharepoint','hellosign'];
 
   var SUSP_KW = ['secure','verify','update','login','signin','account',
     'banking','confirm','validation','password','credential','recovery',
     'suspended','unlock','alert','support','helpdesk','portal',
     'authenticate','access','service'];
+
+  var SUSP_TLDS = {'xyz':1,'top':1,'tk':1,'ml':1,'ga':1,'cf':1,'gq':1,
+    'click':1,'download':1,'loan':1,'review':1,'party':1,'gdn':1,
+    'bid':1,'win':1,'racing':1,'date':1,'trade':1,'live':1,'stream':1,
+    'site':1,'website':1,'space':1,'tech':1,'store':1,'shop':1,'icu':1};
+
+  // Levenshtein edit distance
+  function levenshtein(a, b) {
+    if (a.length < b.length) return levenshtein(b, a);
+    if (!b.length) return a.length;
+    var prev = [];
+    for (var i = 0; i <= b.length; i++) prev[i] = i;
+    for (var i = 0; i < a.length; i++) {
+      var curr = [i + 1];
+      for (var j = 0; j < b.length; j++) {
+        curr[j+1] = Math.min(prev[j+1]+1, curr[j]+1, prev[j]+(a[i]===b[j]?0:1));
+      }
+      prev = curr;
+    }
+    return prev[b.length];
+  }
+
+  // Return brand name if domain SLD is a lookalike, else ''
+  function lookalikeBrand(domain) {
+    if (!domain) return '';
+    var sld = getSld(domain);
+    // Exact match = legitimate
+    for (var i = 0; i < BRANDS.length; i++) {
+      if (sld === BRANDS[i]) return '';
+    }
+    for (var i = 0; i < BRANDS.length; i++) {
+      var b = BRANDS[i];
+      if (Math.abs(sld.length - b.length) <= 2 && levenshtein(sld, b) <= 2) return b;
+      if (b.length > 3 && sld.indexOf(b) !== -1 && sld !== b) return b;
+    }
+    return '';
+  }
 
   function isSuspiciousDomain(domain) {
     if (!domain) return false;
@@ -768,12 +843,54 @@
     return { score: 0, reason: null };
   }
 
+  // NEW: DMARC weak / absent
+  function rule_dmarc(ha) {
+    if (ha.dmarc_weak)
+      return { score: 10, reason: 'DMARC not enforced (result: ' + (ha.dmarc || 'none') + ') \u2014 spoofing risk' };
+    return { score: 0, reason: null };
+  }
+
+  // NEW: Microsoft Exchange spam classification
+  function rule_ms_spam(ha) {
+    if (ha.ms_spam_high)
+      return { score: 25, reason: 'Microsoft Exchange flagged as spam (SCL:' + ha.ms_scl + ', SFV:' + ha.ms_sfv + ', CAT:' + ha.ms_cat + ')' };
+    return { score: 0, reason: null };
+  }
+
+  // NEW: Gmail API relay (business email sent via gmailapi.google.com)
+  function rule_gmail_api(ha) {
+    if (!ha.gmail_api_relay) return { score: 0, reason: null };
+    if (ha.repeated_sends)
+      return { score: 30, reason: 'Email sent ' + ha.gmail_api_hops + '\u00d7 via Gmail API \u2014 automated campaign behaviour' };
+    return { score: 20, reason: 'Email sent via Gmail API (gmailapi.google.com) \u2014 unusual for business email' };
+  }
+
+  // NEW: Sender domain lookalike (edit-distance impersonation)
+  function rule_sender_lookalike(ha) {
+    if (ha.sender_lookalike)
+      return { score: 30, reason: 'Sender domain \u201c' + ha.from_domain + '\u201d is a lookalike of brand \u201c' + ha.sender_lookalike + '\u201d' };
+    return { score: 0, reason: null };
+  }
+
+  // NEW: BEC patterns in subject
+  var BEC_KW = ['request for quote','rfq','invoice','purchase order','wire transfer',
+                'gift card','payment instruction','change.*bank','vendor'];
+  function rule_bec(ha) {
+    var subj = (ha.subject || '').toLowerCase();
+    for (var i = 0; i < BEC_KW.length; i++) {
+      var re = new RegExp(BEC_KW[i], 'i');
+      if (re.test(subj))
+        return { score: 15, reason: 'BEC pattern in subject: \u201c' + BEC_KW[i].replace(/\.\*/g,' ') + '\u201d' };
+    }
+    return { score: 0, reason: null };
+  }
+
   function runRules(ha, ua, iocs) {
     var hits = [];
-    var rules = [rule_spf, rule_dkim, rule_reply_to_mismatch,
-                 rule_suspicious_sender, rule_suspicious_urls,
-                 rule_url_shorteners, rule_many_urls,
-                 rule_urgency_subject, rule_bare_ip_relay];
+    var rules = [rule_spf, rule_dkim, rule_dmarc, rule_ms_spam, rule_gmail_api,
+                 rule_sender_lookalike, rule_reply_to_mismatch, rule_suspicious_sender,
+                 rule_suspicious_urls, rule_url_shorteners, rule_many_urls,
+                 rule_urgency_subject, rule_bec, rule_bare_ip_relay];
     for (var i = 0; i < rules.length; i++) {
       var r = rules[i](ha, ua, iocs);
       if (r.score > 0 && r.reason) hits.push(r);
@@ -869,6 +986,17 @@
     var dkimStr = ha.dkim ? ha.dkim.toUpperCase() : 'NONE';
     var dkimCls = dkimStr === 'PASS' ? 't-green' : (dkimStr === 'NONE' ? 't-yellow' : 't-red');
     nodes.push(makeTermLine('', '<span class="t-key">  DKIM      </span><span class="' + dkimCls + '"> ' + E(dkimStr) + '</span>'));
+    var dmarcStr = ha.dmarc ? ha.dmarc.toUpperCase() : 'NONE';
+    var dmarcCls = ha.dmarc_weak ? 't-yellow' : 't-green';
+    var dmarcSuffix = ha.dmarc_weak ? ' <span class="t-yellow">[WEAK]</span>' : '';
+    nodes.push(makeTermLine('', '<span class="t-key">  DMARC     </span><span class="' + dmarcCls + '"> ' + E(dmarcStr) + '</span>' + dmarcSuffix));
+    if (ha.ms_spam_high) {
+      nodes.push(makeTermLine('', '<span class="t-key">  MS Spam   </span><span class="t-red"> SCL:' + E(String(ha.ms_scl)) + '  SFV:' + E(ha.ms_sfv) + '  CAT:' + E(ha.ms_cat) + '</span>'));
+    }
+    if (ha.gmail_api_relay) {
+      var relayStr = 'Gmail API (' + ha.gmail_api_hops + ' hop' + (ha.gmail_api_hops !== 1 ? 's' : '') + ')';
+      nodes.push(makeTermLine('', '<span class="t-key">  Relay     </span><span class="t-yellow"> ' + E(relayStr) + '</span>'));
+    }
     nodes.push(B());
 
     // URLs
