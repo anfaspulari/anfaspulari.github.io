@@ -699,7 +699,7 @@
   ];
 
   function rule_spf(ha) {
-    var s = ha.spf.toLowerCase();
+    var s = (ha.spf || '').toLowerCase();
     if (s === 'fail')     return { score: 20, reason: 'SPF validation failed (FAIL) \u2014 sender not authorised' };
     if (s === 'softfail') return { score: 10, reason: 'SPF validation soft-failed (SOFTFAIL)' };
     if (!s || s === 'none') return { score: 10, reason: 'No SPF record found (NONE)' };
@@ -707,9 +707,9 @@
   }
 
   function rule_dkim(ha) {
-    var d = ha.dkim.toLowerCase();
+    var d = (ha.dkim || '').toLowerCase();
     if (!d || d === 'none' || d === 'fail' || d === 'neutral')
-      return { score: 10, reason: 'DKIM signature absent or invalid (' + (ha.dkim.toUpperCase() || 'NONE') + ')' };
+      return { score: 10, reason: 'DKIM signature absent or invalid (' + ((ha.dkim || '').toUpperCase() || 'NONE') + ')' };
     return { score: 0, reason: null };
   }
 
@@ -725,21 +725,24 @@
     return { score: 0, reason: null };
   }
 
-  function rule_suspicious_urls(ua) {
-    if (ua.suspicious.length > 0)
-      return { score: 25, reason: 'Suspicious URL pattern detected: ' + ua.suspicious[0].defanged };
+  function rule_suspicious_urls(ha, ua) {
+    var susp = (ua && ua.suspicious) || [];
+    if (susp.length > 0)
+      return { score: 25, reason: 'Suspicious URL pattern detected: ' + susp[0].defanged };
     return { score: 0, reason: null };
   }
 
-  function rule_url_shorteners(ua) {
-    if (ua.shorteners.length > 0)
-      return { score: 15, reason: 'URL shortener detected (destination hidden): ' + ua.shorteners[0].defanged };
+  function rule_url_shorteners(ha, ua) {
+    var sh = (ua && ua.shorteners) || [];
+    if (sh.length > 0)
+      return { score: 15, reason: 'URL shortener detected (destination hidden): ' + sh[0].defanged };
     return { score: 0, reason: null };
   }
 
-  function rule_many_urls(ua) {
-    if (ua.count > 3)
-      return { score: 10, reason: 'High number of URLs (' + ua.count + ') found in email body' };
+  function rule_many_urls(ha, ua) {
+    var cnt = (ua && ua.count) || 0;
+    if (cnt > 3)
+      return { score: 10, reason: 'High number of URLs (' + cnt + ') found in email body' };
     return { score: 0, reason: null };
   }
 
@@ -753,7 +756,7 @@
   }
 
   function rule_bare_ip_relay(ha) {
-    var received = ha.received.join('\n');
+    var received = (ha.received || []).join('\n');
     var m;
     var re = /\((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\)/g;
     while ((m = re.exec(received)) !== null) {
@@ -874,8 +877,8 @@
     if (ua.count === 0) {
       nodes.push(makeTermLine('t-val', '    None found'));
     } else {
-      var shortSet = new Set(ua.shorteners.map(function(x){ return x.url; }));
-      var suspSet  = new Set(ua.suspicious.map(function(x){ return x.url; }));
+      var shortSet = new Set((ua.shorteners || []).map(function(x){ return x.url; }));
+      var suspSet  = new Set((ua.suspicious || []).map(function(x){ return x.url; }));
       for (var i = 0; i < ua.raw.length; i++) {
         var url = ua.raw[i];
         var df  = ua.defanged[i];
@@ -891,11 +894,11 @@
     nodes.push(lbl('  EXTRACTED IOCs'));
     nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
 
-    var allDomains = iocs.domains.slice();
+    var allDomains = (iocs.domains || []).slice();
     if (ha.from_domain && allDomains.indexOf(ha.from_domain) === -1) allDomains.push(ha.from_domain);
     if (ha.reply_to_domain && allDomains.indexOf(ha.reply_to_domain) === -1) allDomains.push(ha.reply_to_domain);
 
-    var hasIocs = allDomains.length || iocs.ips.length || iocs.hashes.length;
+    var hasIocs = allDomains.length || (iocs.ips || []).length || (iocs.hashes || []).length;
     if (!hasIocs) {
       nodes.push(makeTermLine('t-val', '    None extracted'));
     } else {
@@ -904,15 +907,17 @@
         for (var d = 0; d < allDomains.length; d++)
           nodes.push(makeTermLine('t-ioc', '      ' + E(defangDomain(allDomains[d]))));
       }
-      if (iocs.ips.length) {
+      var ipsArr = iocs.ips || [];
+      if (ipsArr.length) {
         nodes.push(makeTermLine('t-label', '    IP Addresses:'));
-        for (var ip = 0; ip < iocs.ips.length; ip++)
-          nodes.push(makeTermLine('t-ioc', '      ' + E(iocs.ips[ip])));
+        for (var ip = 0; ip < ipsArr.length; ip++)
+          nodes.push(makeTermLine('t-ioc', '      ' + E(ipsArr[ip])));
       }
-      if (iocs.hashes.length) {
+      var hashArr = iocs.hashes || [];
+      if (hashArr.length) {
         nodes.push(makeTermLine('t-label', '    File Hashes:'));
-        for (var h = 0; h < iocs.hashes.length; h++)
-          nodes.push(makeTermLine('t-ioc', '      [' + E(iocs.hashes[h].type) + ']  ' + E(iocs.hashes[h].value)));
+        for (var h = 0; h < hashArr.length; h++)
+          nodes.push(makeTermLine('t-ioc', '      [' + E(hashArr[h].type) + ']  ' + E(hashArr[h].value)));
       }
     }
     nodes.push(B());
