@@ -950,9 +950,9 @@
   var pasteInput     = document.getElementById('paste-input');
 
   function showState(name) {
-    stateUpload.style.display    = name === 'upload'    ? '' : 'none';
-    stateAnalyzing.style.display = name === 'analyzing' ? '' : 'none';
-    stateReport.style.display    = name === 'report'    ? '' : 'none';
+    stateUpload.style.display    = name === 'upload'    ? 'block' : 'none';
+    stateAnalyzing.style.display = name === 'analyzing' ? 'block' : 'none';
+    stateReport.style.display    = name === 'report'    ? 'block' : 'none';
   }
   showState('upload');
 
