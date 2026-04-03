@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishScan Demo — Live Analysis</title>
+  <meta name="description" content="Interactive demo of PhishScan CLI — phishing email analyzer built for SOC analysts." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0e14;
+      --surface:  #0d1117;
+      --border:   rgba(0, 212, 255, 0.12);
+      --cyan:     #00d4ff;
+      --cyan-dim: rgba(0, 212, 255, 0.45);
+      --green:    #4ade80;
+      --yellow:   #facc15;
+      --red:      #f87171;
+      --dim:      #4a5568;
+      --text:     #c9d1d9;
+      --mono:     'JetBrains Mono', monospace;
+      --sans:     'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-logo {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: -0.01em;
+    }
+
+    .header-badge {
+      font-size: 0.7rem;
+      background: rgba(0,212,255,0.1);
+      color: var(--cyan-dim);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2px 7px;
+      letter-spacing: 0.05em;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .header-links a {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .header-links a:hover { color: var(--cyan); }
+
+    .btn-github {
+      background: rgba(0,212,255,0.08);
+      color: var(--cyan) !important;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 5px 12px !important;
+      transition: background 0.2s, border-color 0.2s !important;
+    }
+
+    .btn-github:hover {
+      background: rgba(0,212,255,0.15) !important;
+      border-color: var(--cyan-dim) !important;
+    }
+
+    /* ── MAIN LAYOUT ─────────────────────────────────────────── */
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .intro {
+      margin-bottom: 2rem;
+    }
+
+    .intro-label {
+      font-size: 0.7rem;
+      color: var(--cyan-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .intro-title {
+      font-family: var(--sans);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #e6edf3;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro-desc {
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      color: var(--dim);
+      line-height: 1.6;
+      max-width: 580px;
+    }
+
+    /* ── SAMPLE FILE ─────────────────────────────────────────── */
+    .sample-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .sample-header {
+      background: rgba(0,212,255,0.04);
+      border-bottom: 1px solid var(--border);
+      padding: 0.55rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--dim);
+      letter-spacing: 0.04em;
+    }
+
+    .sample-file {
+      color: var(--cyan-dim);
+    }
+
+    .sample-content {
+      padding: 1rem;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #8b949e;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .sh { color: var(--dim); }
+    .sk { color: var(--cyan-dim); }
+    .sv { color: #a5d6ff; }
+    .sw { color: var(--yellow); }
+    .sr { color: var(--red); }
+
+    /* ── TERMINAL ─────────────────────────────────────────────── */
+    .terminal-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0d1117;
+    }
+
+    .terminal-titlebar {
+      background: #161b22;
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot-r { background: #f87171; }
+    .dot-y { background: #facc15; }
+    .dot-g { background: #4ade80; }
+
+    .terminal-title {
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-left: 0.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .terminal-replay {
+      margin-left: auto;
+      background: rgba(0,212,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--cyan-dim);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .terminal-replay:hover {
+      background: rgba(0,212,255,0.14);
+      color: var(--cyan);
+    }
+
+    .terminal-body {
+      padding: 1.1rem 1.2rem 1.4rem;
+      min-height: 480px;
+      overflow-y: auto;
+      max-height: 640px;
+    }
+
+    .t-line {
+      display: block;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 0.8rem;
+    }
+
+    .t-prompt { color: var(--cyan); }
+
+    .t-step   { color: var(--cyan); }
+    .t-step::before { content: '[+] '; }
+
+    .t-hr     { color: var(--cyan-dim); }
+    .t-head   { color: var(--cyan); font-weight: 700; }
+    .t-label  { color: var(--cyan); }
+    .t-key    { color: var(--text); }
+    .t-val    { color: #a5d6ff; }
+    .t-mismatch { color: var(--red); font-weight: 700; }
+    .t-spf-fail { color: var(--red); font-weight: 700; }
+    .t-spf-pass { color: var(--green); }
+    .t-url    { color: #a5d6ff; }
+    .t-susp   { color: var(--red); font-weight: 700; }
+    .t-short  { color: var(--yellow); }
+    .t-ioc    { color: #e6edf3; }
+    .t-score  { color: var(--red); font-weight: 700; font-size: 0.88rem; }
+    .t-bar    { color: var(--red); }
+    .t-reason { color: var(--yellow); }
+    .t-reason::before { content: '    ! '; color: var(--yellow); }
+    .t-blank  { display: block; height: 5px; }
+
+    /* Score bar animation */
+    @keyframes fillBar {
+      from { clip-path: inset(0 100% 0 0); }
+      to   { clip-path: inset(0 0% 0 0); }
+    }
+
+    .bar-filled {
+      display: inline;
+      animation: fillBar 1.2s ease-out forwards;
+    }
+
+    /* Cursor blink */
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 13px;
+      background: var(--cyan);
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── FOOTER NOTE ─────────────────────────────────────────── */
+    .demo-note {
+      margin-top: 1.5rem;
+      padding: 0.9rem 1.1rem;
+      border: 1px solid rgba(250,204,21,0.15);
+      border-radius: 6px;
+      background: rgba(250,204,21,0.04);
+      font-size: 0.78rem;
+      color: #8b949e;
+      line-height: 1.6;
+    }
+
+    .demo-note strong { color: var(--yellow); }
+
+    /* ── SCROLLBAR ───────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.18); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ──────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-brand">
+      <span class="header-logo">PhishScan</span>
+      <span class="header-badge">DEMO</span>
+    </div>
+    <nav class="header-links">
+      <a href="https://anfaspulari.github.io">← Portfolio</a>
+      <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" class="btn-github">GitHub</a>
+    </nav>
+  </header>
+
+  <!-- ── PAGE BODY ───────────────────────────────────────────── -->
+  <main class="page">
+
+    <div class="intro">
+      <p class="intro-label">// Interactive Demo</p>
+      <h1 class="intro-title">PhishScan — Phishing Email Analyzer</h1>
+      <p class="intro-desc">
+        Python CLI for SOC analysts. Parses <code>.eml</code> files, extracts IOCs,
+        applies 8 detection rules, and outputs a scored incident report.
+        Below is a live simulation against a realistic phishing sample.
+      </p>
+    </div>
+
+    <!-- Sample email summary -->
+    <div class="sample-box">
+      <div class="sample-header">
+        <span>INPUT EMAIL</span>
+        <span class="sample-file">sample_emails/phishing_sample.eml</span>
+      </div>
+      <pre class="sample-content"><span class="sk">From</span><span class="sh">:</span>     <span class="sv">support@secure-update-portal.com</span>
+<span class="sk">Reply-To</span><span class="sh">:</span> <span class="sr">attacker@fake-domain.ru</span>
+<span class="sk">To</span><span class="sh">:</span>       <span class="sv">victim@company.com</span>
+<span class="sk">Subject</span><span class="sh">:</span>  <span class="sw">Urgent: Action Required - Verify Your Account Immediately</span>
+<span class="sk">Date</span><span class="sh">:</span>     <span class="sv">Mon, 14 Jan 2024 09:23:11 +0000</span>
+<span class="sh">Received-SPF: </span><span class="sr">fail</span><span class="sh"> (domain of support@secure-update-portal.com does not</span>
+<span class="sh">    designate 185.220.101.47 as permitted sender)</span>
+
+<span class="sh">We have detected unusual login activity on your account...</span>
+<span class="sh">Verify here: </span><span class="sr">https://secure-login-update.com/verify?token=AbC123XyZ9f2</span>
+<span class="sh">Support:     </span><span class="sr">https://bit.ly/3xHelpDesk</span></pre>
+    </div>
+
+    <!-- Terminal output -->
+    <div class="terminal-wrap">
+      <div class="terminal-titlebar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="terminal-title">bash — phishscan</span>
+        <button class="terminal-replay" id="replay-btn" aria-label="Replay demo">↺ Replay</button>
+      </div>
+      <div class="terminal-body" id="terminal-body"></div>
+    </div>
+
+    <div class="demo-note">
+      <strong>Note:</strong> This is a browser simulation of the CLI output.
+      Run the real tool locally: <code>python phishscan.py sample_emails/phishing_sample.eml --verbose</code>
+      — install via <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" style="color:#00d4ff;">github.com/anfaspulari/phishscan-cli</a>
+    </div>
+
+  </main>
+
+  <script>
+  'use strict';
+
+  var body = document.getElementById('terminal-body');
+  var replayBtn = document.getElementById('replay-btn');
+
+  // ── Output lines definition ──────────────────────────────────
+  // Each entry: { cls, text } — rendered in sequence with delays
+  var SEQUENCE = [
+    // Command
+    { type: 'cmd', text: 'python phishscan.py sample_emails/phishing_sample.eml --verbose' },
+    { type: 'blank' },
+
+    // Progress steps
+    { type: 'step', text: 'Parsing email headers...',   delay: 320 },
+    { type: 'step', text: 'Extracting URLs...',         delay: 280 },
+    { type: 'step', text: 'Extracting IOCs...',         delay: 260 },
+    { type: 'step', text: 'Running detection rules...', delay: 300 },
+    { type: 'step', text: 'Calculating risk score...',  delay: 260 },
+    { type: 'blank' },
+
+    // Report header
+    { type: 'hr',  text: '  ══════════════════════════════════════════════════════' },
+    { type: 'head', text: '  PHISHSCAN REPORT' },
+    { type: 'hr',  text: '  ══════════════════════════════════════════════════════' },
+    { type: 'blank' },
+
+    // Metadata
+    { type: 'label', text: '  EMAIL METADATA' },
+    { type: 'label', text: '  ──────────────' },
+    { type: 'kv',    key: '  File      ', val: ' sample_emails/phishing_sample.eml' },
+    { type: 'kv',    key: '  Subject   ', val: ' Urgent: Action Required - Verify Your Account Immediately' },
+    { type: 'kv',    key: '  Date      ', val: ' Mon, 14 Jan 2024 09:23:11 +0000' },
+    { type: 'kv',    key: '  Sender    ', val: ' support@secure-update-portal[.]com' },
+    { type: 'mismatch-line' },
+    { type: 'blank' },
+
+    // Auth
+    { type: 'label', text: '  AUTHENTICATION' },
+    { type: 'label', text: '  ──────────────' },
+    { type: 'auth',  key: '  SPF       ', val: ' FAIL',  color: 'red'  },
+    { type: 'auth',  key: '  DKIM      ', val: ' NONE',  color: 'red'  },
+    { type: 'blank' },
+
+    // URLs
+    { type: 'label', text: '  URLs FOUND (3)' },
+    { type: 'label', text: '  ──────────────' },
+    { type: 'url-susp',  text: '    hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
+    { type: 'url-plain', text: '    hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
+    { type: 'url-short', text: '    hxxps://bit[.]ly/3xHelpDesk' },
+    { type: 'blank' },
+
+    // IOCs
+    { type: 'label', text: '  EXTRACTED IOCs' },
+    { type: 'label', text: '  ──────────────' },
+    { type: 'ioc-sub', text: '    Domains:' },
+    { type: 'ioc',  text: '      secure-login-update[.]com' },
+    { type: 'ioc',  text: '      secure-update-portal[.]com' },
+    { type: 'ioc',  text: '      fake-domain[.]ru' },
+    { type: 'ioc-sub', text: '    IP Addresses:' },
+    { type: 'ioc',  text: '      185.220.101.47' },
+    { type: 'blank' },
+
+    // Score
+    { type: 'score-hr' },
+    { type: 'score-line' },
+    { type: 'verdict-line' },
+    { type: 'score-hr' },
+    { type: 'blank' },
+
+    // Reasons
+    { type: 'label', text: '  DETECTION REASONS' },
+    { type: 'label', text: '  ─────────────────' },
+    { type: 'reason', text: 'SPF validation failed (FAIL) — sender not authorised' },
+    { type: 'reason', text: 'DKIM signature absent or invalid (NONE)' },
+    { type: 'reason', text: 'Reply-To domain (fake-domain.ru) differs from sender domain (secure-update-portal.com)' },
+    { type: 'reason', text: 'Sender domain matches suspicious pattern: secure-update-portal.com' },
+    { type: 'reason', text: 'Suspicious URL pattern detected: hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
+    { type: 'reason', text: 'URL shortener detected (destination hidden): hxxps://bit[.]ly/3xHelpDesk' },
+    { type: 'reason', text: 'Subject line contains urgency trigger word: "urgent"' },
+    { type: 'reason', text: 'Email relayed through bare public IP (no reverse DNS): 185.220.101.47' },
+    { type: 'blank' },
+
+    // Verbose rule breakdown
+    { type: 'label', text: '  RULE BREAKDOWN  (--verbose)' },
+    { type: 'label', text: '  ─────────────────────────' },
+    { type: 'rule', pts: '+20', color: 'red',    text: 'SPF validation failed (FAIL) — sender not authorised' },
+    { type: 'rule', pts: '+10', color: 'yellow', text: 'DKIM signature absent or invalid (NONE)' },
+    { type: 'rule', pts: '+25', color: 'red',    text: 'Reply-To domain (fake-domain.ru) differs from sender domain (secure-update-portal.com)' },
+    { type: 'rule', pts: '+25', color: 'red',    text: 'Sender domain matches suspicious pattern: secure-update-portal.com' },
+    { type: 'rule', pts: '+25', color: 'red',    text: 'Suspicious URL pattern detected' },
+    { type: 'rule', pts: '+15', color: 'yellow', text: 'URL shortener detected: hxxps://bit[.]ly/3xHelpDesk' },
+    { type: 'rule', pts: ' +0', color: 'green',  text: '(url_count_ok)' },
+    { type: 'rule', pts: '+10', color: 'yellow', text: 'Subject line contains urgency trigger word: "urgent"' },
+    { type: 'rule', pts: '+10', color: 'yellow', text: 'Email relayed through bare public IP (no reverse DNS): 185.220.101.47' },
+    { type: 'blank' },
+
+    // Done cursor
+    { type: 'done' },
+  ];
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function addLine(html) {
+    var p = document.createElement('p');
+    p.className = 't-line';
+    p.innerHTML = html;
+    body.appendChild(p);
+    body.scrollTop = body.scrollHeight;
+    return p;
+  }
+
+  function addBlank() {
+    var p = document.createElement('p');
+    p.className = 't-blank';
+    body.appendChild(p);
+  }
+
+  function renderItem(item) {
+    switch (item.type) {
+      case 'blank':
+        addBlank();
+        break;
+      case 'cmd':
+        addLine('<span class="t-prompt">anfas@sec:~$</span> ' + esc(item.text));
+        break;
+      case 'step':
+        addLine('<span class="t-step">' + esc(item.text) + '</span>');
+        break;
+      case 'hr':
+        addLine('<span class="t-hr">' + esc(item.text) + '</span>');
+        break;
+      case 'head':
+        addLine('<span class="t-head">' + esc(item.text) + '</span>');
+        break;
+      case 'label':
+        addLine('<span class="t-label">' + esc(item.text) + '</span>');
+        break;
+      case 'kv':
+        addLine('<span class="t-key">' + esc(item.key) + '</span><span class="t-val">' + esc(item.val) + '</span>');
+        break;
+      case 'mismatch-line':
+        addLine('<span class="t-key">  Reply-To  </span><span class="t-val"> attacker@fake-domain[.]ru</span>  <span class="t-mismatch">[MISMATCH]</span>');
+        break;
+      case 'auth':
+        var color = item.color === 'red' ? 't-spf-fail' : 't-spf-pass';
+        addLine('<span class="t-key">' + esc(item.key) + '</span><span class="' + color + '">' + esc(item.val) + '</span>');
+        break;
+      case 'url-susp':
+        addLine('<span class="t-url">' + esc(item.text) + '</span>  <span class="t-susp">[SUSPICIOUS]</span>');
+        break;
+      case 'url-plain':
+        addLine('<span class="t-url">' + esc(item.text) + '</span>');
+        break;
+      case 'url-short':
+        addLine('<span class="t-url">' + esc(item.text) + '</span>  <span class="t-short">[SHORTENER]</span>');
+        break;
+      case 'ioc-sub':
+        addLine('<span class="t-label">' + esc(item.text) + '</span>');
+        break;
+      case 'ioc':
+        addLine('<span class="t-ioc">' + esc(item.text) + '</span>');
+        break;
+      case 'score-hr':
+        addLine('<span class="t-hr">  ──────────────────────────────────────────────────────</span>');
+        break;
+      case 'score-line':
+        addLine(
+          '<span class="t-key">  Score   : </span>' +
+          '<span class="t-score">100/100</span>' +
+          '  <span class="t-bar">[<span class="bar-filled">████████████████████</span>]</span>'
+        );
+        break;
+      case 'verdict-line':
+        addLine('<span class="t-key">  Verdict : </span><span class="t-score">HIGH RISK PHISHING</span>');
+        break;
+      case 'reason':
+        addLine('<span class="t-reason">' + esc(item.text) + '</span>');
+        break;
+      case 'rule': {
+        var cls = item.color === 'red' ? 't-spf-fail' : item.color === 'green' ? 't-spf-pass' : 't-short';
+        addLine(
+          '    <span class="' + cls + '">' + esc(item.pts) + '</span>  ' +
+          '<span class="t-key">' + esc(item.text) + '</span>'
+        );
+        break;
+      }
+      case 'done':
+        addLine('<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>');
+        break;
+    }
+  }
+
+  // ── Typing animation for the command ────────────────────────
+  function typeCommand(cmd, speed) {
+    return new Promise(function (resolve) {
+      var el = document.createElement('p');
+      el.className = 't-line';
+      body.appendChild(el);
+
+      var i = 0;
+      var prefix = '<span class="t-prompt">anfas@sec:~$</span> ';
+
+      function tick() {
+        i++;
+        el.innerHTML = prefix + esc(cmd.slice(0, i)) + '<span class="cursor"></span>';
+        body.scrollTop = body.scrollHeight;
+        if (i < cmd.length) {
+          setTimeout(tick, speed);
+        } else {
+          el.innerHTML = prefix + esc(cmd);
+          resolve();
+        }
+      }
+      setTimeout(tick, 500);
+    });
+  }
+
+  // ── Run the sequence ─────────────────────────────────────────
+  function runSequence() {
+    body.innerHTML = '';
+
+    var items = SEQUENCE.slice();
+    var firstItem = items.shift(); // the 'cmd' line
+
+    // Type the command char-by-char, then play the rest
+    typeCommand(firstItem.text, 38).then(function () {
+      var i = 0;
+
+      function next() {
+        if (i >= items.length) return;
+        var item = items[i++];
+
+        if (item.type === 'blank') {
+          addBlank();
+          next();
+          return;
+        }
+
+        var delay = item.delay || (item.type === 'step' ? 0 : 18);
+        setTimeout(function () {
+          renderItem(item);
+          next();
+        }, delay);
+      }
+
+      // Small pause after command, then start output
+      setTimeout(next, 250);
+    });
+  }
+
+  replayBtn.addEventListener('click', runSequence);
+
+  // Auto-run on load
+  runSequence();
+  </script>
+
+</body>
+</html>

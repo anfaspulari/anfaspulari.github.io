@@ -6,7 +6,8 @@
     "origin": "Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.",
     "description": "Python CLI that parses .eml files, applies 8 detection rules (SPF/DKIM/Reply-To mismatch, URL patterns, urgency triggers), extracts IOCs, and outputs a scored incident report. Supports JSON output for SIEM ingest.",
     "stack": ["Python", "Email Analysis", "IOC Extraction", "Rules Engine"],
-    "github": "https://github.com/anfaspulari/phishscan-cli"
+    "github": "https://github.com/anfaspulari/phishscan-cli",
+    "demo": "https://anfaspulari.github.io/phishscan-demo"
   },
   {
     "id": "threatboard",
