@@ -409,11 +409,11 @@
 
       for (var i = 0; i < sections.length; i++) {
         var sec = sections[i];
-        if (!sec || sec.trim() === '') continue;
+        if (sec == null || sec.trim() === '') continue;
         var sepIdx = sec.search(/\r?\n\r?\n/);
         if (sepIdx === -1) continue;
-        var secHeaders = sec.slice(0, sepIdx);
-        var secBody    = sec.slice(sepIdx).replace(/^\r?\n/, '');
+        var secHeaders = sec.slice(0, sepIdx) || '';
+        var secBody    = sec.slice(sepIdx).replace(/^\r?\n/, '') || '';
 
         var secCT  = (secHeaders.match(/^Content-Type:\s*(.+?)(?:\r?\n(?:[^\S\r\n]|$)|$)/im) || ['',''])[1].trim();
         var secCTE = (secHeaders.match(/^Content-Transfer-Encoding:\s*(.+)/im) || ['',''])[1].trim();
@@ -446,13 +446,19 @@
   }
 
   function parseEml(rawText) {
-    var text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    var text = (rawText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     // Unfold continuation lines
     text = text.replace(/\n([ \t])/g, ' $1');
 
     var sepIdx = text.indexOf('\n\n');
     var rawHeaders = sepIdx !== -1 ? text.slice(0, sepIdx) : text;
     var rawBody    = sepIdx !== -1 ? text.slice(sepIdx + 2) : '';
+
+    // Treat files that have no recognisable header block (e.g. binary .msg)
+    // as a plain-text blob so URL/IOC extraction can still run
+    if (!rawHeaders || rawHeaders.length < 10 || rawHeaders.indexOf(':') === -1) {
+      return { rawHeaders: '', headers: {}, parts: [{ type: 'text/plain', content: text }] };
+    }
 
     var headers = {};
     var lines = rawHeaders.split('\n');
@@ -468,17 +474,19 @@
 
     var ct  = getHeader(headers, 'content-type');
     var cte = getHeader(headers, 'content-transfer-encoding');
-    var parts = extractParts(rawBody, ct, cte);
+    var parts = extractParts(rawBody, ct, cte) || [];
 
     return { rawHeaders: rawHeaders, headers: headers, parts: parts };
   }
 
   function getHeader(headers, name) {
+    if (!headers) return '';
     var a = headers[name.toLowerCase()];
     return (a && a.length) ? a[0] : '';
   }
 
   function getAllHeaders(headers, name) {
+    if (!headers) return [];
     return headers[name.toLowerCase()] || [];
   }
 
@@ -534,6 +542,7 @@
   var URL_RE = /https?:\/\/[^\s'"<>()\[\]]+/gi;
 
   function extractUrls(parts) {
+    if (!Array.isArray(parts)) return [];
     var seen = {};
     var out = [];
     for (var i = 0; i < parts.length; i++) {
@@ -635,7 +644,9 @@
   var HASH_RE_MD5 = /\b[0-9a-fA-F]{32}\b/g;
 
   function extractIocs(parts, urls, headersObj) {
-    var allText = parts.map(function(p){ return p.content; }).join('\n');
+    var allText = (Array.isArray(parts) ? parts : []).map(function(p) {
+      return (p && p.content) ? p.content : '';
+    }).join('\n');
     var received = getAllHeaders(headersObj, 'received').join('\n');
     var searchText = allText + '\n' + received;
 
@@ -1092,6 +1103,8 @@
       setTimeout(function() {
         try {
           var parsed  = parseEml(rawText);
+          if (!parsed || !parsed.headers) throw new Error('Invalid or unsupported email format');
+          parsed.parts = Array.isArray(parsed.parts) ? parsed.parts : [];
           var ha      = analyzeHeaders(parsed.headers);
           var urls    = extractUrls(parsed.parts);
           var ua      = analyzeUrls(urls);
@@ -1114,10 +1127,13 @@
 
           addLines(termReport, reportNodes, 15);
         } catch(err) {
-          var errLine = makeTermLine('t-error', escHtml('[!] Error parsing email: ' + err.message));
+          console.error('PHISHSCAN FULL ERROR:', err);
+          var msg = err && err.message ? err.message : String(err);
+          var errLine = makeTermLine('t-error', escHtml('[!] Error: ' + msg));
           appendToTerminal(termAnalyzing, errLine);
+          appendToTerminal(termAnalyzing, makeTermLine('t-error', escHtml('    Try pasting the raw email text instead, or check that the file is a valid .eml')));
           appendToTerminal(termAnalyzing, makeTermLine('', '<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
-          showState('analyzing'); // stay on analyzing state to show error
+          showState('analyzing');
         }
       }, 400);
     }
