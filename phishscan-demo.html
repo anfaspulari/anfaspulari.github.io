@@ -3,26 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PhishScan Demo — Live Analysis</title>
-  <meta name="description" content="Interactive demo of PhishScan CLI — phishing email analyzer built for SOC analysts." />
+  <title>PhishScan Analyzer — Interactive Email Analysis</title>
+  <meta name="description" content="Interactive phishing email analyzer. Upload a .eml file or paste raw email text for a full terminal-style security report." />
+  <meta name="author" content="Anfas Pulari" />
+  <meta property="og:title" content="PhishScan Analyzer" />
+  <meta property="og:description" content="Client-side phishing email analyzer — extract IOCs, check authentication, score risk." />
+  <meta property="og:type" content="website" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0a0e14;
-      --surface:  #0d1117;
-      --border:   rgba(0, 212, 255, 0.12);
-      --cyan:     #00d4ff;
-      --cyan-dim: rgba(0, 212, 255, 0.45);
-      --green:    #4ade80;
-      --yellow:   #facc15;
-      --red:      #f87171;
-      --dim:      #4a5568;
-      --text:     #c9d1d9;
-      --mono:     'JetBrains Mono', monospace;
-      --sans:     'Inter', sans-serif;
+      --bg:        #0a0e14;
+      --surface:   #0d1117;
+      --surface2:  #161b22;
+      --border:    rgba(0, 212, 255, 0.13);
+      --border2:   rgba(0, 212, 255, 0.22);
+      --cyan:      #00d4ff;
+      --cyan-dim:  rgba(0, 212, 255, 0.45);
+      --green:     #4ade80;
+      --yellow:    #facc15;
+      --red:       #f87171;
+      --dim:       #4a5568;
+      --text:      #c9d1d9;
+      --text2:     #8b949e;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Inter', sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -33,270 +42,194 @@
       font-family: var(--mono);
       font-size: 14px;
       min-height: 100vh;
+      line-height: 1.5;
     }
 
     /* ── HEADER ─────────────────────────────────────────────── */
-    .header {
+    .hdr {
       border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.5rem;
+      padding: 0.8rem 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: var(--surface);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      gap: 1rem;
     }
-
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+    .hdr-brand { display: flex; align-items: center; gap: 0.6rem; }
+    .hdr-logo  { font-size: 1rem; font-weight: 700; color: var(--cyan); letter-spacing: -0.01em; }
+    .hdr-badge {
+      font-size: 0.65rem; background: rgba(0,212,255,0.08);
+      color: var(--cyan-dim); border: 1px solid var(--border);
+      border-radius: 3px; padding: 2px 7px; letter-spacing: 0.06em;
     }
-
-    .header-logo {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--cyan);
-      letter-spacing: -0.01em;
+    .hdr-links { display: flex; align-items: center; gap: 1rem; }
+    .hdr-links a {
+      font-family: var(--sans); font-size: 0.8rem;
+      color: var(--dim); text-decoration: none; transition: color 0.2s;
     }
-
-    .header-badge {
-      font-size: 0.7rem;
-      background: rgba(0,212,255,0.1);
-      color: var(--cyan-dim);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 2px 7px;
-      letter-spacing: 0.05em;
+    .hdr-links a:hover { color: var(--cyan); }
+    .btn-gh {
+      background: rgba(0,212,255,0.07); color: var(--cyan) !important;
+      border: 1px solid var(--border); border-radius: 5px;
+      padding: 4px 12px !important; transition: background 0.2s, border-color 0.2s !important;
     }
+    .btn-gh:hover { background: rgba(0,212,255,0.14) !important; border-color: var(--cyan-dim) !important; }
 
-    .header-links {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
+    /* ── PAGE ────────────────────────────────────────────────── */
+    .page { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+    /* ── UPLOAD STATE ────────────────────────────────────────── */
+    #state-upload { }
+
+    .upload-card {
+      border: 2px dashed var(--border2);
+      border-radius: 10px;
+      background: var(--surface);
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+      position: relative;
     }
-
-    .header-links a {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      color: var(--dim);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .header-links a:hover { color: var(--cyan); }
-
-    .btn-github {
-      background: rgba(0,212,255,0.08);
-      color: var(--cyan) !important;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      padding: 5px 12px !important;
-      transition: background 0.2s, border-color 0.2s !important;
-    }
-
-    .btn-github:hover {
-      background: rgba(0,212,255,0.15) !important;
-      border-color: var(--cyan-dim) !important;
-    }
-
-    /* ── MAIN LAYOUT ─────────────────────────────────────────── */
-    .page {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
-    }
-
-    .intro {
-      margin-bottom: 2rem;
-    }
-
-    .intro-label {
-      font-size: 0.7rem;
-      color: var(--cyan-dim);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }
-
-    .intro-title {
-      font-family: var(--sans);
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #e6edf3;
-      margin-bottom: 0.5rem;
-    }
-
-    .intro-desc {
-      font-family: var(--sans);
-      font-size: 0.875rem;
-      color: var(--dim);
-      line-height: 1.6;
-      max-width: 580px;
-    }
-
-    /* ── SAMPLE FILE ─────────────────────────────────────────── */
-    .sample-box {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-    }
-
-    .sample-header {
+    .upload-card:hover, .upload-card.drag-over {
+      border-color: var(--cyan);
       background: rgba(0,212,255,0.04);
-      border-bottom: 1px solid var(--border);
-      padding: 0.55rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--dim);
-      letter-spacing: 0.04em;
+    }
+    .upload-card.drag-over { background: rgba(0,212,255,0.07); }
+
+    .upload-icon { margin-bottom: 1.1rem; opacity: 0.6; }
+    .upload-heading {
+      font-family: var(--sans); font-size: 1.05rem; font-weight: 600;
+      color: #e6edf3; margin-bottom: 0.35rem;
+    }
+    .upload-sub { font-size: 0.78rem; color: var(--dim); margin-bottom: 0.4rem; }
+    .upload-types { font-size: 0.72rem; color: rgba(0,212,255,0.35); }
+    #file-input { display: none; }
+
+    .paste-toggle {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 1.5rem; font-size: 0.8rem; color: var(--cyan-dim);
+      cursor: pointer; background: none; border: none;
+      font-family: var(--mono); padding: 4px 0;
+      transition: color 0.2s; text-decoration: none;
+    }
+    .paste-toggle:hover { color: var(--cyan); }
+    .paste-toggle .arrow { transition: transform 0.2s; display: inline-block; }
+    .paste-toggle.open .arrow { transform: rotate(90deg); }
+
+    .paste-section {
+      display: none; margin-top: 1.2rem; text-align: left;
+    }
+    .paste-section.visible { display: block; }
+
+    .paste-label {
+      font-size: 0.72rem; color: var(--dim); letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 0.4rem; display: block;
     }
 
-    .sample-file {
-      color: var(--cyan-dim);
+    textarea#paste-input {
+      width: 100%; min-height: 180px;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border2); border-radius: 6px;
+      font-family: var(--mono); font-size: 0.78rem; line-height: 1.65;
+      padding: 0.8rem 1rem; resize: vertical; outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea#paste-input:focus { border-color: var(--cyan); }
+    textarea#paste-input::placeholder { color: var(--dim); opacity: 0.6; }
+
+    .upload-actions {
+      margin-top: 1.8rem; display: flex; flex-direction: column;
+      align-items: center; gap: 0.7rem;
     }
 
-    .sample-content {
-      padding: 1rem;
-      font-size: 0.78rem;
-      line-height: 1.7;
-      color: #8b949e;
-      max-height: 160px;
-      overflow-y: auto;
+    .btn-analyze {
+      font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+      background: var(--cyan); color: #0a0e14;
+      border: none; border-radius: 6px; padding: 0.65rem 2.2rem;
+      cursor: pointer; transition: background 0.2s, opacity 0.2s;
+      letter-spacing: 0.03em;
     }
+    .btn-analyze:disabled {
+      background: rgba(0,212,255,0.15); color: var(--dim); cursor: not-allowed;
+    }
+    .btn-analyze:not(:disabled):hover { background: #29dcff; }
 
-    .sh { color: var(--dim); }
-    .sk { color: var(--cyan-dim); }
-    .sv { color: #a5d6ff; }
-    .sw { color: var(--yellow); }
-    .sr { color: var(--red); }
+    .privacy-note {
+      font-family: var(--sans); font-size: 0.72rem; color: var(--dim);
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .privacy-note svg { flex-shrink: 0; }
 
-    /* ── TERMINAL ─────────────────────────────────────────────── */
+    /* ── ANALYZING / REPORT STATE ─────────────────────────────── */
+    #state-analyzing { display: none; }
+    #state-report    { display: none; }
+
     .terminal-wrap {
       border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: #0d1117;
+      border-radius: 8px; overflow: hidden;
+      background: var(--surface);
     }
-
     .terminal-titlebar {
-      background: #161b22;
+      background: var(--surface2);
       border-bottom: 1px solid var(--border);
-      padding: 0.6rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      display: flex; align-items: center; gap: 0.45rem;
     }
-
-    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
     .dot-r { background: #f87171; }
     .dot-y { background: #facc15; }
     .dot-g { background: #4ade80; }
-
     .terminal-title {
-      font-size: 0.72rem;
-      color: var(--dim);
-      margin-left: 0.5rem;
+      font-size: 0.7rem; color: var(--dim); margin-left: 0.45rem;
       letter-spacing: 0.03em;
     }
-
-    .terminal-replay {
-      margin-left: auto;
-      background: rgba(0,212,255,0.07);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--cyan-dim);
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      padding: 3px 10px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      letter-spacing: 0.04em;
-    }
-
-    .terminal-replay:hover {
-      background: rgba(0,212,255,0.14);
-      color: var(--cyan);
-    }
-
     .terminal-body {
-      padding: 1.1rem 1.2rem 1.4rem;
-      min-height: 480px;
-      overflow-y: auto;
-      max-height: 640px;
+      padding: 1rem 1.1rem 1.2rem;
+      min-height: 300px; max-height: 680px;
+      overflow-y: auto; overflow-x: hidden;
     }
-
     .t-line {
-      display: block;
-      line-height: 1.65;
-      white-space: pre-wrap;
-      word-break: break-all;
-      font-size: 0.8rem;
+      display: block; line-height: 1.7;
+      white-space: pre-wrap; word-break: break-all;
+      font-size: 0.79rem;
     }
-
+    .t-blank  { display: block; height: 4px; }
     .t-prompt { color: var(--cyan); }
-
-    .t-step   { color: var(--cyan); }
-    .t-step::before { content: '[+] '; }
-
+    .t-step::before { content: '[+] '; color: var(--cyan); }
     .t-hr     { color: var(--cyan-dim); }
     .t-head   { color: var(--cyan); font-weight: 700; }
     .t-label  { color: var(--cyan); }
     .t-key    { color: var(--text); }
     .t-val    { color: #a5d6ff; }
-    .t-mismatch { color: var(--red); font-weight: 700; }
-    .t-spf-fail { color: var(--red); font-weight: 700; }
-    .t-spf-pass { color: var(--green); }
+    .t-red    { color: var(--red); font-weight: 700; }
+    .t-green  { color: var(--green); font-weight: 700; }
+    .t-yellow { color: var(--yellow); font-weight: 700; }
     .t-url    { color: #a5d6ff; }
-    .t-susp   { color: var(--red); font-weight: 700; }
-    .t-short  { color: var(--yellow); }
     .t-ioc    { color: #e6edf3; }
-    .t-score  { color: var(--red); font-weight: 700; font-size: 0.88rem; }
-    .t-bar    { color: var(--red); }
-    .t-reason { color: var(--yellow); }
     .t-reason::before { content: '    ! '; color: var(--yellow); }
-    .t-blank  { display: block; height: 5px; }
-
-    /* Score bar animation */
-    @keyframes fillBar {
-      from { clip-path: inset(0 100% 0 0); }
-      to   { clip-path: inset(0 0% 0 0); }
-    }
-
-    .bar-filled {
-      display: inline;
-      animation: fillBar 1.2s ease-out forwards;
-    }
-
-    /* Cursor blink */
+    .t-reason { color: var(--yellow); }
+    .t-error  { color: var(--red); }
+    .t-warn   { color: var(--yellow); }
     .cursor {
-      display: inline-block;
-      width: 8px;
-      height: 13px;
-      background: var(--cyan);
-      vertical-align: text-bottom;
+      display: inline-block; width: 8px; height: 13px;
+      background: var(--cyan); vertical-align: text-bottom;
       animation: blink 0.9s step-end infinite;
     }
-
     @keyframes blink { 50% { opacity: 0; } }
 
-    /* ── FOOTER NOTE ─────────────────────────────────────────── */
-    .demo-note {
-      margin-top: 1.5rem;
-      padding: 0.9rem 1.1rem;
-      border: 1px solid rgba(250,204,21,0.15);
-      border-radius: 6px;
-      background: rgba(250,204,21,0.04);
-      font-size: 0.78rem;
-      color: #8b949e;
-      line-height: 1.6;
+    .btn-another {
+      display: block; margin: 1.5rem auto 0;
+      font-family: var(--mono); font-size: 0.82rem;
+      background: rgba(0,212,255,0.07); color: var(--cyan);
+      border: 1px solid var(--border2); border-radius: 6px;
+      padding: 0.55rem 1.6rem; cursor: pointer;
+      transition: background 0.2s; letter-spacing: 0.04em;
     }
-
-    .demo-note strong { color: var(--yellow); }
+    .btn-another:hover { background: rgba(0,212,255,0.14); }
 
     /* ── SCROLLBAR ───────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -307,65 +240,92 @@
 <body>
 
   <!-- ── HEADER ──────────────────────────────────────────────── -->
-  <header class="header">
-    <div class="header-brand">
-      <span class="header-logo">PhishScan</span>
-      <span class="header-badge">DEMO</span>
+  <header class="hdr">
+    <div class="hdr-brand">
+      <span class="hdr-logo">PhishScan</span>
+      <span class="hdr-badge">ANALYZER</span>
     </div>
-    <nav class="header-links">
-      <a href="https://anfaspulari.github.io">← Portfolio</a>
-      <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" class="btn-github">GitHub</a>
+    <nav class="hdr-links">
+      <a href="https://anfaspulari.github.io">&#8592; Portfolio</a>
+      <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" class="btn-gh">GitHub</a>
     </nav>
   </header>
 
-  <!-- ── PAGE BODY ───────────────────────────────────────────── -->
   <main class="page">
 
-    <div class="intro">
-      <p class="intro-label">// Interactive Demo</p>
-      <h1 class="intro-title">PhishScan — Phishing Email Analyzer</h1>
-      <p class="intro-desc">
-        Python CLI for SOC analysts. Parses <code>.eml</code> files, extracts IOCs,
-        applies 8 detection rules, and outputs a scored incident report.
-        Below is a live simulation against a realistic phishing sample.
-      </p>
-    </div>
+    <!-- ── STATE 1: UPLOAD ────────────────────────────────────── -->
+    <div id="state-upload">
 
-    <!-- Sample email summary -->
-    <div class="sample-box">
-      <div class="sample-header">
-        <span>INPUT EMAIL</span>
-        <span class="sample-file">sample_emails/phishing_sample.eml</span>
+      <div class="upload-card" id="drop-zone" role="button" tabindex="0"
+           aria-label="Upload email file">
+
+        <input type="file" id="file-input" accept=".eml,.msg,.txt" />
+
+        <div class="upload-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="10" width="36" height="28" rx="3" stroke="rgba(0,212,255,0.45)" stroke-width="1.5" fill="none"/>
+            <path d="M6 16l18 12 18-12" stroke="rgba(0,212,255,0.45)" stroke-width="1.5" fill="none"/>
+            <path d="M24 10 L24 4 M21 7 L24 4 L27 7" stroke="rgba(0,212,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <p class="upload-heading">Drop your .eml file here</p>
+        <p class="upload-sub">or click to browse</p>
+        <p class="upload-types">.eml &nbsp;&#183;&nbsp; .msg &nbsp;&#183;&nbsp; .txt</p>
+
+        <div style="position:relative;z-index:2;">
+          <button class="paste-toggle" id="paste-toggle" type="button"
+                  onclick="event.stopPropagation()">
+            <span class="arrow">&#9658;</span>&nbsp;Or paste raw email text
+          </button>
+
+          <div class="paste-section" id="paste-section" onclick="event.stopPropagation()">
+            <label class="paste-label" for="paste-input">// paste raw headers + body</label>
+            <textarea id="paste-input" spellcheck="false"
+              placeholder="From: support@secure-update-portal.com&#10;Reply-To: attacker@fake-domain.ru&#10;To: victim@company.com&#10;Subject: Urgent: Action Required - Verify Your Account Immediately&#10;Date: Mon, 14 Jan 2024 09:23:11 +0000&#10;Received: from mail.secure-update-portal.com (185.220.101.47)&#10;    by mx.company.com with ESMTP id xyZ9a1b2c3&#10;Received-SPF: fail (domain does not designate 185.220.101.47 as permitted sender)&#10;&#10;Dear Customer,&#10;Verify here: https://secure-login-update.com/verify?token=AbC123XyZ9f2&#10;Support: https://bit.ly/3xHelpDesk"></textarea>
+          </div>
+        </div>
+
+      </div><!-- /upload-card -->
+
+      <div class="upload-actions">
+        <button class="btn-analyze" id="btn-analyze" disabled>Analyze Email</button>
+        <p class="privacy-note">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1L2 4v4c0 3.3 2.5 6.4 6 7 3.5-.6 6-3.7 6-7V4L8 1z"
+              stroke="#4a5568" stroke-width="1.3" fill="none"/>
+          </svg>
+          Analyzed entirely in your browser &mdash; nothing is uploaded to any server.
+        </p>
       </div>
-      <pre class="sample-content"><span class="sk">From</span><span class="sh">:</span>     <span class="sv">support@secure-update-portal.com</span>
-<span class="sk">Reply-To</span><span class="sh">:</span> <span class="sr">attacker@fake-domain.ru</span>
-<span class="sk">To</span><span class="sh">:</span>       <span class="sv">victim@company.com</span>
-<span class="sk">Subject</span><span class="sh">:</span>  <span class="sw">Urgent: Action Required - Verify Your Account Immediately</span>
-<span class="sk">Date</span><span class="sh">:</span>     <span class="sv">Mon, 14 Jan 2024 09:23:11 +0000</span>
-<span class="sh">Received-SPF: </span><span class="sr">fail</span><span class="sh"> (domain of support@secure-update-portal.com does not</span>
-<span class="sh">    designate 185.220.101.47 as permitted sender)</span>
 
-<span class="sh">We have detected unusual login activity on your account...</span>
-<span class="sh">Verify here: </span><span class="sr">https://secure-login-update.com/verify?token=AbC123XyZ9f2</span>
-<span class="sh">Support:     </span><span class="sr">https://bit.ly/3xHelpDesk</span></pre>
-    </div>
+    </div><!-- /state-upload -->
 
-    <!-- Terminal output -->
-    <div class="terminal-wrap">
-      <div class="terminal-titlebar">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
-        <span class="terminal-title">bash — phishscan</span>
-        <button class="terminal-replay" id="replay-btn" aria-label="Replay demo">↺ Replay</button>
+    <!-- ── STATE 2: ANALYZING ─────────────────────────────────── -->
+    <div id="state-analyzing">
+      <div class="terminal-wrap">
+        <div class="terminal-titlebar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="terminal-title" id="analyzing-title">phishscan &#8212; analyzing...</span>
+        </div>
+        <div class="terminal-body" id="terminal-analyzing"></div>
       </div>
-      <div class="terminal-body" id="terminal-body"></div>
     </div>
 
-    <div class="demo-note">
-      <strong>Note:</strong> This is a browser simulation of the CLI output.
-      Run the real tool locally: <code>python phishscan.py sample_emails/phishing_sample.eml --verbose</code>
-      — install via <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" style="color:#00d4ff;">github.com/anfaspulari/phishscan-cli</a>
+    <!-- ── STATE 3: REPORT ────────────────────────────────────── -->
+    <div id="state-report">
+      <div class="terminal-wrap">
+        <div class="terminal-titlebar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="terminal-title" id="report-title">phishscan &#8212; report</span>
+        </div>
+        <div class="terminal-body" id="terminal-report"></div>
+      </div>
+      <button class="btn-another" id="btn-another">&#x21BA; Analyze Another</button>
     </div>
 
   </main>
@@ -373,264 +333,796 @@
   <script>
   'use strict';
 
-  var body = document.getElementById('terminal-body');
-  var replayBtn = document.getElementById('replay-btn');
-
-  // ── Output lines definition ──────────────────────────────────
-  // Each entry: { cls, text } — rendered in sequence with delays
-  var SEQUENCE = [
-    // Command
-    { type: 'cmd', text: 'python phishscan.py sample_emails/phishing_sample.eml --verbose' },
-    { type: 'blank' },
-
-    // Progress steps
-    { type: 'step', text: 'Parsing email headers...',   delay: 320 },
-    { type: 'step', text: 'Extracting URLs...',         delay: 280 },
-    { type: 'step', text: 'Extracting IOCs...',         delay: 260 },
-    { type: 'step', text: 'Running detection rules...', delay: 300 },
-    { type: 'step', text: 'Calculating risk score...',  delay: 260 },
-    { type: 'blank' },
-
-    // Report header
-    { type: 'hr',  text: '  ══════════════════════════════════════════════════════' },
-    { type: 'head', text: '  PHISHSCAN REPORT' },
-    { type: 'hr',  text: '  ══════════════════════════════════════════════════════' },
-    { type: 'blank' },
-
-    // Metadata
-    { type: 'label', text: '  EMAIL METADATA' },
-    { type: 'label', text: '  ──────────────' },
-    { type: 'kv',    key: '  File      ', val: ' sample_emails/phishing_sample.eml' },
-    { type: 'kv',    key: '  Subject   ', val: ' Urgent: Action Required - Verify Your Account Immediately' },
-    { type: 'kv',    key: '  Date      ', val: ' Mon, 14 Jan 2024 09:23:11 +0000' },
-    { type: 'kv',    key: '  Sender    ', val: ' support@secure-update-portal[.]com' },
-    { type: 'mismatch-line' },
-    { type: 'blank' },
-
-    // Auth
-    { type: 'label', text: '  AUTHENTICATION' },
-    { type: 'label', text: '  ──────────────' },
-    { type: 'auth',  key: '  SPF       ', val: ' FAIL',  color: 'red'  },
-    { type: 'auth',  key: '  DKIM      ', val: ' NONE',  color: 'red'  },
-    { type: 'blank' },
-
-    // URLs
-    { type: 'label', text: '  URLs FOUND (3)' },
-    { type: 'label', text: '  ──────────────' },
-    { type: 'url-susp',  text: '    hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
-    { type: 'url-plain', text: '    hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
-    { type: 'url-short', text: '    hxxps://bit[.]ly/3xHelpDesk' },
-    { type: 'blank' },
-
-    // IOCs
-    { type: 'label', text: '  EXTRACTED IOCs' },
-    { type: 'label', text: '  ──────────────' },
-    { type: 'ioc-sub', text: '    Domains:' },
-    { type: 'ioc',  text: '      secure-login-update[.]com' },
-    { type: 'ioc',  text: '      secure-update-portal[.]com' },
-    { type: 'ioc',  text: '      fake-domain[.]ru' },
-    { type: 'ioc-sub', text: '    IP Addresses:' },
-    { type: 'ioc',  text: '      185.220.101.47' },
-    { type: 'blank' },
-
-    // Score
-    { type: 'score-hr' },
-    { type: 'score-line' },
-    { type: 'verdict-line' },
-    { type: 'score-hr' },
-    { type: 'blank' },
-
-    // Reasons
-    { type: 'label', text: '  DETECTION REASONS' },
-    { type: 'label', text: '  ─────────────────' },
-    { type: 'reason', text: 'SPF validation failed (FAIL) — sender not authorised' },
-    { type: 'reason', text: 'DKIM signature absent or invalid (NONE)' },
-    { type: 'reason', text: 'Reply-To domain (fake-domain.ru) differs from sender domain (secure-update-portal.com)' },
-    { type: 'reason', text: 'Sender domain matches suspicious pattern: secure-update-portal.com' },
-    { type: 'reason', text: 'Suspicious URL pattern detected: hxxps://secure-login-update[.]com/verify?token=AbC123XyZ9f2' },
-    { type: 'reason', text: 'URL shortener detected (destination hidden): hxxps://bit[.]ly/3xHelpDesk' },
-    { type: 'reason', text: 'Subject line contains urgency trigger word: "urgent"' },
-    { type: 'reason', text: 'Email relayed through bare public IP (no reverse DNS): 185.220.101.47' },
-    { type: 'blank' },
-
-    // Verbose rule breakdown
-    { type: 'label', text: '  RULE BREAKDOWN  (--verbose)' },
-    { type: 'label', text: '  ─────────────────────────' },
-    { type: 'rule', pts: '+20', color: 'red',    text: 'SPF validation failed (FAIL) — sender not authorised' },
-    { type: 'rule', pts: '+10', color: 'yellow', text: 'DKIM signature absent or invalid (NONE)' },
-    { type: 'rule', pts: '+25', color: 'red',    text: 'Reply-To domain (fake-domain.ru) differs from sender domain (secure-update-portal.com)' },
-    { type: 'rule', pts: '+25', color: 'red',    text: 'Sender domain matches suspicious pattern: secure-update-portal.com' },
-    { type: 'rule', pts: '+25', color: 'red',    text: 'Suspicious URL pattern detected' },
-    { type: 'rule', pts: '+15', color: 'yellow', text: 'URL shortener detected: hxxps://bit[.]ly/3xHelpDesk' },
-    { type: 'rule', pts: ' +0', color: 'green',  text: '(url_count_ok)' },
-    { type: 'rule', pts: '+10', color: 'yellow', text: 'Subject line contains urgency trigger word: "urgent"' },
-    { type: 'rule', pts: '+10', color: 'yellow', text: 'Email relayed through bare public IP (no reverse DNS): 185.220.101.47' },
-    { type: 'blank' },
-
-    // Done cursor
-    { type: 'done' },
-  ];
-
-  function esc(s) {
-    return String(s)
+  /* ================================================================
+     UTILITIES
+  ================================================================ */
+  function escHtml(s) {
+    return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  function addLine(html) {
-    var p = document.createElement('p');
-    p.className = 't-line';
-    p.innerHTML = html;
-    body.appendChild(p);
-    body.scrollTop = body.scrollHeight;
-    return p;
+  function defang(s) {
+    return String(s).replace(/https?/gi, function(m){ return m.replace(/http/i,'hxxp'); })
+                    .replace(/\./g, '[.]');
   }
 
-  function addBlank() {
-    var p = document.createElement('p');
-    p.className = 't-blank';
-    body.appendChild(p);
+  function defangDomain(d) {
+    return String(d).replace(/\./g, '[.]');
   }
 
-  function renderItem(item) {
-    switch (item.type) {
-      case 'blank':
-        addBlank();
-        break;
-      case 'cmd':
-        addLine('<span class="t-prompt">anfas@sec:~$</span> ' + esc(item.text));
-        break;
-      case 'step':
-        addLine('<span class="t-step">' + esc(item.text) + '</span>');
-        break;
-      case 'hr':
-        addLine('<span class="t-hr">' + esc(item.text) + '</span>');
-        break;
-      case 'head':
-        addLine('<span class="t-head">' + esc(item.text) + '</span>');
-        break;
-      case 'label':
-        addLine('<span class="t-label">' + esc(item.text) + '</span>');
-        break;
-      case 'kv':
-        addLine('<span class="t-key">' + esc(item.key) + '</span><span class="t-val">' + esc(item.val) + '</span>');
-        break;
-      case 'mismatch-line':
-        addLine('<span class="t-key">  Reply-To  </span><span class="t-val"> attacker@fake-domain[.]ru</span>  <span class="t-mismatch">[MISMATCH]</span>');
-        break;
-      case 'auth':
-        var color = item.color === 'red' ? 't-spf-fail' : 't-spf-pass';
-        addLine('<span class="t-key">' + esc(item.key) + '</span><span class="' + color + '">' + esc(item.val) + '</span>');
-        break;
-      case 'url-susp':
-        addLine('<span class="t-url">' + esc(item.text) + '</span>  <span class="t-susp">[SUSPICIOUS]</span>');
-        break;
-      case 'url-plain':
-        addLine('<span class="t-url">' + esc(item.text) + '</span>');
-        break;
-      case 'url-short':
-        addLine('<span class="t-url">' + esc(item.text) + '</span>  <span class="t-short">[SHORTENER]</span>');
-        break;
-      case 'ioc-sub':
-        addLine('<span class="t-label">' + esc(item.text) + '</span>');
-        break;
-      case 'ioc':
-        addLine('<span class="t-ioc">' + esc(item.text) + '</span>');
-        break;
-      case 'score-hr':
-        addLine('<span class="t-hr">  ──────────────────────────────────────────────────────</span>');
-        break;
-      case 'score-line':
-        addLine(
-          '<span class="t-key">  Score   : </span>' +
-          '<span class="t-score">100/100</span>' +
-          '  <span class="t-bar">[<span class="bar-filled">████████████████████</span>]</span>'
-        );
-        break;
-      case 'verdict-line':
-        addLine('<span class="t-key">  Verdict : </span><span class="t-score">HIGH RISK PHISHING</span>');
-        break;
-      case 'reason':
-        addLine('<span class="t-reason">' + esc(item.text) + '</span>');
-        break;
-      case 'rule': {
-        var cls = item.color === 'red' ? 't-spf-fail' : item.color === 'green' ? 't-spf-pass' : 't-short';
-        addLine(
-          '    <span class="' + cls + '">' + esc(item.pts) + '</span>  ' +
-          '<span class="t-key">' + esc(item.text) + '</span>'
-        );
-        break;
+  function parseDomain(addr) {
+    if (!addr) return '';
+    var at = addr.lastIndexOf('@');
+    if (at !== -1) return addr.slice(at + 1).toLowerCase().trim();
+    return '';
+  }
+
+  function parseAddr(raw) {
+    if (!raw) return '';
+    var m = raw.match(/<([^>]+)>/);
+    if (m) return m[1].toLowerCase().trim();
+    return raw.toLowerCase().trim().split(/\s/)[0];
+  }
+
+  function getSld(domain) {
+    var parts = domain.split('.');
+    return parts.length >= 2 ? parts[parts.length - 2] : domain;
+  }
+
+  /* ================================================================
+     EML PARSER
+  ================================================================ */
+  function decodeQP(s) {
+    return s.replace(/=\r?\n/g, '')
+            .replace(/=([0-9A-Fa-f]{2})/g, function(_, h) {
+              return String.fromCharCode(parseInt(h, 16));
+            });
+  }
+
+  function decodeB64(s) {
+    try {
+      return atob(s.replace(/\s/g, ''));
+    } catch(e) { return s; }
+  }
+
+  function decodePart(raw, encoding) {
+    var enc = (encoding || '').toLowerCase().trim();
+    if (enc === 'base64') return decodeB64(raw);
+    if (enc === 'quoted-printable') return decodeQP(raw);
+    return raw;
+  }
+
+  function extractParts(rawBody, contentType, encoding) {
+    var ct = (contentType || '').toLowerCase();
+    var parts = [];
+
+    if (ct.indexOf('multipart/') !== -1) {
+      var bm = contentType.match(/boundary="?([^";\r\n]+)"?/i);
+      if (!bm) bm = contentType.match(/boundary=([^;\r\n]+)/i);
+      if (!bm) return parts;
+      var boundary = bm[1].trim();
+      var delimiter = '--' + boundary;
+      var sections = rawBody.split(new RegExp('(?:^|\\r?\\n)' + escapeRegex('--' + boundary) + '(?!--)(?:\\r?\\n|$)', 'g'));
+
+      for (var i = 0; i < sections.length; i++) {
+        var sec = sections[i];
+        if (!sec || sec.trim() === '') continue;
+        var sepIdx = sec.search(/\r?\n\r?\n/);
+        if (sepIdx === -1) continue;
+        var secHeaders = sec.slice(0, sepIdx);
+        var secBody    = sec.slice(sepIdx).replace(/^\r?\n/, '');
+
+        var secCT  = (secHeaders.match(/^Content-Type:\s*(.+?)(?:\r?\n(?:[^\S\r\n]|$)|$)/im) || ['',''])[1].trim();
+        var secCTE = (secHeaders.match(/^Content-Transfer-Encoding:\s*(.+)/im) || ['',''])[1].trim();
+
+        if (!secCT) continue;
+        var secCTLow = secCT.toLowerCase();
+        if (secCTLow.indexOf('multipart/') !== -1) {
+          var sub = extractParts(secBody, secCT, secCTE);
+          parts = parts.concat(sub);
+        } else if (secCTLow.indexOf('text/plain') !== -1 || secCTLow.indexOf('text/html') !== -1) {
+          var decoded = decodePart(secBody, secCTE);
+          parts.push({ type: secCTLow.indexOf('text/html') !== -1 ? 'text/html' : 'text/plain', content: decoded });
+        }
       }
-      case 'done':
-        addLine('<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>');
-        break;
+      return parts;
+    }
+
+    // single part
+    var decoded = decodePart(rawBody, encoding);
+    if (ct.indexOf('text/html') !== -1) {
+      parts.push({ type: 'text/html', content: decoded });
+    } else {
+      parts.push({ type: 'text/plain', content: decoded });
+    }
+    return parts;
+  }
+
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function parseEml(rawText) {
+    var text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Unfold continuation lines
+    text = text.replace(/\n([ \t])/g, ' $1');
+
+    var sepIdx = text.indexOf('\n\n');
+    var rawHeaders = sepIdx !== -1 ? text.slice(0, sepIdx) : text;
+    var rawBody    = sepIdx !== -1 ? text.slice(sepIdx + 2) : '';
+
+    var headers = {};
+    var lines = rawHeaders.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var colon = line.indexOf(':');
+      if (colon <= 0) continue;
+      var key = line.slice(0, colon).toLowerCase().trim();
+      var val = line.slice(colon + 1).trim();
+      if (!headers[key]) headers[key] = [];
+      headers[key].push(val);
+    }
+
+    var ct  = getHeader(headers, 'content-type');
+    var cte = getHeader(headers, 'content-transfer-encoding');
+    var parts = extractParts(rawBody, ct, cte);
+
+    return { rawHeaders: rawHeaders, headers: headers, parts: parts };
+  }
+
+  function getHeader(headers, name) {
+    var a = headers[name.toLowerCase()];
+    return (a && a.length) ? a[0] : '';
+  }
+
+  function getAllHeaders(headers, name) {
+    return headers[name.toLowerCase()] || [];
+  }
+
+  /* ================================================================
+     HEADER ANALYSIS
+  ================================================================ */
+  function analyzeHeaders(headers) {
+    var from_raw    = getHeader(headers, 'from');
+    var from_addr   = parseAddr(from_raw).toLowerCase();
+    var from_domain = parseDomain(from_addr);
+
+    var rto_raw     = getHeader(headers, 'reply-to');
+    var reply_to    = parseAddr(rto_raw).toLowerCase();
+    var reply_to_domain = parseDomain(reply_to);
+    var reply_to_mismatch = !!(reply_to && from_domain && reply_to_domain && reply_to_domain !== from_domain);
+
+    // SPF
+    var spf = '';
+    var authResults = getHeader(headers, 'authentication-results');
+    if (authResults) {
+      var sm = authResults.match(/spf=(\w+)/i);
+      if (sm) spf = sm[1].toLowerCase();
+    }
+    if (!spf) {
+      var rspf = getHeader(headers, 'received-spf');
+      if (rspf) {
+        spf = rspf.trim().split(/[\s;]/)[0].toLowerCase();
+      }
+    }
+
+    // DKIM
+    var dkim = '';
+    if (authResults) {
+      var dm = authResults.match(/dkim=(\w+)/i);
+      if (dm) dkim = dm[1].toLowerCase();
+    }
+
+    var received = getAllHeaders(headers, 'received');
+    var subject  = getHeader(headers, 'subject');
+    var date     = getHeader(headers, 'date');
+    var message_id = getHeader(headers, 'message-id');
+
+    return {
+      from_raw, from_addr, from_domain,
+      reply_to, reply_to_domain, reply_to_mismatch,
+      spf, dkim, received, subject, date, message_id
+    };
+  }
+
+  /* ================================================================
+     URL EXTRACTION & ANALYSIS
+  ================================================================ */
+  var URL_RE = /https?:\/\/[^\s'"<>()\[\]]+/gi;
+
+  function extractUrls(parts) {
+    var seen = {};
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var text = parts[i].content || '';
+      // Strip HTML tags for URL extraction
+      if (parts[i].type === 'text/html') {
+        text = text.replace(/<[^>]*>/g, ' ');
+      }
+      var m;
+      URL_RE.lastIndex = 0;
+      while ((m = URL_RE.exec(text)) !== null) {
+        var url = m[0].replace(/[.,;:)>\]"']+$/, '');
+        if (!seen[url]) { seen[url] = true; out.push(url); }
+      }
+    }
+    return out;
+  }
+
+  var SHORTENERS = new Set([
+    'bit.ly','tinyurl.com','goo.gl','t.co','ow.ly','buff.ly',
+    'short.link','rb.gy','cutt.ly','is.gd','v.gd','tiny.cc',
+    'bl.ink','snip.ly','shorturl.at','clck.ru','x.co'
+  ]);
+
+  var BRANDS = ['paypal','microsoft','google','apple','amazon','netflix',
+    'facebook','instagram','twitter','linkedin','dropbox','chase',
+    'wellsfargo','bankofamerica','citibank','hsbc','zelle','venmo',
+    'cashapp','coinbase','binance','outlook','office365','docusign',
+    'fedex','dhl','ups','usps'];
+
+  var SUSP_KW = ['secure','verify','update','login','signin','account',
+    'banking','confirm','validation','password','credential','recovery',
+    'suspended','unlock','alert','support','helpdesk','portal',
+    'authenticate','access','service'];
+
+  function isSuspiciousDomain(domain) {
+    if (!domain) return false;
+    var d = domain.toLowerCase();
+    var sld = getSld(d);
+    for (var i = 0; i < BRANDS.length; i++) {
+      if (d.indexOf(BRANDS[i]) !== -1 && sld !== BRANDS[i]) return true;
+    }
+    for (var j = 0; j < SUSP_KW.length; j++) {
+      if (sld.indexOf(SUSP_KW[j]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function urlDomain(url) {
+    try {
+      var u = new URL(url);
+      return u.hostname.toLowerCase();
+    } catch(e) {
+      var m = url.match(/^https?:\/\/([^/:?#]+)/i);
+      return m ? m[1].toLowerCase() : '';
     }
   }
 
-  // ── Typing animation for the command ────────────────────────
-  function typeCommand(cmd, speed) {
-    return new Promise(function (resolve) {
-      var el = document.createElement('p');
-      el.className = 't-line';
-      body.appendChild(el);
+  function analyzeUrls(urls) {
+    var raw = [], defanged = [], domains = [], shorteners = [], suspicious = [];
+    var domainsSeen = {};
 
-      var i = 0;
-      var prefix = '<span class="t-prompt">anfas@sec:~$</span> ';
+    for (var i = 0; i < urls.length; i++) {
+      var url = urls[i];
+      var df  = defang(url);
+      var dom = urlDomain(url);
 
-      function tick() {
-        i++;
-        el.innerHTML = prefix + esc(cmd.slice(0, i)) + '<span class="cursor"></span>';
-        body.scrollTop = body.scrollHeight;
-        if (i < cmd.length) {
-          setTimeout(tick, speed);
-        } else {
-          el.innerHTML = prefix + esc(cmd);
-          resolve();
-        }
+      raw.push(url);
+      defanged.push(df);
+
+      if (dom && !domainsSeen[dom]) {
+        domainsSeen[dom] = true;
+        domains.push(dom);
       }
-      setTimeout(tick, 500);
+      if (dom && SHORTENERS.has(dom)) shorteners.push({ url: url, defanged: df });
+      if (dom && isSuspiciousDomain(dom)) suspicious.push({ url: url, defanged: df, domain: dom });
+    }
+
+    return { raw, defanged, count: urls.length, domains, shorteners, suspicious };
+  }
+
+  /* ================================================================
+     IOC EXTRACTION
+  ================================================================ */
+  var IP_RE = /\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/g;
+
+  function isPrivateIp(a,b,c,d) {
+    a=+a; b=+b; c=+c;
+    if (a===10) return true;
+    if (a===172 && b>=16 && b<=31) return true;
+    if (a===192 && b===168) return true;
+    if (a===127) return true;
+    if (a===0) return true;
+    return false;
+  }
+
+  var HASH_RE_256 = /\b[0-9a-fA-F]{64}\b/g;
+  var HASH_RE_1   = /\b[0-9a-fA-F]{40}\b/g;
+  var HASH_RE_MD5 = /\b[0-9a-fA-F]{32}\b/g;
+
+  function extractIocs(parts, urls, headersObj) {
+    var allText = parts.map(function(p){ return p.content; }).join('\n');
+    var received = getAllHeaders(headersObj, 'received').join('\n');
+    var searchText = allText + '\n' + received;
+
+    // Domains
+    var domainSeen = {};
+    var domains = [];
+    for (var i = 0; i < urls.length; i++) {
+      var dom = urlDomain(urls[i]);
+      if (dom && !domainSeen[dom]) { domainSeen[dom] = true; domains.push(dom); }
+    }
+    // Also from_domain and reply_to_domain handled in report
+
+    // IPs
+    var ipSeen = {};
+    var ips = [];
+    var m;
+    IP_RE.lastIndex = 0;
+    while ((m = IP_RE.exec(searchText)) !== null) {
+      if (!isPrivateIp(m[1],m[2],m[3],m[4])) {
+        var ip = m[1]+'.'+m[2]+'.'+m[3]+'.'+m[4];
+        if (!ipSeen[ip]) { ipSeen[ip]=true; ips.push(ip); }
+      }
+    }
+
+    // Hashes
+    var hashSeen = {};
+    var hashes = [];
+    function addHashes(re, type, text) {
+      re.lastIndex = 0;
+      var hm;
+      while ((hm = re.exec(text)) !== null) {
+        var h = hm[0].toLowerCase();
+        if (!hashSeen[h]) { hashSeen[h]=true; hashes.push({type:type,value:h}); }
+      }
+    }
+    addHashes(HASH_RE_256, 'SHA256', searchText);
+    addHashes(HASH_RE_1,   'SHA1',   searchText);
+    addHashes(HASH_RE_MD5, 'MD5',    searchText);
+
+    return { domains, ips, hashes };
+  }
+
+  /* ================================================================
+     DETECTION RULES
+  ================================================================ */
+  var URGENCY_KW = [
+    'urgent','verify','suspended','unusual activity','confirm your',
+    'immediate','action required','account locked','unauthorized',
+    'limited time','expires','click here','update your'
+  ];
+
+  function rule_spf(ha) {
+    var s = ha.spf.toLowerCase();
+    if (s === 'fail')     return { score: 20, reason: 'SPF validation failed (FAIL) \u2014 sender not authorised' };
+    if (s === 'softfail') return { score: 10, reason: 'SPF validation soft-failed (SOFTFAIL)' };
+    if (!s || s === 'none') return { score: 10, reason: 'No SPF record found (NONE)' };
+    return { score: 0, reason: null };
+  }
+
+  function rule_dkim(ha) {
+    var d = ha.dkim.toLowerCase();
+    if (!d || d === 'none' || d === 'fail' || d === 'neutral')
+      return { score: 10, reason: 'DKIM signature absent or invalid (' + (ha.dkim.toUpperCase() || 'NONE') + ')' };
+    return { score: 0, reason: null };
+  }
+
+  function rule_reply_to_mismatch(ha) {
+    if (ha.reply_to_mismatch)
+      return { score: 25, reason: 'Reply-To domain (' + ha.reply_to_domain + ') differs from sender domain (' + ha.from_domain + ')' };
+    return { score: 0, reason: null };
+  }
+
+  function rule_suspicious_sender(ha) {
+    if (isSuspiciousDomain(ha.from_domain))
+      return { score: 25, reason: 'Sender domain matches suspicious pattern: ' + ha.from_domain };
+    return { score: 0, reason: null };
+  }
+
+  function rule_suspicious_urls(ua) {
+    if (ua.suspicious.length > 0)
+      return { score: 25, reason: 'Suspicious URL pattern detected: ' + ua.suspicious[0].defanged };
+    return { score: 0, reason: null };
+  }
+
+  function rule_url_shorteners(ua) {
+    if (ua.shorteners.length > 0)
+      return { score: 15, reason: 'URL shortener detected (destination hidden): ' + ua.shorteners[0].defanged };
+    return { score: 0, reason: null };
+  }
+
+  function rule_many_urls(ua) {
+    if (ua.count > 3)
+      return { score: 10, reason: 'High number of URLs (' + ua.count + ') found in email body' };
+    return { score: 0, reason: null };
+  }
+
+  function rule_urgency_subject(ha) {
+    var subj = (ha.subject || '').toLowerCase();
+    for (var i = 0; i < URGENCY_KW.length; i++) {
+      if (subj.indexOf(URGENCY_KW[i]) !== -1)
+        return { score: 10, reason: 'Subject line contains urgency trigger word: \u201c' + URGENCY_KW[i] + '\u201d' };
+    }
+    return { score: 0, reason: null };
+  }
+
+  function rule_bare_ip_relay(ha) {
+    var received = ha.received.join('\n');
+    var m;
+    var re = /\((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\)/g;
+    while ((m = re.exec(received)) !== null) {
+      if (!isPrivateIp(m[1],m[2],m[3],m[4])) {
+        var ip = m[1]+'.'+m[2]+'.'+m[3]+'.'+m[4];
+        return { score: 10, reason: 'Email relayed through bare public IP (no reverse DNS): ' + ip };
+      }
+    }
+    return { score: 0, reason: null };
+  }
+
+  function runRules(ha, ua, iocs) {
+    var hits = [];
+    var rules = [rule_spf, rule_dkim, rule_reply_to_mismatch,
+                 rule_suspicious_sender, rule_suspicious_urls,
+                 rule_url_shorteners, rule_many_urls,
+                 rule_urgency_subject, rule_bare_ip_relay];
+    for (var i = 0; i < rules.length; i++) {
+      var r = rules[i](ha, ua, iocs);
+      if (r.score > 0 && r.reason) hits.push(r);
+    }
+    return hits;
+  }
+
+  function calculateScore(hits) {
+    var total = 0;
+    for (var i = 0; i < hits.length; i++) total += hits[i].score;
+    total = Math.min(total, 100);
+    var verdict, color;
+    if (total >= 61) { verdict = 'HIGH RISK PHISHING'; color = 'red'; }
+    else if (total >= 31) { verdict = 'SUSPICIOUS'; color = 'yellow'; }
+    else { verdict = 'LOW RISK'; color = 'green'; }
+    return { total, verdict, color };
+  }
+
+  /* ================================================================
+     TERMINAL RENDERER
+  ================================================================ */
+  function makeTermLine(cls, html) {
+    var p = document.createElement('p');
+    p.className = 't-line' + (cls ? ' ' + cls : '');
+    p.innerHTML = html;
+    return p;
+  }
+  function makeBlank() {
+    var p = document.createElement('p');
+    p.className = 't-blank';
+    return p;
+  }
+
+  function appendToTerminal(el, node) {
+    el.appendChild(node);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function addLines(el, nodes, msPerLine, done) {
+    var i = 0;
+    function next() {
+      if (i >= nodes.length) { if (done) done(); return; }
+      appendToTerminal(el, nodes[i++]);
+      setTimeout(next, msPerLine);
+    }
+    next();
+  }
+
+  /* ================================================================
+     REPORT BUILDER
+  ================================================================ */
+  function buildReport(filename, ha, ua, iocs, hits, scoreObj) {
+    var E = escHtml;
+    var nodes = [];
+    var B = makeBlank;
+    function hr1() { return makeTermLine('t-hr', E('  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550')); }
+    function hr2() { return makeTermLine('t-hr', E('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500')); }
+    function lbl(t) { return makeTermLine('t-label', E(t)); }
+    function kv(key, val) {
+      return makeTermLine('', '<span class="t-key">' + E(key) + '</span><span class="t-val">' + E(val) + '</span>');
+    }
+
+    nodes.push(B());
+    nodes.push(hr1());
+    nodes.push(makeTermLine('t-head', '  PHISHSCAN REPORT'));
+    nodes.push(hr1());
+    nodes.push(B());
+
+    // Metadata
+    nodes.push(lbl('  EMAIL METADATA'));
+    nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+    nodes.push(kv('  File      ', ' ' + filename));
+    nodes.push(kv('  Subject   ', ' ' + (ha.subject || '(none)')));
+    nodes.push(kv('  Date      ', ' ' + (ha.date || '(none)')));
+    nodes.push(kv('  Sender    ', ' ' + defang(ha.from_addr || '(none)')));
+
+    if (ha.reply_to) {
+      var rtLine = '<span class="t-key">  Reply-To  </span><span class="t-val"> ' +
+        E(defang(ha.reply_to)) + '</span>';
+      if (ha.reply_to_mismatch) {
+        rtLine += '  <span class="t-red">[MISMATCH]</span>';
+      }
+      nodes.push(makeTermLine('', rtLine));
+    }
+    nodes.push(B());
+
+    // Authentication
+    nodes.push(lbl('  AUTHENTICATION'));
+    nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+    var spfStr = ha.spf ? ha.spf.toUpperCase() : 'NONE';
+    var spfCls = spfStr === 'PASS' ? 't-green' : (spfStr === 'NONE' ? 't-yellow' : 't-red');
+    nodes.push(makeTermLine('', '<span class="t-key">  SPF       </span><span class="' + spfCls + '"> ' + E(spfStr) + '</span>'));
+    var dkimStr = ha.dkim ? ha.dkim.toUpperCase() : 'NONE';
+    var dkimCls = dkimStr === 'PASS' ? 't-green' : (dkimStr === 'NONE' ? 't-yellow' : 't-red');
+    nodes.push(makeTermLine('', '<span class="t-key">  DKIM      </span><span class="' + dkimCls + '"> ' + E(dkimStr) + '</span>'));
+    nodes.push(B());
+
+    // URLs
+    nodes.push(lbl('  URLs FOUND (' + ua.count + ')'));
+    nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+    if (ua.count === 0) {
+      nodes.push(makeTermLine('t-val', '    None found'));
+    } else {
+      var shortSet = new Set(ua.shorteners.map(function(x){ return x.url; }));
+      var suspSet  = new Set(ua.suspicious.map(function(x){ return x.url; }));
+      for (var i = 0; i < ua.raw.length; i++) {
+        var url = ua.raw[i];
+        var df  = ua.defanged[i];
+        var line = '<span class="t-url">    ' + E(df) + '</span>';
+        if (suspSet.has(url)) line += '  <span class="t-red">[SUSPICIOUS]</span>';
+        if (shortSet.has(url)) line += '  <span class="t-yellow">[SHORTENER]</span>';
+        nodes.push(makeTermLine('', line));
+      }
+    }
+    nodes.push(B());
+
+    // IOCs
+    nodes.push(lbl('  EXTRACTED IOCs'));
+    nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+
+    var allDomains = iocs.domains.slice();
+    if (ha.from_domain && allDomains.indexOf(ha.from_domain) === -1) allDomains.push(ha.from_domain);
+    if (ha.reply_to_domain && allDomains.indexOf(ha.reply_to_domain) === -1) allDomains.push(ha.reply_to_domain);
+
+    var hasIocs = allDomains.length || iocs.ips.length || iocs.hashes.length;
+    if (!hasIocs) {
+      nodes.push(makeTermLine('t-val', '    None extracted'));
+    } else {
+      if (allDomains.length) {
+        nodes.push(makeTermLine('t-label', '    Domains:'));
+        for (var d = 0; d < allDomains.length; d++)
+          nodes.push(makeTermLine('t-ioc', '      ' + E(defangDomain(allDomains[d]))));
+      }
+      if (iocs.ips.length) {
+        nodes.push(makeTermLine('t-label', '    IP Addresses:'));
+        for (var ip = 0; ip < iocs.ips.length; ip++)
+          nodes.push(makeTermLine('t-ioc', '      ' + E(iocs.ips[ip])));
+      }
+      if (iocs.hashes.length) {
+        nodes.push(makeTermLine('t-label', '    File Hashes:'));
+        for (var h = 0; h < iocs.hashes.length; h++)
+          nodes.push(makeTermLine('t-ioc', '      [' + E(iocs.hashes[h].type) + ']  ' + E(iocs.hashes[h].value)));
+      }
+    }
+    nodes.push(B());
+
+    // Score
+    var scoreCls = scoreObj.color === 'red' ? 't-red' : scoreObj.color === 'yellow' ? 't-yellow' : 't-green';
+    var filled = Math.round(scoreObj.total / 5);
+    var bar = '\u2588'.repeat(filled) + '\u2591'.repeat(20 - filled);
+    nodes.push(hr2());
+    nodes.push(makeTermLine('', '<span class="t-key">  Score   : </span><span class="' + scoreCls + '">' + E(scoreObj.total) + '/100</span>  <span class="' + scoreCls + '">[' + E(bar) + ']</span>'));
+    nodes.push(makeTermLine('', '<span class="t-key">  Verdict : </span><span class="' + scoreCls + '">' + E(scoreObj.verdict) + '</span>'));
+    nodes.push(hr2());
+    nodes.push(B());
+
+    // Reasons
+    if (hits.length) {
+      nodes.push(lbl('  DETECTION REASONS'));
+      nodes.push(lbl('  \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+      for (var r = 0; r < hits.length; r++)
+        nodes.push(makeTermLine('t-reason', E(hits[r].reason)));
+      nodes.push(B());
+    }
+
+    return nodes;
+  }
+
+  /* ================================================================
+     MAIN ORCHESTRATOR
+  ================================================================ */
+  var currentFilename = '';
+  var currentText     = '';
+
+  var stateUpload    = document.getElementById('state-upload');
+  var stateAnalyzing = document.getElementById('state-analyzing');
+  var stateReport    = document.getElementById('state-report');
+  var termAnalyzing  = document.getElementById('terminal-analyzing');
+  var termReport     = document.getElementById('terminal-report');
+  var analyzingTitle = document.getElementById('analyzing-title');
+  var reportTitle    = document.getElementById('report-title');
+  var btnAnalyze     = document.getElementById('btn-analyze');
+  var btnAnother     = document.getElementById('btn-another');
+  var fileInput      = document.getElementById('file-input');
+  var dropZone       = document.getElementById('drop-zone');
+  var pasteToggle    = document.getElementById('paste-toggle');
+  var pasteSection   = document.getElementById('paste-section');
+  var pasteInput     = document.getElementById('paste-input');
+
+  function showState(name) {
+    stateUpload.style.display    = name === 'upload'    ? '' : 'none';
+    stateAnalyzing.style.display = name === 'analyzing' ? '' : 'none';
+    stateReport.style.display    = name === 'report'    ? '' : 'none';
+  }
+  showState('upload');
+
+  // ── Drag-and-drop & file input ───────────────────────────────
+  dropZone.addEventListener('click', function(e) {
+    if (e.target === pasteToggle || pasteSection.contains(e.target)) return;
+    fileInput.click();
+  });
+  dropZone.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+
+  dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', function() {
+    dropZone.classList.remove('drag-over');
+  });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    var files = e.dataTransfer.files;
+    if (files.length) handleFile(files[0]);
+  });
+
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  pasteInput.addEventListener('input', updateAnalyzeBtn);
+  pasteInput.addEventListener('paste', function() { setTimeout(updateAnalyzeBtn, 10); });
+
+  pasteToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var open = pasteSection.classList.toggle('visible');
+    pasteToggle.classList.toggle('open', open);
+    updateAnalyzeBtn();
+  });
+
+  function updateAnalyzeBtn() {
+    var hasPaste = pasteInput.value.trim().length > 0;
+    var hasFile  = currentFilename !== '';
+    btnAnalyze.disabled = !hasPaste && !hasFile;
+  }
+
+  function handleFile(file) {
+    currentFilename = file.name;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      currentText = e.target.result;
+      updateAnalyzeBtn();
+    };
+    reader.onerror = function() {
+      currentFilename = '';
+      currentText = '';
+      updateAnalyzeBtn();
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  btnAnalyze.addEventListener('click', function() {
+    var rawText, filename;
+    if (pasteSection.classList.contains('visible') && pasteInput.value.trim()) {
+      rawText = pasteInput.value;
+      filename = '(pasted input)';
+    } else {
+      rawText = currentText;
+      filename = currentFilename;
+    }
+    if (!rawText) return;
+    runAnalysis(rawText, filename);
+  });
+
+  btnAnother.addEventListener('click', function() {
+    currentFilename = '';
+    currentText = '';
+    fileInput.value = '';
+    pasteInput.value = '';
+    pasteSection.classList.remove('visible');
+    pasteToggle.classList.remove('open');
+    btnAnalyze.disabled = true;
+    termAnalyzing.innerHTML = '';
+    termReport.innerHTML = '';
+    showState('upload');
+  });
+
+  /* ── Analysis runner ──────────────────────────────────────────*/
+  function addStep(el, text) {
+    return new Promise(function(resolve) {
+      var p = makeTermLine('t-step', escHtml(text));
+      appendToTerminal(el, p);
+      setTimeout(resolve, 300);
     });
   }
 
-  // ── Run the sequence ─────────────────────────────────────────
-  function runSequence() {
-    body.innerHTML = '';
+  function runAnalysis(rawText, filename) {
+    termAnalyzing.innerHTML = '';
+    termReport.innerHTML = '';
+    analyzingTitle.textContent = 'phishscan \u2014 ' + filename;
+    showState('analyzing');
 
-    var items = SEQUENCE.slice();
-    var firstItem = items.shift(); // the 'cmd' line
+    var isMsgFile = /\.msg$/i.test(filename);
 
-    // Type the command char-by-char, then play the rest
-    typeCommand(firstItem.text, 38).then(function () {
-      var i = 0;
+    // initial prompt line
+    var promptLine = makeTermLine('', '<span class="t-prompt">anfas@sec:~$</span> phishscan ' + escHtml(filename));
+    appendToTerminal(termAnalyzing, promptLine);
+    appendToTerminal(termAnalyzing, makeBlank());
 
-      function next() {
-        if (i >= items.length) return;
-        var item = items[i++];
+    if (isMsgFile) {
+      var warn = makeTermLine('t-warn', '\u26a0 MSG format is Microsoft Outlook binary \u2014 limited parsing. For best results, export as .eml from Outlook.');
+      appendToTerminal(termAnalyzing, warn);
+      appendToTerminal(termAnalyzing, makeBlank());
+    }
 
-        if (item.type === 'blank') {
-          addBlank();
-          next();
-          return;
-        }
+    var steps = [
+      'Reading file...',
+      'Parsing email headers...',
+      'Extracting URLs...',
+      'Extracting IOCs...',
+      'Running detection rules...',
+      'Calculating risk score...'
+    ];
 
-        var delay = item.delay || (item.type === 'step' ? 0 : 18);
-        setTimeout(function () {
-          renderItem(item);
-          next();
-        }, delay);
+    var stepNodes = steps.map(function(s) { return makeTermLine('t-step', escHtml(s)); });
+    var si = 0;
+    function nextStep() {
+      if (si >= stepNodes.length) {
+        doAnalysis();
+        return;
       }
+      appendToTerminal(termAnalyzing, stepNodes[si++]);
+      setTimeout(nextStep, 300);
+    }
+    setTimeout(nextStep, 200);
 
-      // Small pause after command, then start output
-      setTimeout(next, 250);
-    });
+    function doAnalysis() {
+      setTimeout(function() {
+        try {
+          var parsed  = parseEml(rawText);
+          var ha      = analyzeHeaders(parsed.headers);
+          var urls    = extractUrls(parsed.parts);
+          var ua      = analyzeUrls(urls);
+          var iocs    = extractIocs(parsed.parts, urls, parsed.headers);
+          var hits    = runRules(ha, ua, iocs);
+          var scoreObj = calculateScore(hits);
+
+          var reportNodes = buildReport(filename, ha, ua, iocs, hits, scoreObj);
+          var cursorLine = makeTermLine('', '<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>');
+          reportNodes.push(cursorLine);
+
+          // Copy analyzing steps to report terminal
+          var cloneDiv = termAnalyzing.cloneNode(true);
+          while (cloneDiv.firstChild) {
+            termReport.appendChild(cloneDiv.firstChild);
+          }
+
+          reportTitle.textContent = 'phishscan \u2014 ' + filename + ' [' + scoreObj.verdict + ']';
+          showState('report');
+
+          addLines(termReport, reportNodes, 15);
+        } catch(err) {
+          var errLine = makeTermLine('t-error', escHtml('[!] Error parsing email: ' + err.message));
+          appendToTerminal(termAnalyzing, errLine);
+          appendToTerminal(termAnalyzing, makeTermLine('', '<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
+          showState('analyzing'); // stay on analyzing state to show error
+        }
+      }, 400);
+    }
   }
 
-  replayBtn.addEventListener('click', runSequence);
-
-  // Auto-run on load
-  runSequence();
   </script>
-
 </body>
 </html>
