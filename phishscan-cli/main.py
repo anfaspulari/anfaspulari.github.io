@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-PhishScan v2 — Multi-Layer Phishing Detection Engine
+PhishScan v2 - Multi-Layer Phishing Detection Engine
 =====================================================
 CLI tool for SOC analysts to triage suspicious emails.
 
 Analyzes email headers, URLs, content behaviour, and HTML structure
-through four independent intelligence layers, then aggregates findings
+through six independent intelligence layers, then aggregates findings
 into a weighted risk score with a human-readable verdict.
 
 Usage:
@@ -13,6 +14,7 @@ Usage:
     python main.py <email.eml> --verbose
     python main.py <email.eml> --json
     python main.py <email.eml> --no-color
+    python main.py --test-apis
 """
 
 import sys
