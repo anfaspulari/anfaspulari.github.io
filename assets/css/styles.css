@@ -447,51 +447,160 @@ nav .container {
   background: rgba(0, 212, 255, 0.06);
 }
 
-/* ── Mindset / Principles ── */
-#mindset { background: var(--bg2); }
-
-.principles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--border);
-}
-
-.principle {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  padding: 22px 24px;
+/* ── Mindset ── */
+#mindset {
   background: var(--bg);
-  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
-.principle:hover { background: var(--bg2); }
+/* Dot-grid overlay */
+#mindset::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(0,212,255,0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
 
-.principle-num {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--cyan);
-  opacity: 0.7;
+#mindset .container { position: relative; z-index: 1; }
+
+.mindset-heading {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+/* ── Cards grid ── */
+.mindset-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 44px;
+}
+
+.mindset-card {
+  position: relative;
+  background: rgba(20, 20, 22, 0.9);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 26px 22px 28px;
+  overflow: hidden;
+  transition: transform 0.32s ease, border-color 0.32s ease, box-shadow 0.32s ease;
+  cursor: default;
+  backdrop-filter: blur(4px);
+}
+
+/* Animated top accent line */
+.mindset-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+
+.mindset-card--blue::after {
+  background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
+}
+.mindset-card--red::after {
+  background: linear-gradient(90deg, transparent 0%, #f87171 50%, transparent 100%);
+}
+
+/* Bottom glow orb */
+.mc-glow {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 90px;
+  border-radius: 50%;
+  filter: blur(35px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.mindset-card--blue .mc-glow { background: #00d4ff; }
+.mindset-card--red  .mc-glow { background: #f87171; }
+
+/* Hover states */
+.mindset-card:hover { transform: translateY(-5px); }
+
+.mindset-card--blue:hover {
+  border-color: rgba(0, 212, 255, 0.28);
+  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1), 0 0 0 1px rgba(0, 212, 255, 0.15);
+}
+.mindset-card--red:hover {
+  border-color: rgba(248, 113, 113, 0.28);
+  box-shadow: 0 12px 40px rgba(248, 113, 113, 0.1), 0 0 0 1px rgba(248, 113, 113, 0.15);
+}
+
+.mindset-card:hover::after  { opacity: 1; }
+.mindset-card:hover .mc-glow { opacity: 0.55; }
+
+/* Icon container */
+.mc-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
   flex-shrink: 0;
-  margin-top: 2px;
-  letter-spacing: 0.04em;
+  transition: background 0.3s;
 }
+.mindset-card--blue .mc-icon { background: rgba(0, 212, 255, 0.08); color: #00d4ff; }
+.mindset-card--red  .mc-icon { background: rgba(248, 113, 113, 0.08); color: #f87171; }
+.mindset-card--blue:hover .mc-icon { background: rgba(0, 212, 255, 0.14); }
+.mindset-card--red:hover  .mc-icon { background: rgba(248, 113, 113, 0.14); }
+.mc-icon svg { width: 20px; height: 20px; }
 
-.principle-title {
+/* Concept label */
+.mc-concept {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0.65;
+}
+.mindset-card--blue .mc-concept { color: #00d4ff; }
+.mindset-card--red  .mc-concept { color: #f87171; }
+
+/* Title */
+.mc-title {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  line-height: 1.3;
 }
 
-.principle-desc {
-  font-size: 0.85rem;
+/* Philosophy one-liner */
+.mc-line {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.45;
+  font-style: italic;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* Description */
+.mc-desc {
+  font-size: 0.82rem;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 /* ── Projects ── */
@@ -833,11 +942,13 @@ footer .container {
   .hero-name { font-size: 2.2rem; }
   .hero-subtitle { font-size: 1.05rem; }
   .skills-grid { grid-template-columns: 1fr; }
-  .principles-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+  .mindset-cards { grid-template-columns: repeat(2, 1fr); }
+  .mindset-heading { font-size: 1.6rem; }
 }
 
 @media (max-width: 600px) {
   .stats-row { flex-direction: column; }
   .terminal { max-width: 100%; }
+  .mindset-cards { grid-template-columns: 1fr; }
 }

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-PhishScan - CLI entry point.
+PhishScan — CLI entry point.
 
-Delegates to the v2 intelligence engine (main.py).
+This file delegates to the v2 intelligence engine (main.py).
 All detection logic, API calls, and reporting live in main.py.
 
 Usage:
