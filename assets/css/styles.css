@@ -31,8 +31,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+    linear-gradient(rgba(0,212,255,0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.01) 1px, transparent 1px);
   background-size: 48px 48px;
   pointer-events: none;
   z-index: 0;
@@ -729,48 +729,6 @@ nav .container {
 .training-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
 .training-desc { font-size: 0.85rem; color: var(--muted); }
 
-/* ── Threat Alert Stream ── */
-#threat-sim { background: var(--bg); }
-
-.alert-stream {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 20px;
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  max-width: 680px;
-}
-
-.alert-entry {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  gap: 10px;
-  align-items: baseline;
-  line-height: 1.5;
-}
-
-.alert-time { color: var(--muted); white-space: nowrap; }
-
-.alert-info  .alert-level { color: var(--green); }
-.alert-warn  .alert-level { color: var(--amber); }
-.alert-threat .alert-level { color: var(--red); }
-
-.alert-info   .alert-msg { color: var(--muted); }
-.alert-warn   .alert-msg { color: var(--text); }
-.alert-threat .alert-msg { color: var(--red); }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-.alert-new { animation: slideIn 0.3s ease forwards; }
-
 /* ── Contact ── */
 .contact-grid {
   display: grid;
@@ -915,6 +873,12 @@ footer .container {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  body::before { display: none; } /* hide gridlines on tablet/mobile */
+
+  section { padding: 56px 0; }
+
+  .container { padding: 0 16px; }
+
   .hamburger { display: flex; }
 
   .nav-links {
@@ -939,16 +903,41 @@ footer .container {
     border-bottom: 1px solid var(--border);
   }
 
-  .hero-name { font-size: 2.2rem; }
-  .hero-subtitle { font-size: 1.05rem; }
-  .skills-grid { grid-template-columns: 1fr; }
-  .contact-grid { grid-template-columns: 1fr; }
+  #hero { padding-top: 110px; padding-bottom: 60px; }
+
+  .hero-name     { font-size: 2.2rem; }
+  .hero-subtitle { font-size: 1rem; }
+  .hero-desc     { font-size: 0.95rem; }
+
+  .section-title { font-size: 1.4rem; }
+
+  .skills-grid   { grid-template-columns: 1fr; }
+  .contact-grid  { grid-template-columns: 1fr; }
   .mindset-cards { grid-template-columns: repeat(2, 1fr); }
-  .mindset-heading { font-size: 1.6rem; }
+  .mindset-heading { font-size: 1.5rem; }
+
+  .exp-header { flex-direction: column; gap: 6px; }
 }
 
 @media (max-width: 600px) {
+  section { padding: 48px 0; }
+
+  .hero-name { font-size: 1.9rem; }
+
   .stats-row { flex-direction: column; }
-  .terminal { max-width: 100%; }
-  .mindset-cards { grid-template-columns: 1fr; }
+
+  .terminal {
+    max-width: 100%;
+    padding: 14px 14px;
+    font-size: 0.78rem;
+  }
+
+  #terminal-input { font-size: 0.78rem; }
+
+  .btn-row { flex-direction: column; gap: 10px; }
+  .btn     { text-align: center; }
+
+  .mindset-cards   { grid-template-columns: 1fr; }
+  .training-grid   { grid-template-columns: 1fr; }
+  .mindset-heading { font-size: 1.35rem; }
 }
