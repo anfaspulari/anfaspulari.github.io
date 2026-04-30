@@ -418,7 +418,29 @@ nav .container {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  cursor: default;
 }
+
+.skill-group::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.skill-group:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 212, 255, 0.25);
+  box-shadow: 0 10px 32px rgba(0, 212, 255, 0.08), 0 0 0 1px rgba(0, 212, 255, 0.12);
+}
+
+.skill-group:hover::after { opacity: 1; }
 
 .skill-group-title {
   font-size: 0.8rem;
@@ -427,7 +449,10 @@ nav .container {
   letter-spacing: 0.1em;
   margin-bottom: 14px;
   color: var(--text);
+  transition: color 0.28s ease;
 }
+
+.skill-group:hover .skill-group-title { color: var(--cyan); }
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -617,14 +642,29 @@ nav .container {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  cursor: default;
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.28s ease;
 }
 
 .project-card:hover {
-  border-color: rgba(0, 212, 255, 0.35);
-  box-shadow: 0 4px 24px rgba(0, 212, 255, 0.07);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  border-color: rgba(0, 212, 255, 0.28);
+  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1), 0 0 0 1px rgba(0, 212, 255, 0.15);
 }
+
+.project-card:hover::after { opacity: 1; }
 
 .project-emoji { font-size: 1.6rem; margin-bottom: 12px; }
 
@@ -716,7 +756,29 @@ nav .container {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  cursor: default;
 }
+
+.training-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.training-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 212, 255, 0.25);
+  box-shadow: 0 10px 32px rgba(0, 212, 255, 0.08), 0 0 0 1px rgba(0, 212, 255, 0.12);
+}
+
+.training-card:hover::after { opacity: 1; }
 
 .training-num {
   font-family: var(--mono);
@@ -724,7 +786,10 @@ nav .container {
   font-weight: 700;
   color: rgba(0, 212, 255, 0.15);
   margin-bottom: 10px;
+  transition: color 0.28s ease;
 }
+
+.training-card:hover .training-num { color: rgba(0, 212, 255, 0.45); }
 
 .training-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
 .training-desc { font-size: 0.85rem; color: var(--muted); }
