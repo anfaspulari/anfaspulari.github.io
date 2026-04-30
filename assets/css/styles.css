@@ -420,10 +420,28 @@ nav .container {
   padding: 22px;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   cursor: default;
 }
 
+/* Diagonal shimmer sweep — passes through card on hover */
+.skill-group::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(0, 212, 255, 0.055) 50%,
+    transparent 75%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+/* Top accent line */
 .skill-group::after {
   content: '';
   position: absolute;
@@ -431,16 +449,17 @@ nav .container {
   height: 2px;
   background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.28s ease;
+  transition: opacity 0.3s ease;
 }
 
 .skill-group:hover {
   transform: translateY(-4px);
-  border-color: rgba(0, 212, 255, 0.25);
-  box-shadow: 0 10px 32px rgba(0, 212, 255, 0.08), 0 0 0 1px rgba(0, 212, 255, 0.12);
+  border-color: rgba(0, 212, 255, 0.28);
+  box-shadow: 0 10px 36px rgba(0, 212, 255, 0.09), 0 0 0 1px rgba(0, 212, 255, 0.14);
 }
 
-.skill-group:hover::after { opacity: 1; }
+.skill-group:hover::before { transform: translateX(100%); }
+.skill-group:hover::after  { opacity: 1; }
 
 .skill-group-title {
   font-size: 0.8rem;
@@ -449,10 +468,16 @@ nav .container {
   letter-spacing: 0.1em;
   margin-bottom: 14px;
   color: var(--text);
-  transition: color 0.28s ease;
+  transition: color 0.3s ease;
 }
 
 .skill-group:hover .skill-group-title { color: var(--cyan); }
+
+/* Active tags brighten when parent is hovered */
+.skill-group:hover .tag.active {
+  background: rgba(0, 212, 255, 0.11);
+  border-color: rgba(0, 212, 255, 0.45);
+}
 
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -644,10 +669,27 @@ nav .container {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  transition: border-color 0.32s ease, box-shadow 0.32s ease, transform 0.32s ease;
   cursor: default;
 }
 
+/* Radial glow orb — rises from below card center on hover */
+.project-card::before {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.14) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.45s ease, bottom 0.45s ease;
+  pointer-events: none;
+}
+
+/* Top accent line */
 .project-card::after {
   content: '';
   position: absolute;
@@ -655,18 +697,26 @@ nav .container {
   height: 2px;
   background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.28s ease;
+  transition: opacity 0.32s ease;
 }
 
 .project-card:hover {
   transform: translateY(-5px);
   border-color: rgba(0, 212, 255, 0.28);
-  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1), 0 0 0 1px rgba(0, 212, 255, 0.15);
+  box-shadow: 0 16px 48px rgba(0, 212, 255, 0.12), 0 0 0 1px rgba(0, 212, 255, 0.15);
 }
 
-.project-card:hover::after { opacity: 1; }
+.project-card:hover::before { opacity: 1; bottom: -30px; }
+.project-card:hover::after  { opacity: 1; }
 
-.project-emoji { font-size: 1.6rem; margin-bottom: 12px; }
+.project-emoji {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-emoji { transform: scale(1.2); }
 
 .project-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
 
@@ -758,10 +808,24 @@ nav .container {
   padding: 22px;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   cursor: default;
 }
 
+/* Left border charge — grows from bottom to top on hover */
+.training-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  height: 0;
+  background: linear-gradient(to top, var(--cyan) 0%, rgba(0, 212, 255, 0.15) 100%);
+  transition: height 0.45s ease;
+  pointer-events: none;
+}
+
+/* Top accent line — appears simultaneously */
 .training-card::after {
   content: '';
   position: absolute;
@@ -769,7 +833,7 @@ nav .container {
   height: 2px;
   background: linear-gradient(90deg, transparent 0%, #00d4ff 50%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.28s ease;
+  transition: opacity 0.3s ease 0.15s;
 }
 
 .training-card:hover {
@@ -778,7 +842,8 @@ nav .container {
   box-shadow: 0 10px 32px rgba(0, 212, 255, 0.08), 0 0 0 1px rgba(0, 212, 255, 0.12);
 }
 
-.training-card:hover::after { opacity: 1; }
+.training-card:hover::before { height: 100%; }
+.training-card:hover::after  { opacity: 1; }
 
 .training-num {
   font-family: var(--mono);
@@ -786,10 +851,13 @@ nav .container {
   font-weight: 700;
   color: rgba(0, 212, 255, 0.15);
   margin-bottom: 10px;
-  transition: color 0.28s ease;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-.training-card:hover .training-num { color: rgba(0, 212, 255, 0.45); }
+.training-card:hover .training-num {
+  color: rgba(0, 212, 255, 0.6);
+  text-shadow: 0 0 24px rgba(0, 212, 255, 0.25);
+}
 
 .training-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
 .training-desc { font-size: 0.85rem; color: var(--muted); }
