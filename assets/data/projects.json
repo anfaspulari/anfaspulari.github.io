@@ -26,6 +26,7 @@
     "origin": "Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.",
     "description": "A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.",
     "stack": ["Python", "Bash", "Log Parsing", "Anomaly Detection"],
-    "github": "https://github.com/anfaspulari"
+    "github": "https://github.com/anfaspulari",
+    "demo": "https://anfaspulari.github.io/loglens-demo"
   }
 ]
