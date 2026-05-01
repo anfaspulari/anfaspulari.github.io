@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LogLens — SIEM Log Correlator</title>
-  <meta name="description" content="Interactive SIEM log correlator. Paste auth.log or syslog output to detect brute force, privilege escalation, and lateral movement." />
+  <meta name="description" content="Interactive SIEM log correlator. Paste syslog/auth.log output to detect brute force, phishing, BEC, lateral movement, and more." />
   <meta name="author" content="Anfas Pulari" />
   <meta property="og:title" content="LogLens — SIEM Log Correlator" />
-  <meta property="og:description" content="Client-side log correlation — detect brute force, privilege escalation, lateral movement from auth.log exports." />
+  <meta property="og:description" content="Client-side log correlation — detect brute force, phishing campaigns, BEC, privilege escalation, and lateral movement." />
   <meta property="og:type" content="website" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,76 +30,45 @@
       --cyan:     #00d4ff;
       --dim:      #4a5568;
       --text:     #c9d1d9;
-      --text2:    #8b949e;
       --mono:     'JetBrains Mono', monospace;
       --sans:     'Inter', sans-serif;
     }
 
     html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 14px;
-      min-height: 100vh;
-      line-height: 1.5;
-    }
+    body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; min-height: 100vh; line-height: 1.5; }
 
     .hdr {
-      border-bottom: 1px solid var(--border);
-      padding: 0.8rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface);
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      gap: 1rem;
+      border-bottom: 1px solid var(--border); padding: 0.8rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); position: sticky; top: 0; z-index: 20; gap: 1rem;
     }
     .hdr-brand { display: flex; align-items: center; gap: 0.6rem; }
     .hdr-logo  { font-size: 1rem; font-weight: 700; color: var(--green); letter-spacing: -0.01em; }
     .hdr-badge {
-      font-size: 0.65rem; background: rgba(74,222,128,0.08);
-      color: var(--green-dim); border: 1px solid var(--border);
-      border-radius: 3px; padding: 2px 7px; letter-spacing: 0.06em;
+      font-size: 0.65rem; background: rgba(74,222,128,0.08); color: var(--green-dim);
+      border: 1px solid var(--border); border-radius: 3px; padding: 2px 7px; letter-spacing: 0.06em;
     }
     .hdr-links { display: flex; align-items: center; gap: 1rem; }
-    .hdr-links a {
-      font-family: var(--sans); font-size: 0.8rem;
-      color: var(--dim); text-decoration: none; transition: color 0.2s;
-    }
+    .hdr-links a { font-family: var(--sans); font-size: 0.8rem; color: var(--dim); text-decoration: none; transition: color 0.2s; }
     .hdr-links a:hover { color: var(--green); }
     .btn-gh {
       background: rgba(74,222,128,0.07); color: var(--green) !important;
-      border: 1px solid var(--border); border-radius: 5px;
-      padding: 4px 12px !important; transition: background 0.2s, border-color 0.2s !important;
+      border: 1px solid var(--border); border-radius: 5px; padding: 4px 12px !important;
+      transition: background 0.2s, border-color 0.2s !important;
     }
     .btn-gh:hover { background: rgba(74,222,128,0.14) !important; border-color: var(--green-dim) !important; }
 
-    .page { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+    .page { max-width: 880px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
 
     .upload-card {
-      border: 2px dashed var(--border2);
-      border-radius: 10px;
-      background: var(--surface);
-      padding: 3rem 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.25s, background 0.25s;
-      position: relative;
+      border: 2px dashed var(--border2); border-radius: 10px; background: var(--surface);
+      padding: 3rem 2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.25s, background 0.25s; position: relative;
     }
-    .upload-card:hover, .upload-card.drag-over {
-      border-color: var(--green);
-      background: rgba(74,222,128,0.04);
-    }
+    .upload-card:hover, .upload-card.drag-over { border-color: var(--green); background: rgba(74,222,128,0.04); }
     .upload-card.drag-over { background: rgba(74,222,128,0.07); }
-    .upload-icon { margin-bottom: 1.1rem; opacity: 0.6; }
-    .upload-heading {
-      font-family: var(--sans); font-size: 1.05rem; font-weight: 600;
-      color: #e6edf3; margin-bottom: 0.35rem;
-    }
+    .upload-icon  { margin-bottom: 1.1rem; opacity: 0.6; }
+    .upload-heading { font-family: var(--sans); font-size: 1.05rem; font-weight: 600; color: #e6edf3; margin-bottom: 0.35rem; }
     .upload-sub   { font-size: 0.78rem; color: var(--dim); margin-bottom: 0.4rem; }
     .upload-types { font-size: 0.72rem; color: rgba(74,222,128,0.35); }
     #file-input   { display: none; }
@@ -107,8 +76,8 @@
     .paste-toggle {
       display: inline-flex; align-items: center; gap: 0.4rem;
       margin-top: 1.5rem; font-size: 0.8rem; color: var(--green-dim);
-      cursor: pointer; background: none; border: none;
-      font-family: var(--mono); padding: 4px 0; transition: color 0.2s;
+      cursor: pointer; background: none; border: none; font-family: var(--mono);
+      padding: 4px 0; transition: color 0.2s;
     }
     .paste-toggle:hover { color: var(--green); }
     .paste-toggle .arrow { transition: transform 0.2s; display: inline-block; }
@@ -116,41 +85,26 @@
 
     .paste-section { display: none; margin-top: 1.2rem; text-align: left; }
     .paste-section.visible { display: block; }
-
-    .paste-label {
-      font-size: 0.72rem; color: var(--dim); letter-spacing: 0.05em;
-      text-transform: uppercase; margin-bottom: 0.4rem; display: block;
-    }
+    .paste-label { font-size: 0.72rem; color: var(--dim); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.4rem; display: block; }
 
     textarea#paste-input {
-      width: 100%; min-height: 180px;
-      background: var(--bg); color: var(--text);
-      border: 1px solid var(--border2); border-radius: 6px;
-      font-family: var(--mono); font-size: 0.78rem; line-height: 1.65;
-      padding: 0.8rem 1rem; resize: vertical; outline: none;
+      width: 100%; min-height: 200px; background: var(--bg); color: var(--text);
+      border: 1px solid var(--border2); border-radius: 6px; font-family: var(--mono);
+      font-size: 0.78rem; line-height: 1.65; padding: 0.8rem 1rem; resize: vertical; outline: none;
       transition: border-color 0.2s;
     }
     textarea#paste-input:focus { border-color: var(--green); }
     textarea#paste-input::placeholder { color: var(--dim); opacity: 0.6; }
 
-    .upload-actions {
-      margin-top: 1.8rem; display: flex; flex-direction: column;
-      align-items: center; gap: 0.7rem;
-    }
+    .upload-actions { margin-top: 1.8rem; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
     .btn-analyze {
       font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
-      background: var(--green); color: #0a0e14;
-      border: none; border-radius: 6px; padding: 0.65rem 2.2rem;
-      cursor: pointer; transition: background 0.2s, opacity 0.2s;
-      letter-spacing: 0.03em;
+      background: var(--green); color: #0a0e14; border: none; border-radius: 6px;
+      padding: 0.65rem 2.2rem; cursor: pointer; transition: background 0.2s; letter-spacing: 0.03em;
     }
     .btn-analyze:disabled { background: rgba(74,222,128,0.15); color: var(--dim); cursor: not-allowed; }
     .btn-analyze:not(:disabled):hover { background: #6ee7a0; }
-
-    .privacy-note {
-      font-family: var(--sans); font-size: 0.72rem; color: var(--dim);
-      display: flex; align-items: center; gap: 0.35rem;
-    }
+    .privacy-note { font-family: var(--sans); font-size: 0.72rem; color: var(--dim); display: flex; align-items: center; gap: 0.35rem; }
     .privacy-note svg { flex-shrink: 0; }
 
     #state-analyzing { display: none; }
@@ -162,46 +116,38 @@
       padding: 0.55rem 1rem; display: flex; align-items: center; gap: 0.45rem;
     }
     .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-    .dot-r { background: #f87171; }
-    .dot-y { background: #facc15; }
-    .dot-g { background: #4ade80; }
+    .dot-r { background: #f87171; } .dot-y { background: #facc15; } .dot-g { background: #4ade80; }
     .terminal-title { font-size: 0.7rem; color: var(--dim); margin-left: 0.45rem; letter-spacing: 0.03em; }
-    .terminal-body {
-      padding: 1rem 1.1rem 1.2rem;
-      min-height: 300px; max-height: 680px;
-      overflow-y: auto; overflow-x: hidden;
-    }
-    .t-line  { display: block; line-height: 1.7; white-space: pre-wrap; word-break: break-all; font-size: 0.79rem; }
+    .terminal-body { padding: 1rem 1.1rem 1.2rem; min-height: 300px; max-height: 720px; overflow-y: auto; overflow-x: hidden; }
+
+    .t-line  { display: block; line-height: 1.75; white-space: pre-wrap; word-break: break-all; font-size: 0.79rem; }
     .t-blank { display: block; height: 4px; }
     .t-prompt { color: var(--green); }
     .t-step::before { content: '[+] '; color: var(--green); }
-    .t-hr     { color: var(--green-dim); }
-    .t-head   { color: var(--green); font-weight: 700; }
-    .t-label  { color: var(--green); }
-    .t-key    { color: var(--text); }
-    .t-val    { color: #a5d6ff; }
-    .t-red    { color: var(--red);    font-weight: 700; }
-    .t-orange { color: var(--orange); font-weight: 700; }
-    .t-yellow { color: var(--yellow); }
-    .t-green  { color: var(--green);  font-weight: 700; }
-    .t-ioc    { color: #e6edf3; }
+    .t-hr    { color: var(--green-dim); }
+    .t-head  { color: var(--green); font-weight: 700; }
+    .t-label { color: var(--green); }
+    .t-key   { color: var(--text); }
+    .t-val   { color: #a5d6ff; }
+    .t-red   { color: var(--red);    font-weight: 700; }
+    .t-orange{ color: var(--orange); font-weight: 700; }
+    .t-yellow{ color: var(--yellow); }
+    .t-green { color: var(--green);  font-weight: 700; }
+    .t-cyan  { color: var(--cyan); }
+    .t-ioc   { color: #e6edf3; }
     .t-reason::before { content: '    ! '; color: var(--yellow); }
-    .t-reason { color: var(--yellow); }
-    .t-error  { color: var(--red); }
-    .cursor {
-      display: inline-block; width: 8px; height: 13px;
-      background: var(--green); vertical-align: text-bottom;
-      animation: blink 0.9s step-end infinite;
+    .t-reason{ color: var(--yellow); }
+    .t-error { color: var(--red); }
+    .cursor  {
+      display: inline-block; width: 8px; height: 13px; background: var(--green);
+      vertical-align: text-bottom; animation: blink 0.9s step-end infinite;
     }
     @keyframes blink { 50% { opacity: 0; } }
 
     .btn-another {
-      display: block; margin: 1.5rem auto 0;
-      font-family: var(--mono); font-size: 0.82rem;
-      background: rgba(74,222,128,0.07); color: var(--green);
-      border: 1px solid var(--border2); border-radius: 6px;
-      padding: 0.55rem 1.6rem; cursor: pointer;
-      transition: background 0.2s; letter-spacing: 0.04em;
+      display: block; margin: 1.5rem auto 0; font-family: var(--mono); font-size: 0.82rem;
+      background: rgba(74,222,128,0.07); color: var(--green); border: 1px solid var(--border2);
+      border-radius: 6px; padding: 0.55rem 1.6rem; cursor: pointer; transition: background 0.2s;
     }
     .btn-another:hover { background: rgba(74,222,128,0.14); }
 
@@ -215,7 +161,7 @@
   <header class="hdr">
     <div class="hdr-brand">
       <span class="hdr-logo">LogLens</span>
-      <span class="hdr-badge">CORRELATOR</span>
+      <span class="hdr-badge">CORRELATOR v2</span>
     </div>
     <nav class="hdr-links">
       <a href="https://anfaspulari.github.io">&#8592; Portfolio</a>
@@ -248,9 +194,9 @@
             <span class="arrow">&#9658;</span>&nbsp;Or paste raw log content
           </button>
           <div class="paste-section" id="paste-section" onclick="event.stopPropagation()">
-            <label class="paste-label" for="paste-input">// paste auth.log or syslog lines</label>
+            <label class="paste-label" for="paste-input">// paste auth.log, syslog, or custom SOC log lines</label>
             <textarea id="paste-input" spellcheck="false"
-              placeholder="Apr 28 09:12:03 server01 sshd[1001]: Failed password for root from 185.220.101.47 port 44412 ssh2&#10;Apr 28 09:12:07 server01 sshd[1001]: Failed password for admin from 185.220.101.47 port 44413 ssh2&#10;Apr 28 09:12:11 server01 sshd[1001]: Failed password for user1 from 185.220.101.47 port 44414 ssh2&#10;Apr 28 09:13:02 server01 sshd[1002]: Accepted password for user1 from 10.0.0.15 port 52341 ssh2&#10;Apr 28 09:45:22 server01 sudo: user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash&#10;Apr 28 10:02:14 webserver02 sshd[2041]: Failed password for root from 203.0.113.42 port 39871 ssh2&#10;Apr 28 10:02:18 webserver02 sshd[2042]: Accepted password for root from 203.0.113.42 port 39872 ssh2&#10;Apr 28 10:15:30 server01 sshd[1103]: Accepted password for user1 from 10.0.0.5 port 54201 ssh2&#10;Apr 28 10:15:45 webserver02 sshd[2055]: Accepted password for deploy from 10.0.0.5 port 54289 ssh2&#10;Apr 28 10:15:52 dbserver03 sshd[3012]: Accepted password for postgres from 10.0.0.5 port 54301 ssh2"></textarea>
+              placeholder="Jan 13 09:28:11 mailserver sshd[1024]: Accepted password for panos.d from 185.243.115.23 port 443&#10;Jan 13 09:28:45 mailserver auth[1025]: Warning: unusual login location for panos.d expected=UK detected=Greece&#10;Jan 13 09:29:02 mailserver gmailapi[2048]: Email sent via API user=panos.d@corp.com&#10;Jan 13 09:29:05 mailserver gmailapi[2049]: Bulk email detected user=panos.d@corp.com recipients=48&#10;Jan 13 09:29:11 mailserver urlscan[3051]: Lookalike domain ptarmiganland.com resembles ptarmigan.com distance=2&#10;Jan 13 09:29:14 mailserver phishdetector[4001]: Credential harvesting page detected url=http://ptarmiganland.com/login&#10;Jan 13 09:29:22 mailserver threatintel[5002]: High abuse score for IP 102.129.145.17 score=78&#10;Jan 13 09:29:30 mailserver impersonation[6001]: Domain mismatch sender=grosvernor.com actual=grosvenor.com distance=1&#10;Jan 13 09:29:35 mailserver bec[7001]: BEC pattern detected keyword=&quot;invoice attached&quot; urgency=high&#10;Jan 13 09:29:40 mailserver correlation[8001]: Multiple phishing indicators detected campaign_likely=true"></textarea>
           </div>
         </div>
       </div>
@@ -299,16 +245,16 @@
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-
   function defangIp(ip) { return String(ip).replace(/\./g,'[.]'); }
-
+  function defangUrl(u) { return String(u).replace(/https?/i,'hxxp').replace(/\./g,'[.]'); }
   function isPrivateIp(ip) {
     var p = ip.split('.').map(Number);
-    if (p[0] === 10) return true;
-    if (p[0] === 172 && p[1] >= 16 && p[1] <= 31) return true;
-    if (p[0] === 192 && p[1] === 168) return true;
-    if (p[0] === 127) return true;
-    return false;
+    return p[0]===10 || (p[0]===172 && p[1]>=16 && p[1]<=31) || (p[0]===192 && p[1]===168) || p[0]===127;
+  }
+  function padScore(n) {
+    var s = '+' + n;
+    while (s.length < 4) s = ' ' + s;
+    return s;
   }
 
   /* ================================================================
@@ -337,11 +283,10 @@
   }
 
   function parseLog(text) {
-    var lines   = text.split(/\r?\n/);
-    var entries = [];
+    var lines = text.split(/\r?\n/), entries = [];
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i].trim();
-      if (!line) continue;
+      if (!line || line.charAt(0) === '#') continue;
       var e = parseSyslogLine(line);
       if (e) entries.push(e);
     }
@@ -349,169 +294,401 @@
   }
 
   /* ================================================================
-     DETECTION ENGINE
+     SIGNAL RULES — fires at most once per rule across all entries
+     Each rule: { id, severity, score, test(entries)->entry|null, label(entry)->string }
   ================================================================ */
-  var SSH_FAIL_RE   = /Failed (?:password|publickey) for (?:invalid user )?(\S+) from (\d+\.\d+\.\d+\.\d+)/i;
-  var SSH_ACCPT_RE  = /Accepted (?:password|publickey) for (\S+) from (\d+\.\d+\.\d+\.\d+)/i;
-  var SUDO_MSG_RE   = /^(\S+)\s+:.*USER=(\S+)\s*;.*COMMAND=(.+)/;
-  var SU_OPEN_RE    = /session opened for user (\S+) by (\w+)/i;
+  var SIGNAL_RULES = [
 
-  function correlate(parsed) {
-    var entries     = parsed.entries;
-    var failsByIp   = {};
-    var succsByIp   = {};
-    var hostsByIp   = {};
-    var anomalies   = [];
-    var accounts    = {};
-    var hosts       = {};
+    // ── Authentication signals ─────────────────────────────
+    {
+      id: 'SSH_UNUSUAL_PORT',
+      severity: 'HIGH',
+      score: 10,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          var m = es[i].message.match(/Accepted \S+ for \S+ from \S+ port (\d+)/i);
+          if (m && +m[1]!==22 && +m[1]!==2222) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/Accepted \S+ for (\S+) from (\S+) port (\d+)/i);
+        return m ? 'SSH login on unusual port '+m[3]+' (user: '+m[1]+', src: '+m[2]+')' : 'SSH login on unusual port';
+      }
+    },
 
-    function initAcct(u) {
-      if (!accounts[u]) accounts[u] = { failed: 0, success: 0, privesc: false };
+    {
+      id: 'GEO_ANOMALY',
+      severity: 'HIGH',
+      score: 15,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/unusual login location/i.test(es[i].message) ||
+              /expected=\S+\s+detected=/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/expected=(\S+)\s+detected=(\S+)/i);
+        return m ? 'Geo anomaly: login from '+m[2]+' (expected '+m[1]+')' : 'Unusual login location detected';
+      }
+    },
+
+    // ── Email campaign signals ─────────────────────────────
+    {
+      id: 'GMAIL_API',
+      severity: 'HIGH',
+      score: 20,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/email sent via (gmail )?api/i.test(es[i].message) ||
+              (es[i].process==='gmailapi' && /email sent/i.test(es[i].message))) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/user=([^\s]+)/i);
+        return 'Email sent via Gmail API'+(m ? ' (user: '+m[1]+')' : '');
+      }
+    },
+
+    {
+      id: 'BULK_EMAIL',
+      severity: 'HIGH',
+      score: 15,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/bulk email/i.test(es[i].message)) return es[i];
+          var m = es[i].message.match(/recipients=(\d+)/i);
+          if (m && +m[1] > 10) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/recipients=(\d+)/i);
+        return 'Bulk email campaign behavior'+(m ? ' ('+m[1]+' recipients)' : '');
+      }
+    },
+
+    // ── Phishing / domain signals ──────────────────────────
+    {
+      id: 'LOOKALIKE_DOMAIN',
+      severity: 'HIGH',
+      score: 25,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/lookalike domain/i.test(es[i].message) ||
+              /resembles\b.*\bdistance=/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/(?:domain\s+)?(\S+)\s+resembles\s+(\S+)/i);
+        return m ? 'Lookalike domain: '+m[1]+' (resembles '+m[2]+')' : 'Lookalike domain detected';
+      }
+    },
+
+    {
+      id: 'CREDENTIAL_HARVEST',
+      severity: 'CRITICAL',
+      score: 30,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/credential.{0,20}harvest/i.test(es[i].message) ||
+              /phish.{0,30}page detected/i.test(es[i].message) ||
+              /harvesting page/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/url=(\S+)/i);
+        return 'Credential harvesting page detected'+(m ? ': '+defangUrl(m[1]) : '');
+      }
+    },
+
+    // ── Threat intelligence signals ────────────────────────
+    {
+      id: 'ABUSE_IP',
+      severity: 'HIGH',
+      score: 20,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/high abuse score/i.test(es[i].message) ||
+              /abuse score\b/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var ipM = e.message.match(/for IP (\d+\.\d+\.\d+\.\d+)/i) || e.message.match(/(\d+\.\d+\.\d+\.\d+)/);
+        var scM = e.message.match(/score=(\d+)/i);
+        return 'Malicious IP reputation'+(ipM ? ': '+defangIp(ipM[1]) : '')+(scM ? ' (abuse score: '+scM[1]+')' : '');
+      }
+    },
+
+    // ── Impersonation / BEC signals ────────────────────────
+    {
+      id: 'DOMAIN_IMPERSONATION',
+      severity: 'CRITICAL',
+      score: 30,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/domain mismatch/i.test(es[i].message) ||
+              es[i].process==='impersonation' ||
+              /sender=\S+\s+actual=/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/sender=(\S+)\s+actual=(\S+)/i);
+        return m ? 'Domain impersonation: '+m[1]+' (actual: '+m[2]+')' : 'Domain impersonation detected';
+      }
+    },
+
+    {
+      id: 'BEC_PATTERN',
+      severity: 'CRITICAL',
+      score: 25,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (es[i].process==='bec' ||
+              /bec pattern/i.test(es[i].message) ||
+              /business email compromise/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var kw  = e.message.match(/keyword="([^"]+)"/i) || e.message.match(/keyword=(\S+)/i);
+        var urg = e.message.match(/urgency=(\w+)/i);
+        return 'BEC pattern detected'+(kw ? ' (keyword: "'+kw[1]+'")'  : '')+(urg ? ', urgency: '+urg[1] : '');
+      }
+    },
+
+    {
+      id: 'CAMPAIGN_DETECTED',
+      severity: 'CRITICAL',
+      score: 20,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/campaign_likely=true/i.test(es[i].message) ||
+              /multiple phishing indicators/i.test(es[i].message) ||
+              /coordinated.{0,20}attack/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function() { return 'Coordinated phishing campaign confirmed'; }
+    },
+
+    // ── Security response (informational, score 0) ─────────
+    {
+      id: 'QUARANTINE',
+      severity: 'INFO',
+      score: 0,
+      test: function(es) {
+        for (var i=0;i<es.length;i++) {
+          if (/quarantine[d]?/i.test(es[i].message)) return es[i];
+        }
+        return null;
+      },
+      label: function(e) {
+        var m = e.message.match(/severity=(\w+)/i);
+        return 'Security system quarantined email'+(m ? ' (severity: '+m[1]+')' : '');
+      }
     }
+  ];
+
+  /* ================================================================
+     CORRELATION RULES — fired when required signal IDs all present
+  ================================================================ */
+  var CORRELATION_RULES = [
+    {
+      id: 'PHISHING_INFRA',
+      requires: ['GMAIL_API', 'BULK_EMAIL'],
+      label: 'Gmail API + bulk email → active phishing campaign infrastructure'
+    },
+    {
+      id: 'ACTIVE_PHISH_PAGE',
+      requires: ['LOOKALIKE_DOMAIN', 'CREDENTIAL_HARVEST'],
+      label: 'Lookalike domain + credential harvesting → active phishing page confirmed'
+    },
+    {
+      id: 'BEC_ATTACK',
+      requires: ['DOMAIN_IMPERSONATION', 'BEC_PATTERN'],
+      label: 'Domain impersonation + BEC pattern → business email compromise attack'
+    },
+    {
+      id: 'ACCOUNT_TAKEOVER',
+      requires: ['GEO_ANOMALY', 'GMAIL_API'],
+      label: 'Geo anomaly + API email abuse → likely account takeover in progress'
+    },
+    {
+      id: 'FULL_CAMPAIGN',
+      requires: ['CREDENTIAL_HARVEST', 'ABUSE_IP', 'DOMAIN_IMPERSONATION'],
+      label: 'Credential page + malicious IP + impersonation → coordinated multi-vector attack'
+    }
+  ];
+
+  /* ================================================================
+     SSH-SPECIFIC DETECTION (stateful: needs cross-entry analysis)
+     Returns findings[] in same format as signal rule hits
+  ================================================================ */
+  var SSH_FAIL_RE  = /Failed (?:password|publickey) for (?:invalid user )?(\S+) from (\d+\.\d+\.\d+\.\d+)/i;
+  var SSH_ACCPT_RE = /Accepted (?:password|publickey) for (\S+) from (\d+\.\d+\.\d+\.\d+)/i;
+  var SUDO_MSG_RE  = /^(\S+)\s+:.*USER=(\S+)\s*;.*COMMAND=(.+)/;
+  var SU_OPEN_RE   = /session opened for user (\S+) by (\w+)/i;
+
+  function detectSsh(entries) {
+    var findings  = [];
+    var failsByIp = {}, succsByIp = {}, hostsByIp = {}, privSeen = {};
 
     for (var i = 0; i < entries.length; i++) {
       var e = entries[i];
-      hosts[e.host] = true;
 
       var fm = e.message.match(SSH_FAIL_RE);
       if (fm) {
-        var ip = fm[2], user = fm[1];
+        var ip=fm[2], u=fm[1];
         if (!failsByIp[ip]) failsByIp[ip] = [];
-        failsByIp[ip].push({ user: user, host: e.host, ts: e.timestamp, tsVal: e.tsVal });
-        initAcct(user); accounts[user].failed++;
+        failsByIp[ip].push({user:u, host:e.host, ts:e.timestamp, tsVal:e.tsVal});
         continue;
       }
 
       var sm = e.message.match(SSH_ACCPT_RE);
       if (sm) {
-        var ip = sm[2], user = sm[1];
+        var ip=sm[2], u=sm[1];
         if (!succsByIp[ip]) succsByIp[ip] = [];
-        succsByIp[ip].push({ user: user, host: e.host, ts: e.timestamp, tsVal: e.tsVal });
+        succsByIp[ip].push({user:u, host:e.host, ts:e.timestamp, tsVal:e.tsVal});
         if (!hostsByIp[ip]) hostsByIp[ip] = {};
         if (!hostsByIp[ip][e.host]) hostsByIp[ip][e.host] = e.tsVal;
-        initAcct(user); accounts[user].success++;
         continue;
       }
 
       if (e.process === 'sudo') {
-        var sudoM = e.message.match(SUDO_MSG_RE);
-        if (sudoM && sudoM[2].toLowerCase() === 'root') {
-          initAcct(sudoM[1]); accounts[sudoM[1]].privesc = true;
-          anomalies.push({ severity:'HIGH', type:'PRIV_ESC',
-            detail: sudoM[1] + ' escalated to root via sudo on ' + e.host + ' (' + e.timestamp + ')',
-            score: 20, ip: null });
+        var sM = e.message.match(SUDO_MSG_RE);
+        if (sM && sM[2].toLowerCase()==='root' && !privSeen['sudo'+sM[1]+e.host]) {
+          privSeen['sudo'+sM[1]+e.host] = true;
+          findings.push({id:'PRIV_ESC', severity:'HIGH', score:20,
+            label: sM[1]+' escalated to root via sudo on '+e.host+' ('+e.timestamp+')'});
         }
-        continue;
       }
 
       if (e.process === 'su') {
-        var suM = e.message.match(SU_OPEN_RE);
-        if (suM && suM[1].toLowerCase() === 'root') {
-          initAcct(suM[2]); accounts[suM[2]].privesc = true;
-          anomalies.push({ severity:'HIGH', type:'PRIV_ESC',
-            detail: suM[2] + ' opened root session via su on ' + e.host + ' (' + e.timestamp + ')',
-            score: 20, ip: null });
+        var sM = e.message.match(SU_OPEN_RE);
+        if (sM && sM[1].toLowerCase()==='root' && !privSeen['su'+sM[2]+e.host]) {
+          privSeen['su'+sM[2]+e.host] = true;
+          findings.push({id:'PRIV_ESC_SU', severity:'HIGH', score:20,
+            label: sM[2]+' opened root shell via su on '+e.host+' ('+e.timestamp+')'});
         }
-        continue;
       }
     }
 
-    // Brute force: >= 3 failed logins from same IP
+    // Brute force
     for (var ip in failsByIp) {
       var fails = failsByIp[ip];
       if (fails.length >= 3) {
-        var userSeen = {}, users = [];
-        for (var j = 0; j < fails.length; j++) {
-          if (!userSeen[fails[j].user]) { userSeen[fails[j].user]=true; users.push(fails[j].user); }
-        }
-        anomalies.push({ severity:'CRITICAL', type:'BRUTE_FORCE',
-          detail: ip + ' — ' + fails.length + ' failed SSH attempts targeting: ' + users.join(', '),
-          score: 20, ip: ip });
+        var us={}, uList=[];
+        for (var j=0;j<fails.length;j++) if (!us[fails[j].user]) { us[fails[j].user]=true; uList.push(fails[j].user); }
+        findings.push({id:'BRUTE_FORCE', severity:'CRITICAL', score:20,
+          label: ip+' — '+fails.length+' failed SSH attempts targeting: '+uList.join(', ')});
 
-        // Success after brute from same IP
         if (succsByIp[ip]) {
-          var minFail = fails[0].tsVal;
-          for (var j = 1; j < fails.length; j++) if (fails[j].tsVal < minFail) minFail = fails[j].tsVal;
-          var succAfter = succsByIp[ip].filter(function(s){ return s.tsVal > minFail; });
-          if (succAfter.length) {
-            anomalies.push({ severity:'CRITICAL', type:'SUCCESS_AFTER_BRUTE',
-              detail: ip + ' — login succeeded after brute force (' + succAfter[0].user + ' on ' + succAfter[0].host + ')',
-              score: 30, ip: ip });
-          }
+          var minF = fails[0].tsVal;
+          for (var j=1;j<fails.length;j++) if (fails[j].tsVal<minF) minF=fails[j].tsVal;
+          var sA = succsByIp[ip].filter(function(s){return s.tsVal>minF;});
+          if (sA.length) findings.push({id:'SUCCESS_AFTER_BRUTE', severity:'CRITICAL', score:30,
+            label: ip+' — login accepted after brute force ('+sA[0].user+' on '+sA[0].host+')'});
         }
       }
     }
 
-    // 1-2 fails then success (not caught by brute)
+    // 1-2 fails then success
     for (var ip in succsByIp) {
-      var fails = failsByIp[ip] || [];
-      if (fails.length > 0 && fails.length < 3) {
-        var minFail = fails[0].tsVal;
-        for (var j = 1; j < fails.length; j++) if (fails[j].tsVal < minFail) minFail = fails[j].tsVal;
-        var succAfter = succsByIp[ip].filter(function(s){ return s.tsVal > minFail; });
-        if (succAfter.length) {
-          anomalies.push({ severity:'HIGH', type:'FAIL_THEN_SUCCESS',
-            detail: ip + ' — login succeeded after ' + fails.length + ' failed attempt(s) (' + succAfter[0].user + ' on ' + succAfter[0].host + ')',
-            score: 15, ip: ip });
-        }
+      var fails = failsByIp[ip]||[];
+      if (fails.length>0 && fails.length<3) {
+        var minF = fails[0].tsVal;
+        for (var j=1;j<fails.length;j++) if (fails[j].tsVal<minF) minF=fails[j].tsVal;
+        var sA = succsByIp[ip].filter(function(s){return s.tsVal>minF;});
+        if (sA.length) findings.push({id:'FAIL_THEN_SUCCESS', severity:'HIGH', score:15,
+          label: ip+' — login accepted after '+fails.length+' failed attempt(s) ('+sA[0].user+' on '+sA[0].host+')'});
       }
     }
 
     // Root login from external IP
-    var rootIpSeen = {};
+    var rootSeen = {};
     for (var ip in succsByIp) {
-      var succs = succsByIp[ip];
-      for (var j = 0; j < succs.length; j++) {
-        if (succs[j].user === 'root' && !isPrivateIp(ip) && !rootIpSeen[ip]) {
-          rootIpSeen[ip] = true;
-          anomalies.push({ severity:'CRITICAL', type:'ROOT_LOGIN_EXTERNAL',
-            detail: 'Root login from external IP ' + ip + ' on ' + succs[j].host + ' (' + succs[j].ts + ')',
-            score: 25, ip: ip });
+      var ss = succsByIp[ip];
+      for (var j=0;j<ss.length;j++) {
+        if (ss[j].user==='root' && !isPrivateIp(ip) && !rootSeen[ip]) {
+          rootSeen[ip]=true;
+          findings.push({id:'ROOT_LOGIN_EXTERNAL', severity:'CRITICAL', score:25,
+            label: 'Root login from external IP '+ip+' on '+ss[j].host});
         }
       }
     }
 
-    // Lateral movement: same IP -> 3+ hosts within 5 minutes
+    // Lateral movement: 3+ hosts from same IP within 5 min
     for (var ip in hostsByIp) {
-      var hostMap  = hostsByIp[ip];
-      var hostList = Object.keys(hostMap);
-      if (hostList.length >= 3) {
-        var times = hostList.map(function(h){ return hostMap[h]; });
-        var minT = times[0], maxT = times[0];
-        for (var j = 1; j < times.length; j++) {
-          if (times[j] < minT) minT = times[j];
-          if (times[j] > maxT) maxT = times[j];
-        }
-        if ((maxT - minT) <= 300) {
-          anomalies.push({ severity:'HIGH', type:'LATERAL_MOVEMENT',
-            detail: ip + ' — accessed ' + hostList.length + ' hosts in ' + (maxT-minT) + 's: ' + hostList.join(', '),
-            score: 30, ip: ip });
-        }
+      var hMap=hostsByIp[ip], hList=Object.keys(hMap);
+      if (hList.length>=3) {
+        var times=hList.map(function(h){return hMap[h];}), minT=times[0], maxT=times[0];
+        for (var j=1;j<times.length;j++){if(times[j]<minT)minT=times[j];if(times[j]>maxT)maxT=times[j];}
+        if ((maxT-minT)<=300) findings.push({id:'LATERAL_MOVEMENT', severity:'HIGH', score:30,
+          label: ip+' — accessed '+hList.length+' hosts in '+(maxT-minT)+'s: '+hList.join(', ')});
       }
     }
 
-    return {
-      anomalies:   anomalies,
-      accounts:    accounts,
-      hosts:       Object.keys(hosts),
-      failsByIp:   failsByIp,
-      succsByIp:   succsByIp
-    };
+    return findings;
+  }
+
+  /* ================================================================
+     MAIN DETECTION ORCHESTRATOR
+  ================================================================ */
+  function detectAll(parsed) {
+    var entries  = parsed.entries;
+    var findings = [];
+    var firedIds = {};
+    var hosts    = {};
+    for (var i=0;i<entries.length;i++) hosts[entries[i].host]=true;
+
+    // Signal rules (single-fire per rule type)
+    for (var i=0;i<SIGNAL_RULES.length;i++) {
+      var rule  = SIGNAL_RULES[i];
+      var match = rule.test(entries);
+      if (match) {
+        findings.push({id:rule.id, severity:rule.severity, score:rule.score, label:rule.label(match)});
+        firedIds[rule.id] = true;
+      }
+    }
+
+    // SSH stateful rules
+    var sshFindings = detectSsh(entries);
+    for (var i=0;i<sshFindings.length;i++) {
+      findings.push(sshFindings[i]);
+      firedIds[sshFindings[i].id] = true;
+    }
+
+    // Correlation analysis
+    var correlations = [];
+    for (var i=0;i<CORRELATION_RULES.length;i++) {
+      var cr=CORRELATION_RULES[i], ok=true;
+      for (var j=0;j<cr.requires.length;j++) if (!firedIds[cr.requires[j]]) { ok=false; break; }
+      if (ok) correlations.push(cr);
+    }
+
+    return { findings:findings, correlations:correlations, hosts:Object.keys(hosts) };
   }
 
   /* ================================================================
      SCORING
   ================================================================ */
-  function calculateScore(anomalies) {
+  function calculateScore(findings) {
     var total = 0;
-    for (var i = 0; i < anomalies.length; i++) total += anomalies[i].score;
+    for (var i=0;i<findings.length;i++) total += findings[i].score;
     total = Math.min(total, 100);
     var verdict, color;
-    if      (total >= 71) { verdict = 'HIGH RISK — Active Attack Indicators'; color = 'red';    }
-    else if (total >= 41) { verdict = 'SUSPICIOUS — Investigate Further';     color = 'yellow'; }
-    else if (total >= 11) { verdict = 'LOW RISK — Minor Anomalies';           color = 'yellow'; }
-    else                  { verdict = 'CLEAN — No Anomalies Detected';         color = 'green';  }
-    return { total: total, verdict: verdict, color: color };
+    if      (total >= 71) { verdict='HIGH RISK — Active Attack Indicators'; color='red';    }
+    else if (total >= 41) { verdict='SUSPICIOUS — Investigate Further';     color='yellow'; }
+    else if (total >= 11) { verdict='LOW RISK — Minor Anomalies';           color='yellow'; }
+    else                  { verdict='CLEAN — No Anomalies Detected';         color='green';  }
+    return { total:total, verdict:verdict, color:color };
   }
 
   /* ================================================================
@@ -519,21 +696,15 @@
   ================================================================ */
   function mkLine(cls, html) {
     var p = document.createElement('p');
-    p.className = 't-line' + (cls ? ' ' + cls : '');
+    p.className = 't-line'+(cls ? ' '+cls : '');
     p.innerHTML = html;
     return p;
   }
-  function mkBlank() { var p = document.createElement('p'); p.className = 't-blank'; return p; }
-
-  function appendTo(el, node) { el.appendChild(node); el.scrollTop = el.scrollHeight; }
-
+  function mkBlank() { var p=document.createElement('p'); p.className='t-blank'; return p; }
+  function appendTo(el, node) { el.appendChild(node); el.scrollTop=el.scrollHeight; }
   function addLines(el, nodes, ms, done) {
-    var i = 0;
-    function next() {
-      if (i >= nodes.length) { if (done) done(); return; }
-      appendTo(el, nodes[i++]);
-      setTimeout(next, ms);
-    }
+    var i=0;
+    function next() { if(i>=nodes.length){if(done)done();return;} appendTo(el,nodes[i++]); setTimeout(next,ms); }
     next();
   }
 
@@ -543,131 +714,101 @@
   var HR1 = '  ══════════════════════════════════════════════════════';
   var HR2 = '  ──────────────────────────────────────────────────────';
 
-  function sevHtml(sev) {
-    if (sev === 'CRITICAL') return '<span class="t-red">[CRITICAL]</span> ';
-    if (sev === 'HIGH')     return '<span class="t-orange">[HIGH]    </span> ';
-    if (sev === 'MEDIUM')   return '<span class="t-yellow">[MEDIUM]  </span> ';
-    return '<span class="t-val">[INFO]    </span> ';
-  }
-
-  function kv(key, val) {
-    return mkLine('', '<span class="t-key">' + escHtml(key) + '</span><span class="t-val">' + escHtml(val) + '</span>');
+  function sevBadge(sev) {
+    if (sev==='CRITICAL') return '<span class="t-red"  >[CRIT]</span>';
+    if (sev==='HIGH')     return '<span class="t-orange">[HIGH]</span>';
+    if (sev==='MEDIUM')   return '<span class="t-yellow">[WARN]</span>';
+    return                       '<span class="t-cyan"  >[INFO]</span>';
   }
 
   function buildReport(filename, parsed, result, scoreObj) {
-    var E         = escHtml;
-    var entries   = parsed.entries;
-    var anomalies = result.anomalies;
-    var accounts  = result.accounts;
-    var hosts     = result.hosts;
-    var failsByIp = result.failsByIp;
-    var succsByIp = result.succsByIp;
-    var nodes = [];
-    var B = mkBlank;
+    var E = escHtml;
+    var findings     = result.findings;
+    var correlations = result.correlations;
+    var entries      = parsed.entries;
+    var nodes = [], B = mkBlank;
 
-    var totalFailed = 0, totalSuccess = 0, totalPrivesc = 0;
-    for (var ip in failsByIp) totalFailed  += failsByIp[ip].length;
-    for (var ip in succsByIp) totalSuccess += succsByIp[ip].length;
-    for (var u  in accounts)  if (accounts[u].privesc) totalPrivesc++;
+    var firstTs = entries.length ? entries[0].timestamp                   : 'N/A';
+    var lastTs  = entries.length ? entries[entries.length-1].timestamp    : 'N/A';
 
-    var firstTs = entries.length ? entries[0].timestamp : 'N/A';
-    var lastTs  = entries.length ? entries[entries.length-1].timestamp : 'N/A';
+    // Separate scored findings from informational
+    var scored = findings.filter(function(f){return f.score>0;});
+    var info   = findings.filter(function(f){return f.score===0;});
 
-    // Header
+    // Sort by score descending
+    scored.sort(function(a,b){return b.score-a.score;});
+
     nodes.push(B());
     nodes.push(mkLine('t-hr',   E(HR1)));
     nodes.push(mkLine('t-head', '  LOGLENS CORRELATION REPORT'));
     nodes.push(mkLine('t-hr',   E(HR1)));
     nodes.push(B());
 
-    // Log summary
+    // ── Log summary ──────────────────────────────────────────
     nodes.push(mkLine('t-label', '  LOG SUMMARY'));
     nodes.push(mkLine('t-label', '  ───────────'));
-    nodes.push(kv('  Source    ', ' ' + filename));
-    nodes.push(kv('  Entries   ', ' ' + entries.length + ' parsed'));
-    nodes.push(kv('  Timespan  ', ' ' + firstTs + ' → ' + lastTs));
-    nodes.push(kv('  Hosts     ', ' ' + (hosts.length ? hosts.join(', ') : 'none')));
+    nodes.push(mkLine('', '<span class="t-key">  Source   </span><span class="t-val"> '+E(filename)+'</span>'));
+    nodes.push(mkLine('', '<span class="t-key">  Entries  </span><span class="t-val"> '+E(String(entries.length))+' parsed</span>'));
+    nodes.push(mkLine('', '<span class="t-key">  Timespan </span><span class="t-val"> '+E(firstTs)+' → '+E(lastTs)+'</span>'));
+    nodes.push(mkLine('', '<span class="t-key">  Hosts    </span><span class="t-val"> '+E(result.hosts.join(', ') || 'N/A')+'</span>'));
     nodes.push(B());
 
-    // Auth events
-    nodes.push(mkLine('t-label', '  AUTHENTICATION EVENTS'));
-    nodes.push(mkLine('t-label', '  ──────────────────────'));
-    nodes.push(mkLine('', '<span class="t-key">  Successful logins  </span><span class="t-green"> ' + E(String(totalSuccess)) + '</span>'));
-    nodes.push(mkLine('', '<span class="t-key">  Failed attempts    </span><span class="' + (totalFailed > 0 ? 't-red' : 't-green') + '"> ' + E(String(totalFailed)) + '</span>'));
-    nodes.push(mkLine('', '<span class="t-key">  Privilege changes  </span><span class="' + (totalPrivesc > 0 ? 't-orange' : 't-green') + '"> ' + E(String(totalPrivesc)) + '</span>'));
-    nodes.push(B());
+    // ── Anomalies ────────────────────────────────────────────
+    nodes.push(mkLine('t-label', '  ANOMALIES DETECTED ('+scored.length+')'));
+    nodes.push(mkLine('t-label', '  ─────────────────────────────────────────'));
 
-    // Anomalies
-    nodes.push(mkLine('t-label', '  ANOMALIES DETECTED (' + anomalies.length + ')'));
-    nodes.push(mkLine('t-label', '  ──────────────────────────────'));
-    if (!anomalies.length) {
+    if (!scored.length) {
       nodes.push(mkLine('t-green', '    None detected'));
     } else {
-      for (var i = 0; i < anomalies.length; i++) {
-        var a = anomalies[i];
-        nodes.push(mkLine('', '  ' + sevHtml(a.severity) + E(a.detail)));
+      for (var i=0;i<scored.length;i++) {
+        var f = scored[i];
+        var scoreColor = f.severity==='CRITICAL' ? 't-red' : f.severity==='HIGH' ? 't-orange' : 't-yellow';
+        nodes.push(mkLine('',
+          '  '+sevBadge(f.severity)+
+          '  <span class="'+scoreColor+'">'+E(padScore(f.score))+'</span>'+
+          '  <span class="t-key">'+E(f.label)+'</span>'
+        ));
       }
     }
     nodes.push(B());
 
-    // Suspicious IPs
-    var suspIps = [], ipSeen2 = {};
-    for (var i = 0; i < anomalies.length; i++) {
-      if (anomalies[i].ip && !ipSeen2[anomalies[i].ip]) {
-        ipSeen2[anomalies[i].ip] = true; suspIps.push(anomalies[i].ip);
-      }
-    }
-    if (suspIps.length) {
-      nodes.push(mkLine('t-label', '  SUSPICIOUS IPs'));
-      nodes.push(mkLine('t-label', '  ──────────────'));
-      for (var i = 0; i < suspIps.length; i++) {
-        var ip     = suspIps[i];
-        var fCount = (failsByIp[ip] || []).length;
-        var sCount = (succsByIp[ip] || []).length;
-        var note   = [];
-        if (fCount) note.push(fCount + ' failed');
-        if (sCount) note.push(sCount + ' accepted');
-        if (!isPrivateIp(ip)) note.push('external');
-        nodes.push(mkLine('t-ioc', '    ' + E(defangIp(ip)) + (note.length ? '   (' + note.join(', ') + ')' : '')));
+    // ── Correlation insights ─────────────────────────────────
+    if (correlations.length) {
+      nodes.push(mkLine('t-label', '  ATTACK CORRELATIONS'));
+      nodes.push(mkLine('t-label', '  ────────────────────'));
+      for (var i=0;i<correlations.length;i++) {
+        nodes.push(mkLine('t-cyan', '  ↪  '+E(correlations[i].label)));
       }
       nodes.push(B());
     }
 
-    // Targeted accounts
-    var acctList = Object.keys(accounts).filter(function(u) {
-      return accounts[u].failed + accounts[u].success > 0;
-    });
-    if (acctList.length) {
-      nodes.push(mkLine('t-label', '  TARGETED ACCOUNTS'));
-      nodes.push(mkLine('t-label', '  ─────────────────'));
-      for (var i = 0; i < acctList.length; i++) {
-        var u = acctList[i], a = accounts[u], parts = [];
-        if (a.failed)  parts.push(a.failed  + ' failed');
-        if (a.success) parts.push(a.success + ' accepted');
-        if (a.privesc) parts.push('PRIV_ESC');
-        var cls = (a.privesc || (a.failed > 0 && a.success > 0)) ? 't-yellow' : '';
-        nodes.push(mkLine(cls, '    ' + E(u) + '   (' + parts.join(', ') + ')'));
+    // ── Informational findings ───────────────────────────────
+    if (info.length) {
+      nodes.push(mkLine('t-label', '  SECURITY RESPONSE'));
+      nodes.push(mkLine('t-label', '  ──────────────────'));
+      for (var i=0;i<info.length;i++) {
+        nodes.push(mkLine('t-cyan', '  '+sevBadge('INFO')+'  '+E(info[i].label)));
       }
       nodes.push(B());
     }
 
-    // Score
-    var sCls   = scoreObj.color === 'red' ? 't-red' : scoreObj.color === 'yellow' ? 't-yellow' : 't-green';
-    var filled = Math.round(scoreObj.total / 5);
-    var bar    = '█'.repeat(filled) + '░'.repeat(20 - filled);
+    // ── Score ─────────────────────────────────────────────────
+    var sCls   = scoreObj.color==='red' ? 't-red' : scoreObj.color==='yellow' ? 't-yellow' : 't-green';
+    var filled = Math.round(scoreObj.total/5);
+    var bar    = '█'.repeat(filled)+'░'.repeat(20-filled);
     nodes.push(mkLine('t-hr', E(HR2)));
-    nodes.push(mkLine('', '<span class="t-key">  Score   : </span><span class="' + sCls + '">' + E(String(scoreObj.total)) + '/100</span>  <span class="' + sCls + '">[' + E(bar) + ']</span>'));
-    nodes.push(mkLine('', '<span class="t-key">  Verdict : </span><span class="' + sCls + '">' + E(scoreObj.verdict) + '</span>'));
+    nodes.push(mkLine('', '<span class="t-key">  Score   : </span><span class="'+sCls+'">'+E(String(scoreObj.total))+'/100</span>  <span class="'+sCls+'">['+E(bar)+']</span>'));
+    nodes.push(mkLine('', '<span class="t-key">  Verdict : </span><span class="'+sCls+'">'+E(scoreObj.verdict)+'</span>'));
     nodes.push(mkLine('t-hr', E(HR2)));
     nodes.push(B());
 
-    // Detection reasons
-    if (anomalies.length) {
+    // ── Detection reasons ────────────────────────────────────
+    if (scored.length) {
       nodes.push(mkLine('t-label', '  DETECTION REASONS'));
       nodes.push(mkLine('t-label', '  ─────────────────'));
-      for (var i = 0; i < anomalies.length; i++) {
-        var a = anomalies[i];
-        nodes.push(mkLine('t-reason', E('[' + a.type + '] ' + a.detail + '  (+' + a.score + ')')));
+      for (var i=0;i<scored.length;i++) {
+        var f=scored[i];
+        nodes.push(mkLine('t-reason', E('['+f.id+'] '+f.label+'  (+'+f.score+')')));
       }
       nodes.push(B());
     }
@@ -678,8 +819,7 @@
   /* ================================================================
      ORCHESTRATOR
   ================================================================ */
-  var currentFilename = '';
-  var currentText     = '';
+  var currentFilename='', currentText='';
 
   var stateUpload    = document.getElementById('state-upload');
   var stateAnalyzing = document.getElementById('state-analyzing');
@@ -696,113 +836,99 @@
   var pasteSection   = document.getElementById('paste-section');
   var pasteInput     = document.getElementById('paste-input');
 
-  function showState(name) {
-    stateUpload.style.display    = name === 'upload'    ? 'block' : 'none';
-    stateAnalyzing.style.display = name === 'analyzing' ? 'block' : 'none';
-    stateReport.style.display    = name === 'report'    ? 'block' : 'none';
+  function showState(n) {
+    stateUpload.style.display    = n==='upload'    ? 'block':'none';
+    stateAnalyzing.style.display = n==='analyzing' ? 'block':'none';
+    stateReport.style.display    = n==='report'    ? 'block':'none';
   }
   showState('upload');
 
   dropZone.addEventListener('click', function(e) {
-    if (e.target === pasteToggle || pasteSection.contains(e.target)) return;
-    fileInput.click();
+    if (e.target===pasteToggle || pasteSection.contains(e.target)) return; fileInput.click();
   });
-  dropZone.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
-  });
-  dropZone.addEventListener('dragover',  function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', function()  { dropZone.classList.remove('drag-over'); });
-  dropZone.addEventListener('drop', function(e) {
-    e.preventDefault(); dropZone.classList.remove('drag-over');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-  });
-  fileInput.addEventListener('change', function() { if (fileInput.files.length) handleFile(fileInput.files[0]); });
-  pasteInput.addEventListener('input', updateBtn);
-  pasteInput.addEventListener('paste', function() { setTimeout(updateBtn, 10); });
-  pasteToggle.addEventListener('click', function(e) {
+  dropZone.addEventListener('keydown', function(e) { if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click();} });
+  dropZone.addEventListener('dragover',  function(e){e.preventDefault();dropZone.classList.add('drag-over');});
+  dropZone.addEventListener('dragleave', function(){dropZone.classList.remove('drag-over');});
+  dropZone.addEventListener('drop', function(e){e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0]);});
+  fileInput.addEventListener('change', function(){if(fileInput.files.length)handleFile(fileInput.files[0]);});
+  pasteInput.addEventListener('input',  updateBtn);
+  pasteInput.addEventListener('paste',  function(){setTimeout(updateBtn,10);});
+  pasteToggle.addEventListener('click', function(e){
     e.stopPropagation();
-    var open = pasteSection.classList.toggle('visible');
-    pasteToggle.classList.toggle('open', open);
-    updateBtn();
+    var open=pasteSection.classList.toggle('visible');
+    pasteToggle.classList.toggle('open',open); updateBtn();
   });
 
-  function updateBtn() {
-    btnAnalyze.disabled = !(pasteInput.value.trim() || currentFilename);
-  }
+  function updateBtn() { btnAnalyze.disabled=!(pasteInput.value.trim()||currentFilename); }
 
   function handleFile(file) {
-    currentFilename = file.name;
-    var reader = new FileReader();
-    reader.onload  = function(e) { currentText = e.target.result; updateBtn(); };
-    reader.onerror = function()  { currentFilename = ''; currentText = ''; updateBtn(); };
-    reader.readAsText(file, 'utf-8');
+    currentFilename=file.name;
+    var r=new FileReader();
+    r.onload=function(e){currentText=e.target.result;updateBtn();};
+    r.onerror=function(){currentFilename='';currentText='';updateBtn();};
+    r.readAsText(file,'utf-8');
   }
 
   btnAnalyze.addEventListener('click', function() {
     var rawText, filename;
     if (pasteSection.classList.contains('visible') && pasteInput.value.trim()) {
-      rawText = pasteInput.value; filename = '(pasted input)';
-    } else {
-      rawText = currentText; filename = currentFilename;
-    }
+      rawText=pasteInput.value; filename='(pasted input)';
+    } else { rawText=currentText; filename=currentFilename; }
     if (!rawText) return;
     runAnalysis(rawText, filename);
   });
 
   btnAnother.addEventListener('click', function() {
-    currentFilename = ''; currentText = '';
-    fileInput.value = ''; pasteInput.value = '';
+    currentFilename=''; currentText=''; fileInput.value=''; pasteInput.value='';
     pasteSection.classList.remove('visible'); pasteToggle.classList.remove('open');
-    btnAnalyze.disabled = true;
-    termAnalyzing.innerHTML = ''; termReport.innerHTML = '';
+    btnAnalyze.disabled=true; termAnalyzing.innerHTML=''; termReport.innerHTML='';
     showState('upload');
   });
 
   function runAnalysis(rawText, filename) {
-    termAnalyzing.innerHTML = ''; termReport.innerHTML = '';
-    analyzingTitle.textContent = 'loglens — ' + filename;
+    termAnalyzing.innerHTML=''; termReport.innerHTML='';
+    analyzingTitle.textContent='loglens — '+filename;
     showState('analyzing');
 
-    appendTo(termAnalyzing, mkLine('', '<span class="t-prompt">anfas@sec:~$</span> loglens ' + escHtml(filename)));
+    appendTo(termAnalyzing, mkLine('','<span class="t-prompt">anfas@sec:~$</span> loglens '+escHtml(filename)));
     appendTo(termAnalyzing, mkBlank());
 
     var steps = [
       'Parsing log entries...',
-      'Building authentication timeline...',
-      'Detecting brute force patterns...',
-      'Checking privilege escalations...',
-      'Identifying lateral movement...',
+      'Running signal detection rules...',
+      'Checking authentication patterns...',
+      'Correlating multi-vector signals...',
       'Scoring risk indicators...'
     ];
-    var si = 0;
+    var si=0;
     function nextStep() {
-      if (si >= steps.length) { doAnalysis(); return; }
+      if (si>=steps.length) { doAnalysis(); return; }
       appendTo(termAnalyzing, mkLine('t-step', steps[si++]));
       setTimeout(nextStep, 300);
     }
     setTimeout(nextStep, 200);
 
     function doAnalysis() {
-      setTimeout(function() {
+      setTimeout(function(){
         try {
           var parsed = parseLog(rawText);
-          if (!parsed.entries.length) throw new Error('No valid syslog entries found. Ensure the log uses standard format: Month Day HH:MM:SS host process[pid]: message');
-          var result   = correlate(parsed);
-          var scoreObj = calculateScore(result.anomalies);
+          if (!parsed.entries.length) throw new Error('No valid syslog entries found. Expected format: Month Day HH:MM:SS host process[pid]: message');
+          var result   = detectAll(parsed);
+          var scoreObj = calculateScore(result.findings);
 
           var reportNodes = buildReport(filename, parsed, result, scoreObj);
-          reportNodes.push(mkLine('', '<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
+          reportNodes.push(mkLine('','<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
 
-          var clone = termAnalyzing.cloneNode(true);
-          while (clone.firstChild) termReport.appendChild(clone.firstChild);
+          var clone=termAnalyzing.cloneNode(true);
+          while(clone.firstChild) termReport.appendChild(clone.firstChild);
 
-          reportTitle.textContent = 'loglens — ' + filename + ' [' + scoreObj.verdict + ']';
+          reportTitle.textContent='loglens — '+filename+' ['+scoreObj.verdict+']';
           showState('report');
           addLines(termReport, reportNodes, 15);
         } catch(err) {
-          var msg = err && err.message ? err.message : String(err);
-          appendTo(termAnalyzing, mkLine('t-error', escHtml('[!] Error: ' + msg)));
-          appendTo(termAnalyzing, mkLine('', '<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
+          var msg=err&&err.message?err.message:String(err);
+          appendTo(termAnalyzing, mkLine('t-error', escHtml('[!] Error: '+msg)));
+          appendTo(termAnalyzing, mkLine('','<span class="t-prompt">anfas@sec:~$</span> <span class="cursor"></span>'));
           showState('analyzing');
         }
       }, 400);
