@@ -16,11 +16,6 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://anfaspulari.github.io" />
 
-  <!-- Security headers (advisory) -->
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-
   <!-- Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -53,20 +48,10 @@
 
   <!-- ── HERO ───────────────────────────────────────────── -->
   <section id="hero">
-    <canvas id="particle-canvas" aria-hidden="true"></canvas>
     <div class="container">
-      <div class="hero-badges">
-        <span class="hero-tag">// Cybersecurity Analyst</span>
-        <span class="hero-badge">Actively Building Security Tools</span>
-      </div>
+      <span class="hero-tag">// Cybersecurity Analyst</span>
       <h1 class="hero-name">Anfas Pulari</h1>
       <p class="hero-subtitle">Tier 2 SOC Analyst. Phishing investigations, brand threat analysis &amp; digital risk operations.</p>
-      <p class="hero-desc">
-        Tier 2 analyst at a leading digital risk protection platform - focused on phishing campaigns,
-        brand impersonation, and attacker infrastructure correlation. Building security tools and
-        training the next generation of defenders.
-      </p>
-      <p class="hero-focus"><span class="focus-glow">Every alert is a signal. The pattern is the intelligence.</span></p>
 
       <!-- Interactive Terminal -->
       <div class="terminal" id="interactive-terminal">
@@ -96,8 +81,6 @@
       </div>
     </div>
   </section>
-
-  <hr class="divider" />
 
   <!-- ── ABOUT ──────────────────────────────────────────── -->
   <section id="about">
@@ -139,8 +122,6 @@
     </div>
   </section>
 
-  <hr class="divider" />
-
   <!-- ── EXPERIENCE ─────────────────────────────────────── -->
   <section id="experience">
     <div class="container">
@@ -177,8 +158,6 @@
       </div>
     </div>
   </section>
-
-  <hr class="divider" />
 
   <!-- ── SKILLS ─────────────────────────────────────────── -->
   <section id="skills">
@@ -236,90 +215,6 @@
     </div>
   </section>
 
-  <hr class="divider" />
-
-  <!-- ── MINDSET ────────────────────────────────────────── -->
-  <section id="mindset">
-    <div class="container">
-      <p class="section-label">Mindset</p>
-      <h2 class="section-title mindset-heading">Think Like Security,<br>Not Just Learn It</h2>
-      <p class="section-desc">Real-world instincts mapped to cybersecurity thinking.</p>
-
-      <div class="mindset-cards">
-
-        <!-- Card 1: Zero Trust -->
-        <div class="mindset-card mindset-card--blue">
-          <div class="mc-glow" aria-hidden="true"></div>
-          <div class="mc-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9V7a2 2 0 012-2h14a2 2 0 012 2v2"/>
-              <rect x="3" y="9" width="18" height="13" rx="2"/>
-              <path d="M12 14v3"/>
-              <circle cx="12" cy="13" r="1"/>
-            </svg>
-          </div>
-          <span class="mc-concept">Zero Trust</span>
-          <h3 class="mc-title">Verify Before You Trust</h3>
-          <p class="mc-line">"Not every knock deserves an open door."</p>
-          <p class="mc-desc">Identity, device, context - none are assumed safe by default. Trust is earned at every checkpoint, not granted at the perimeter.</p>
-        </div>
-
-        <!-- Card 2: Least Privilege -->
-        <div class="mindset-card mindset-card--red">
-          <div class="mc-glow" aria-hidden="true"></div>
-          <div class="mc-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="7.5" cy="15.5" r="4.5"/>
-              <path d="M10.86 12.14L21 2"/>
-              <path d="M18.5 5.5l2 2"/>
-              <path d="M15.5 8.5l2 2"/>
-            </svg>
-          </div>
-          <span class="mc-concept">Least Privilege</span>
-          <h3 class="mc-title">Limit Access, Limit Damage</h3>
-          <p class="mc-line">"One key shouldn't unlock everything."</p>
-          <p class="mc-desc">The more access you grant, the more you can lose. Contain the blast radius before the breach even happens.</p>
-        </div>
-
-        <!-- Card 3: Monitoring -->
-        <div class="mindset-card mindset-card--blue">
-          <div class="mc-glow" aria-hidden="true"></div>
-          <div class="mc-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-              <line x1="12" y1="2" x2="12" y2="4"/>
-              <line x1="12" y1="20" x2="12" y2="22"/>
-            </svg>
-          </div>
-          <span class="mc-concept">Monitoring</span>
-          <h3 class="mc-title">Visibility Is Protection</h3>
-          <p class="mc-line">"You can't stop what you can't see."</p>
-          <p class="mc-desc">Blind spots are a threat actor's best ally. Continuous visibility is what converts raw noise into actionable signal.</p>
-        </div>
-
-        <!-- Card 4: Defense in Depth -->
-        <div class="mindset-card mindset-card--red">
-          <div class="mc-glow" aria-hidden="true"></div>
-          <div class="mc-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M12 17s5-2.5 5-6.25V8l-5-1.875L7 8v2.75C7 14.5 12 17 12 17z" stroke-opacity="0.45"/>
-              <path d="M12 13s2.5-1.25 2.5-3.125V8.5L12 7.563 9.5 8.5v1.375C9.5 11.75 12 13 12 13z" stroke-opacity="0.2"/>
-            </svg>
-          </div>
-          <span class="mc-concept">Defense in Depth</span>
-          <h3 class="mc-title">Security Works in Layers</h3>
-          <p class="mc-line">"A single lock can fail. Layers don't."</p>
-          <p class="mc-desc">No single control stops everything. Stack your defenses - each layer buys time, and time is what gives you intelligence.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider" />
-
   <!-- ── PROJECTS ───────────────────────────────────────── -->
   <section id="projects">
     <div class="container">
@@ -373,8 +268,6 @@
     </div>
   </section>
 
-  <hr class="divider" />
-
   <!-- ── TRAINING ───────────────────────────────────────── -->
   <section id="training">
     <div class="container">
@@ -414,8 +307,6 @@
     </div>
   </section>
 
-
-  <hr class="divider" />
 
   <!-- ── CONTACT ────────────────────────────────────────── -->
   <section id="contact">
