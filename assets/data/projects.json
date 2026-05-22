@@ -1,30 +1,33 @@
 [
   {
     "id": "phishscan",
-    "emoji": "🎣",
+    "icon": "phishing",
     "name": "PhishScan — Phishing Detection CLI",
     "origin": "Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.",
     "description": "Python CLI that parses .eml files, applies 8 detection rules (SPF/DKIM/Reply-To mismatch, URL patterns, urgency triggers), extracts IOCs, and outputs a scored incident report. Supports JSON output for SIEM ingest.",
+    "metrics": ["8 detection rules", "12 IOC fields", "JSON / SIEM output"],
     "stack": ["Python", "Email Analysis", "IOC Extraction", "Rules Engine"],
     "github": "https://github.com/anfaspulari/phishscan-cli",
     "demo": "https://anfaspulari.github.io/phishscan-demo"
   },
   {
     "id": "threatboard",
-    "emoji": "📊",
+    "icon": "graph",
     "name": "ThreatBoard — IOC Dashboard",
     "origin": "Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.",
     "description": "A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Searchable IOC table, ATT&CK-mapped campaigns, severity chart.",
+    "metrics": ["20+ IOCs indexed", "6 ATT&CK TTPs", "4 campaign clusters"],
     "stack": ["JavaScript", "Threat Intel", "IOC Analysis", "ATT&CK TTPs"],
     "github": "https://github.com/anfaspulari/threatboard",
     "demo": "https://anfaspulari.github.io/threatboard"
   },
   {
     "id": "loglens",
-    "emoji": "📋",
+    "icon": "logs",
     "name": "LogLens — SIEM Log Correlator",
     "origin": "Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.",
     "description": "A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.",
+    "metrics": ["8 detection rules", "MITRE ATT&CK mapped", "JSON alert output"],
     "stack": ["Python", "Bash", "Log Parsing", "Anomaly Detection"],
     "github": "https://github.com/anfaspulari",
     "demo": "https://anfaspulari.github.io/loglens-demo"

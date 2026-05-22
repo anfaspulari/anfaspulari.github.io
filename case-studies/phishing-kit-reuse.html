@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Case study: tracing a credential-harvest phishing kit reused across three brand impersonation campaigns." />
+  <title>Phishing Kit Reuse — Case Study | Anfas Pulari</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <nav class="cs-nav">
+    <div class="container">
+      <a href="../index.html" class="nav-logo">~/anfas.sec</a>
+      <a href="../index.html#case-studies" class="cs-nav-back">← All case studies</a>
+    </div>
+  </nav>
+
+  <main id="main" class="case-study">
+    <div class="cs-layout">
+
+      <aside class="cs-toc" aria-label="On this page">
+        <p class="cs-toc-label">// On this page</p>
+        <ul>
+          <li><a href="#the-alert">The Alert</a></li>
+          <li><a href="#what-i-saw">What I Saw</a></li>
+          <li><a href="#how-i-investigated">How I Investigated</a></li>
+          <li><a href="#what-it-turned-into">What It Turned Into</a></li>
+          <li><a href="#what-id-do-differently">What I'd Do Differently</a></li>
+        </ul>
+      </aside>
+
+      <article class="cs-body">
+        <a href="../index.html#case-studies" class="cs-back">← Back to case studies</a>
+        <p class="section-label">Case Study</p>
+        <h1>Credential-Harvest Kit Reused Across Three Brands</h1>
+
+        <div class="cs-meta" aria-label="Case metadata">
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Timeframe</span>
+            <span class="cs-meta-val">[Q? 2024 — placeholder]</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Role</span>
+            <span class="cs-meta-val">Tier 2 Analyst — Lead investigator</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Attack type</span>
+            <span class="cs-meta-val is-threat">Phishing — credential harvesting</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Outcome</span>
+            <span class="cs-meta-val is-ok">3 takedowns · IOC bundle delivered</span>
+          </div>
+        </div>
+
+        <p class="cs-lead">
+          Same kit signature, same hosting fingerprint — three different brand impersonations linked back to one operator cluster. The pattern was in the kit, not the IOCs.
+        </p>
+
+        <section id="the-alert">
+          <h2>The Alert</h2>
+          <p>
+            [Placeholder] — what triggered the case. Source (DRP feed, client report, internal correlation rule). What the alert looked like on first glance, what it claimed to be, and why it landed in my queue specifically.
+          </p>
+        </section>
+
+        <section id="what-i-saw">
+          <h2>What I Saw</h2>
+          <p>
+            [Placeholder] — first-look indicators. Sender header anomalies, suspect URLs, hosting fingerprint. What stood out vs. routine noise.
+          </p>
+          <pre class="cs-code" data-copy-label="click to copy">From: "Support &lt;support@secure-update-portal[.]com&gt;"
+Reply-To: helpdesk@mailer-relay[.]net
+Return-Path: bounce+47210@mailer-relay[.]net
+Authentication-Results: spf=fail dkim=none dmarc=fail</pre>
+        </section>
+
+        <section id="how-i-investigated">
+          <h2>How I Investigated</h2>
+          <p>
+            [Placeholder] — the actual process. Domain pivot via passive DNS, TLS cert overlap, kit fingerprinting from the landing page source, prior-campaign lookups.
+          </p>
+          <ul>
+            <li>Pivot 1 — [placeholder]</li>
+            <li>Pivot 2 — [placeholder]</li>
+            <li>Pivot 3 — [placeholder]</li>
+          </ul>
+          <pre class="cs-code" data-copy-label="click to copy"># Kit fingerprint (hash of the landing-page resource bundle)
+sha256:  9f3c…b21a   credential_harvester_v3
+matched: campaigns 4821, 4977, 5102</pre>
+        </section>
+
+        <section id="what-it-turned-into">
+          <h2>What It Turned Into</h2>
+          <p>
+            [Placeholder] — escalation outcome. Takedowns requested, IOC bundle composition, client comms, links surfaced to Tier 3.
+          </p>
+        </section>
+
+        <section id="what-id-do-differently">
+          <h2>What I'd Do Differently</h2>
+          <p>
+            [Placeholder] — honest review. Things I'd automate next time, signals I should have weighed earlier, friction points in the process.
+          </p>
+        </section>
+
+        <p class="cs-disclaimer">
+          All names, indicators, and timestamps in this case study are simulated or anonymized for demonstration. No client data is reproduced here.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ── COMMAND PALETTE (Cmd/Ctrl+K) ──────────────────── -->
+  <div id="cmd-palette" class="cmd-palette" role="dialog" aria-modal="true" aria-label="Command palette" aria-hidden="true" hidden>
+    <div class="cmd-palette-backdrop" data-cmd-close></div>
+    <div class="cmd-palette-panel">
+      <div class="cmd-palette-input-line">
+        <span class="cmd-palette-prompt">›</span>
+        <input id="cmd-palette-input"
+               type="text"
+               autocomplete="off"
+               spellcheck="false"
+               placeholder="search commands… (whoami · skills · status · analyze phishing_case)"
+               aria-label="Command search"
+               aria-controls="cmd-palette-list" />
+        <kbd class="cmd-palette-hint">esc</kbd>
+      </div>
+      <ul id="cmd-palette-list" class="cmd-palette-list" role="listbox" aria-label="Available commands"></ul>
+      <div id="cmd-palette-output" class="cmd-palette-output" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

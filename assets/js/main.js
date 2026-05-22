@@ -47,13 +47,12 @@ var COMMANDS = {
   },
 
   status: function () {
-    var open = Math.floor(Math.random() * 10) + 5;
     return [
-      { text: '[ALERT QUEUE STATUS - ' + getTimestamp() + ']', type: 'info' },
-      { text: '  Open alerts    : ' + open,                    type: 'out'  },
-      { text: '  Priority HIGH  : 2',                          type: 'warn' },
-      { text: '  Assigned to me : 3',                          type: 'out'  },
-      { text: '  Avg close time : 18 min',                     type: 'out'  },
+      { text: '[ALERT QUEUE STATUS - shift snapshot]', type: 'info' },
+      { text: '  Open alerts    : 9',                  type: 'out'  },
+      { text: '  Priority HIGH  : 2',                  type: 'warn' },
+      { text: '  Assigned to me : 3',                  type: 'out'  },
+      { text: '  Avg close time : 18 min',             type: 'out'  },
     ];
   },
 
@@ -165,25 +164,59 @@ async function loadProjects() {
   }
 }
 
+// Inline-SVG icons reused by .project-icon (1.5 stroke, currentColor — matches case-study/mc-icon style)
+var PROJECT_ICONS = {
+  phishing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<path d="M12 3v9"/>' +
+              '<path d="M12 12a5 5 0 1 0 5 5"/>' +
+              '<path d="M9 3h6"/>' +
+            '</svg>',
+  graph:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<circle cx="6" cy="6" r="2"/>' +
+              '<circle cx="18" cy="6" r="2"/>' +
+              '<circle cx="12" cy="18" r="2"/>' +
+              '<circle cx="6" cy="14" r="2"/>' +
+              '<path d="M7.5 7.4l3 3"/>' +
+              '<path d="M16.5 7.4l-3 3"/>' +
+              '<path d="M12 14v2"/>' +
+              '<path d="M7.5 13l3-2"/>' +
+            '</svg>',
+  logs:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<path d="M3 5h10"/>' +
+              '<path d="M3 9h8"/>' +
+              '<path d="M3 13h5"/>' +
+              '<circle cx="16" cy="15" r="4"/>' +
+              '<path d="M19 18l3 3"/>' +
+            '</svg>',
+};
+
 function renderProjects(grid, projects) {
   grid.innerHTML = projects.map(function (p) {
+    var icon = PROJECT_ICONS[p.icon] || PROJECT_ICONS.graph;
+
+    var metrics = (p.metrics || []).map(function (m) {
+      return '<span class="project-metric">' + escapeHtml(m) + '</span>';
+    }).join('');
+
     var tags = p.stack.map(function (t) {
       return '<span class="project-tag">' + escapeHtml(t) + '</span>';
     }).join('');
 
-    var links = '<a href="' + escapeHtml(p.github) + '" target="_blank" rel="noopener" class="project-link">GitHub</a>';
-    if (p.demo) {
-      links += ' <span class="project-link-sep">·</span> <a href="' + escapeHtml(p.demo) + '" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>';
-    }
+    var ghLink = '<a href="' + escapeHtml(p.github) + '" target="_blank" rel="noopener" class="project-link">GitHub →</a>';
+    var demoBtn = p.demo
+      ? '<a href="' + escapeHtml(p.demo) + '" target="_blank" rel="noopener" class="project-cta">Live demo →</a>'
+      : '';
 
     return (
       '<div class="project-card">' +
-        '<div class="project-emoji">'  + p.emoji + '</div>' +
-        '<p class="project-title">'    + escapeHtml(p.name)        + '</p>' +
-        '<p class="project-origin">'   + escapeHtml(p.origin)      + '</p>' +
-        '<p class="project-desc">'     + escapeHtml(p.description) + '</p>' +
-        '<div class="project-tags">'   + tags + '</div>' +
-        '<div class="project-links">'  + links + '</div>' +
+        '<div class="project-icon">'    + icon + '</div>' +
+        '<p class="project-title">'     + escapeHtml(p.name)        + '</p>' +
+        '<p class="project-origin">'    + escapeHtml(p.origin)      + '</p>' +
+        '<p class="project-desc">'      + escapeHtml(p.description) + '</p>' +
+        '<div class="project-metrics">' + metrics + '</div>' +
+        '<div class="project-tags">'    + tags + '</div>' +
+        '<div class="project-footer">'  + ghLink + demoBtn + '</div>' +
+        '<p class="project-disclaimer">Simulated/anonymized data only — no client material is reproduced.</p>' +
       '</div>'
     );
   }).join('');
@@ -224,11 +257,11 @@ function initMobileNav() {
 function initScrollAnimations() {
   var targets = document.querySelectorAll(
     '.stat-box, .exp-item, .skill-group, .project-card, ' +
-    '.training-card, .mindset-card'
+    '.training-card'
   );
 
   // Stagger siblings within the same grid
-  document.querySelectorAll('.skills-grid, .projects-grid, .training-grid, .stats-row, .mindset-cards').forEach(function (grid) {
+  document.querySelectorAll('.skills-grid, .projects-grid, .training-grid, .stats-row').forEach(function (grid) {
     Array.from(grid.children).forEach(function (child, i) {
       child.style.transitionDelay = (i * 0.07) + 's';
     });
@@ -375,65 +408,222 @@ function disableResumeLinks(links) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// PARTICLE EFFECT — hero background
+// COMMAND PALETTE — Cmd+K / Ctrl+K
+// Reuses the COMMANDS registry above; does not duplicate it.
 // ─────────────────────────────────────────────────────────────
 
-function initParticles() {
-  var canvas = document.getElementById('particle-canvas');
-  if (!canvas || !canvas.getContext) return;
+var COMMAND_DESC = {
+  whoami:                 'current operator profile',
+  help:                   'list available commands',
+  skills:                 'list core competencies',
+  projects:               'active security projects',
+  status:                 'current alert queue',
+  'analyze phishing_case':'run a sample SOC analysis',
+  clear:                  'clear palette output',
+};
 
-  var ctx   = canvas.getContext('2d');
-  var COUNT = 50;
-  var particles = [];
+function initCommandPalette() {
+  var paletteEl = document.getElementById('cmd-palette');
+  if (!paletteEl) return;
 
-  function resize() {
-    canvas.width  = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+  var inputEl  = document.getElementById('cmd-palette-input');
+  var listEl   = document.getElementById('cmd-palette-list');
+  var outputEl = document.getElementById('cmd-palette-output');
+
+  // 'clear' is handled inline in the terminal; surface it here too.
+  var commandNames = Object.keys(COMMANDS).concat(['clear']);
+
+  var lastTrigger  = null;
+  var activeIndex  = 0;
+  var filteredItems = commandNames.slice();
+
+  function isOpen() { return !paletteEl.hasAttribute('hidden'); }
+
+  function open() {
+    if (isOpen()) return;
+    lastTrigger = document.activeElement;
+    paletteEl.removeAttribute('hidden');
+    paletteEl.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    inputEl.value = '';
+    outputEl.innerHTML = '';
+    activeIndex = 0;
+    renderList();
+    inputEl.focus();
   }
-  resize();
-  window.addEventListener('resize', resize);
 
-  for (var i = 0; i < COUNT; i++) {
-    particles.push({
-      x:  Math.random() * canvas.width,
-      y:  Math.random() * canvas.height,
-      r:  Math.random() * 1.2 + 0.3,
-      vy: -(Math.random() * 0.3 + 0.08),
-      vx: (Math.random() - 0.5) * 0.12,
-      o:  Math.random() * 0.3 + 0.06,
+  function close() {
+    if (!isOpen()) return;
+    paletteEl.setAttribute('hidden', '');
+    paletteEl.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus();
+  }
+
+  function getMatches(query) {
+    var q = (query || '').trim().toLowerCase();
+    if (!q) return commandNames.slice();
+    return commandNames.filter(function (name) {
+      var desc = (COMMAND_DESC[name] || '').toLowerCase();
+      return name.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
     });
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  function renderList() {
+    filteredItems = getMatches(inputEl.value);
+    if (activeIndex >= filteredItems.length) activeIndex = Math.max(0, filteredItems.length - 1);
 
-    particles.forEach(function (p) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,212,255,' + p.o + ')';
-      ctx.fill();
+    if (filteredItems.length === 0) {
+      listEl.innerHTML = '<li class="cmd-palette-empty">No matching commands.</li>';
+      return;
+    }
 
-      p.x += p.vx;
-      p.y += p.vy;
+    listEl.innerHTML = filteredItems.map(function (name, i) {
+      var desc = COMMAND_DESC[name] || '';
+      return '<li role="option" id="cmd-opt-' + i + '" class="cmd-palette-item' +
+             (i === activeIndex ? ' is-active' : '') +
+             '" data-cmd-idx="' + i + '" aria-selected="' + (i === activeIndex) + '">' +
+               '<span class="cmd-palette-name">' + escapeHtml(name) + '</span>' +
+               '<span class="cmd-palette-desc">' + escapeHtml(desc) + '</span>' +
+             '</li>';
+    }).join('');
 
-      if (p.y < -4)               { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
-      if (p.x < -4)                 p.x = canvas.width + 4;
-      if (p.x > canvas.width + 4) p.x = -4;
-    });
-
-    requestAnimationFrame(draw);
+    if (filteredItems[activeIndex]) {
+      inputEl.setAttribute('aria-activedescendant', 'cmd-opt-' + activeIndex);
+    }
   }
 
-  draw();
+  function execute(name) {
+    if (!name) return;
+
+    if (name === 'clear') { outputEl.innerHTML = ''; return; }
+
+    var handler = COMMANDS[name];
+    if (!handler) return;
+
+    outputEl.innerHTML = '';
+
+    var cmdLine = document.createElement('p');
+    cmdLine.className = 't-line';
+    cmdLine.innerHTML = '<span class="t-prompt">anfas@sec:~$</span> ' + escapeHtml(name);
+    outputEl.appendChild(cmdLine);
+
+    handler().forEach(function (line) {
+      var el = document.createElement('p');
+      el.className = 't-line t-out-' + (line.type || 'out');
+      el.textContent = line.text;
+      outputEl.appendChild(el);
+    });
+
+    outputEl.scrollTop = outputEl.scrollHeight;
+  }
+
+  // Global key handler — Cmd/Ctrl+K toggles, Esc closes, arrows navigate.
+  document.addEventListener('keydown', function (e) {
+    var isCmdK = (e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K');
+    if (isCmdK) {
+      e.preventDefault();
+      if (isOpen()) close(); else open();
+      return;
+    }
+
+    if (!isOpen()) return;
+
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!filteredItems.length) return;
+      activeIndex = (activeIndex + 1) % filteredItems.length;
+      renderList();
+      return;
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!filteredItems.length) return;
+      activeIndex = (activeIndex - 1 + filteredItems.length) % filteredItems.length;
+      renderList();
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filteredItems[activeIndex]) execute(filteredItems[activeIndex]);
+      return;
+    }
+
+    // Focus trap — bounce Tab back to the only focusable element (the input).
+    if (e.key === 'Tab') { e.preventDefault(); inputEl.focus(); }
+  });
+
+  inputEl.addEventListener('input', function () {
+    activeIndex = 0;
+    renderList();
+  });
+
+  // Outside-click closes the modal.
+  paletteEl.addEventListener('click', function (e) {
+    if (e.target.hasAttribute('data-cmd-close')) close();
+  });
+
+  // Click on a list item executes it.
+  listEl.addEventListener('click', function (e) {
+    var item = e.target.closest('.cmd-palette-item');
+    if (!item) return;
+    var idx = parseInt(item.getAttribute('data-cmd-idx'), 10);
+    if (isNaN(idx) || !filteredItems[idx]) return;
+    activeIndex = idx;
+    renderList();
+    execute(filteredItems[idx]);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// CASE STUDY — copy-on-click for .cs-code blocks
+// ─────────────────────────────────────────────────────────────
+
+function initCopyOnClick() {
+  var blocks = document.querySelectorAll('.cs-code');
+  if (!blocks.length) return;
+
+  blocks.forEach(function (block) {
+    block.setAttribute('role', 'button');
+    block.setAttribute('tabindex', '0');
+    block.setAttribute('aria-label', 'Click to copy this code block');
+
+    function copy() {
+      var text = block.textContent.replace(/\s+$/, '');
+      var done = function () {
+        block.classList.add('is-copied');
+        setTimeout(function () { block.classList.remove('is-copied'); }, 1400);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {/* noop */});
+      } else {
+        // Fallback for older browsers / non-secure contexts
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {/* noop */}
+        document.body.removeChild(ta);
+      }
+    }
+
+    block.addEventListener('click', copy);
+    block.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copy(); }
+    });
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
 // UTILITIES
 // ─────────────────────────────────────────────────────────────
-
-function getTimestamp() {
-  return new Date().toTimeString().slice(0, 8);
-}
 
 function escapeHtml(str) {
   return String(str)
@@ -448,12 +638,14 @@ function escapeHtml(str) {
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('year').textContent = new Date().getFullYear();
-  initParticles();
+  var yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
   initMobileNav();
   initTerminal();
   loadProjects();
   initScrollAnimations();
   initContactForm();
   checkResume();
+  initCopyOnClick();
+  initCommandPalette();
 });
