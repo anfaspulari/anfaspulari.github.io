@@ -14,6 +14,14 @@
   --red:    #f87171;
   --mono:   'JetBrains Mono', monospace;
   --sans:   'Inter', sans-serif;
+
+  /* Semantic accent tokens */
+  --accent:      #00d4ff; /* primary / interactive */
+  --accent-warn: #fbbf24; /* threat / attention */
+  --accent-ok:   #4ade80; /* verified / safe */
+
+  /* Layout */
+  --container-narrow: 760px;
 }
 
 /* ── Base ── */
@@ -46,7 +54,7 @@ ul { list-style: none; }
 
 /* ── Layout ── */
 .container {
-  max-width: 900px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -723,4 +731,28 @@ footer .container {
   .btn     { text-align: center; }
 
   .training-grid   { grid-template-columns: 1fr; }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Freeze cursor blink */
+  .t-cursor { animation: none; opacity: 1; }
+
+  /* Prevent scroll-triggered translateY shift */
+  .fade-in { transform: none; opacity: 1; }
+  .fade-in.is-visible { transform: none; opacity: 1; }
+
+  /* Kill hover lifts */
+  .btn:hover,
+  .project-card:hover,
+  .skill-group:hover,
+  .training-card:hover,
+  .exp-item:hover,
+  .stat-box:hover { transform: none; }
 }
