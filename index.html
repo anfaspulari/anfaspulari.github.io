@@ -226,34 +226,58 @@
       <div class="projects-grid" id="projects-grid">
 
         <div class="project-card">
-          <div class="project-emoji">🎣</div>
-          <p class="project-title">PhishScan - Phishing Detection CLI</p>
-          <p class="project-origin">Built after spending hours manually parsing phishing emails in SOC workflows - this automates the repetitive parts.</p>
-          <p class="project-desc">A Python CLI tool that analyzes email headers, URLs, and domain patterns to score phishing likelihood. Extracts IOCs and generates incident-ready reports.</p>
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <p class="project-title">PhishScan — Phishing Detection CLI</p>
+          <p class="project-origin">Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.</p>
+          <p class="project-desc">Python CLI that parses .eml files, applies 8 detection rules (SPF/DKIM/Reply-To mismatch, URL patterns, urgency triggers), extracts IOCs, and outputs a scored incident report.</p>
           <div class="project-tags">
             <span class="project-tag">Python</span>
-            <span class="project-tag">Email Parsing</span>
-            <span class="project-tag">VirusTotal API</span>
+            <span class="project-tag">Email Analysis</span>
             <span class="project-tag">IOC Extraction</span>
+            <span class="project-tag">Rules Engine</span>
+          </div>
+          <div class="project-metrics">
+            <span class="project-metric">8 detection rules</span>
+            <span class="project-metric">IOC extraction</span>
+            <span class="project-metric">SIEM JSON output</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" class="project-link">GitHub ↗</a>
+            <a href="https://anfaspulari.github.io/phishscan-demo" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>
           </div>
         </div>
 
-        <div class="project-card project-card--featured">
-          <div class="project-emoji">📊</div>
-          <p class="project-title">ThreatBoard - IOC Dashboard <span class="project-badge">Actively Building</span></p>
+        <div class="project-card">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+          <p class="project-title">ThreatBoard — IOC Dashboard</p>
           <p class="project-origin">Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.</p>
-          <p class="project-desc">A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Built as a mock TI platform.</p>
+          <p class="project-desc">A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Searchable IOC table, ATT&amp;CK-mapped campaigns, severity chart.</p>
           <div class="project-tags">
             <span class="project-tag">JavaScript</span>
             <span class="project-tag">Threat Intel</span>
             <span class="project-tag">IOC Analysis</span>
             <span class="project-tag">ATT&amp;CK TTPs</span>
           </div>
+          <div class="project-metrics">
+            <span class="project-metric">ATT&amp;CK mapped</span>
+            <span class="project-metric">IOC clustering</span>
+            <span class="project-metric">Campaign timelines</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/anfaspulari/threatboard" target="_blank" rel="noopener" class="project-link">GitHub ↗</a>
+            <a href="https://anfaspulari.github.io/threatboard" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>
+          </div>
         </div>
 
         <div class="project-card">
-          <div class="project-emoji">📋</div>
-          <p class="project-title">LogLens - SIEM Log Correlator</p>
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><circle cx="10" cy="10" r="1.5"/><path d="M11.5 11.5l2 2"/></svg>
+          </div>
+          <p class="project-title">LogLens — SIEM Log Correlator</p>
           <p class="project-origin">Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.</p>
           <p class="project-desc">A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.</p>
           <div class="project-tags">
@@ -261,6 +285,15 @@
             <span class="project-tag">Bash</span>
             <span class="project-tag">Log Parsing</span>
             <span class="project-tag">Anomaly Detection</span>
+          </div>
+          <div class="project-metrics">
+            <span class="project-metric">10 signal rules</span>
+            <span class="project-metric">SSH correlation</span>
+            <span class="project-metric">100/100 scoring</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/anfaspulari" target="_blank" rel="noopener" class="project-link">GitHub ↗</a>
+            <a href="https://anfaspulari.github.io/loglens-demo" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>
           </div>
         </div>
 

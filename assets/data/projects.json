@@ -6,6 +6,7 @@
     "origin": "Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.",
     "description": "Python CLI that parses .eml files, applies 8 detection rules (SPF/DKIM/Reply-To mismatch, URL patterns, urgency triggers), extracts IOCs, and outputs a scored incident report. Supports JSON output for SIEM ingest.",
     "stack": ["Python", "Email Analysis", "IOC Extraction", "Rules Engine"],
+    "metrics": ["8 detection rules", "IOC extraction", "SIEM JSON output"],
     "github": "https://github.com/anfaspulari/phishscan-cli",
     "demo": "https://anfaspulari.github.io/phishscan-demo"
   },
@@ -16,6 +17,7 @@
     "origin": "Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.",
     "description": "A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships. Searchable IOC table, ATT&CK-mapped campaigns, severity chart.",
     "stack": ["JavaScript", "Threat Intel", "IOC Analysis", "ATT&CK TTPs"],
+    "metrics": ["ATT&CK mapped", "IOC clustering", "Campaign timelines"],
     "github": "https://github.com/anfaspulari/threatboard",
     "demo": "https://anfaspulari.github.io/threatboard"
   },
@@ -26,6 +28,7 @@
     "origin": "Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.",
     "description": "A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.",
     "stack": ["Python", "Bash", "Log Parsing", "Anomaly Detection"],
+    "metrics": ["10 signal rules", "SSH correlation", "100/100 scoring"],
     "github": "https://github.com/anfaspulari",
     "demo": "https://anfaspulari.github.io/loglens-demo"
   }

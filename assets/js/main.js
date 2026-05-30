@@ -164,25 +164,41 @@ async function loadProjects() {
   }
 }
 
+var PROJECT_ICONS = {
+  phishscan:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  threatboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
+  loglens:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><circle cx="10" cy="10" r="1.5"/><path d="M11.5 11.5l2 2"/></svg>',
+};
+
 function renderProjects(grid, projects) {
   grid.innerHTML = projects.map(function (p) {
+    var icon = PROJECT_ICONS[p.id]
+      ? '<div class="project-icon">' + PROJECT_ICONS[p.id] + '</div>'
+      : '<div class="project-icon project-icon--emoji">' + p.emoji + '</div>';
+
     var tags = p.stack.map(function (t) {
       return '<span class="project-tag">' + escapeHtml(t) + '</span>';
     }).join('');
 
-    var links = '<a href="' + escapeHtml(p.github) + '" target="_blank" rel="noopener" class="project-link">GitHub</a>';
+    var metrics = (p.metrics || []).map(function (m) {
+      return '<span class="project-metric">' + escapeHtml(m) + '</span>';
+    }).join('');
+    var metricsHtml = metrics ? '<div class="project-metrics">' + metrics + '</div>' : '';
+
+    var links = '<a href="' + escapeHtml(p.github) + '" target="_blank" rel="noopener" class="project-link">GitHub ↗</a>';
     if (p.demo) {
-      links += ' <span class="project-link-sep">·</span> <a href="' + escapeHtml(p.demo) + '" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>';
+      links += '<a href="' + escapeHtml(p.demo) + '" target="_blank" rel="noopener" class="project-link project-link--demo">Live Demo</a>';
     }
 
     return (
       '<div class="project-card">' +
-        '<div class="project-emoji">'  + p.emoji + '</div>' +
-        '<p class="project-title">'    + escapeHtml(p.name)        + '</p>' +
-        '<p class="project-origin">'   + escapeHtml(p.origin)      + '</p>' +
-        '<p class="project-desc">'     + escapeHtml(p.description) + '</p>' +
-        '<div class="project-tags">'   + tags + '</div>' +
-        '<div class="project-links">'  + links + '</div>' +
+        icon +
+        '<p class="project-title">'   + escapeHtml(p.name)        + '</p>' +
+        '<p class="project-origin">'  + escapeHtml(p.origin)      + '</p>' +
+        '<p class="project-desc">'    + escapeHtml(p.description) + '</p>' +
+        '<div class="project-tags">'  + tags + '</div>' +
+        metricsHtml +
+        '<div class="project-links">' + links + '</div>' +
       '</div>'
     );
   }).join('');
