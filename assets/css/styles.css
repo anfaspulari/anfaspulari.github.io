@@ -166,7 +166,7 @@ nav .container {
   font-family: var(--mono);
   font-size: 0.82rem;
   max-width: 520px;
-  margin-bottom: 32px;
+  margin-bottom: 0;
   cursor: text;
 }
 
@@ -242,6 +242,7 @@ nav .container {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
 .btn {
