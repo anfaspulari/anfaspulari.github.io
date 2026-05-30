@@ -199,6 +199,7 @@ function renderProjects(grid, projects) {
         '<div class="project-tags">'  + tags + '</div>' +
         metricsHtml +
         '<div class="project-links">' + links + '</div>' +
+        '<em class="project-note">Demo uses sample data</em>' +
       '</div>'
     );
   }).join('');
@@ -410,7 +411,8 @@ function escapeHtml(str) {
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('year').textContent = new Date().getFullYear();
+  var yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
   initMobileNav();
   initTerminal();
   loadProjects();

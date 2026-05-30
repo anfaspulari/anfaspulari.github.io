@@ -52,6 +52,35 @@ a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
 ul { list-style: none; }
 
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 0 0 4px 0;
+  text-decoration: none;
+  transition: top 0.15s;
+}
+.skip-link:focus { top: 0; outline: none; }
+
+/* ── Focus rings ── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* Elements that manage their own focus appearance */
+#terminal-input:focus-visible,
+.contact-form input:focus-visible,
+.contact-form textarea:focus-visible { outline: none; }
+
 /* ── Layout ── */
 .container {
   max-width: 1120px;
@@ -575,6 +604,14 @@ nav .container {
   border-color: rgba(74, 222, 128, 0.55);
 }
 
+.project-note {
+  display: block;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--muted);
+  opacity: 0.45;
+  margin-top: 10px;
+}
 
 /* ── Training ── */
 #training { background: var(--bg2); }
@@ -678,23 +715,12 @@ footer .container {
   text-align: center;
 }
 
-.footer-disclaimer {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: rgba(140, 140, 160, 0.55);
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  width: 100%;
-  text-align: center;
-}
-
 .footer-copy {
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--muted);
+  opacity: 0.45;
 }
-
-.footer-copy span { color: var(--cyan); }
 
 .footer-links { display: flex; gap: 20px; }
 
