@@ -41,6 +41,9 @@
         <li><a href="#training">Training</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+      <button class="cp-trigger" id="cp-trigger" aria-label="Open command palette" aria-keyshortcuts="Control+k Meta+k">
+        <kbd>⌘</kbd>K
+      </button>
       <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation" aria-expanded="false">
         <span></span>
         <span></span>
@@ -433,6 +436,28 @@
       <p class="footer-copy"><span id="year"></span></p>
     </div>
   </footer>
+
+  <!-- ── COMMAND PALETTE ──────────────────────────────────── -->
+  <div id="cmd-palette" class="cp-overlay" hidden
+       role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="cp-dialog">
+      <div class="cp-input-wrap">
+        <span class="cp-prefix" aria-hidden="true">&gt;_</span>
+        <input class="cp-input" id="cp-input" type="text"
+               placeholder="Search commands and pages..."
+               autocomplete="off" spellcheck="false"
+               aria-label="Search commands" aria-autocomplete="list"
+               aria-controls="cp-list" />
+        <kbd class="cp-esc">esc</kbd>
+      </div>
+      <ul class="cp-list" id="cp-list" role="listbox" aria-label="Commands"></ul>
+      <div class="cp-bar" aria-hidden="true">
+        <span><kbd>↑↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> select</span>
+        <span><kbd>esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
 
   <script src="assets/js/main.js" defer></script>
 

@@ -407,6 +407,163 @@ function escapeHtml(str) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// COMMAND PALETTE — Cmd+K / Ctrl+K
+// ─────────────────────────────────────────────────────────────
+
+var PALETTE_ITEMS = [
+  { label: 'whoami',                desc: 'View operator profile',           type: 'cmd' },
+  { label: 'skills',                desc: 'List core competencies',          type: 'cmd' },
+  { label: 'projects',              desc: 'Active security projects',        type: 'cmd' },
+  { label: 'status',                desc: 'Current alert queue',             type: 'cmd' },
+  { label: 'analyze phishing_case', desc: 'Run sample SOC analysis',         type: 'cmd' },
+  { label: 'clear',                 desc: 'Clear terminal output',           type: 'cmd' },
+  { label: 'Go to About',           desc: '#about',                          type: 'nav', target: '#about' },
+  { label: 'Go to Experience',      desc: '#experience',                     type: 'nav', target: '#experience' },
+  { label: 'Go to Case Studies',    desc: '#case-studies',                   type: 'nav', target: '#case-studies' },
+  { label: 'Go to Projects',        desc: '#projects',                       type: 'nav', target: '#projects' },
+  { label: 'Go to Contact',         desc: '#contact',                        type: 'nav', target: '#contact' },
+  { label: 'Download Resume',       desc: 'Save PDF to disk',                type: 'nav', target: 'resume' },
+];
+
+function initCommandPalette() {
+  var overlay  = document.getElementById('cmd-palette');
+  var input    = document.getElementById('cp-input');
+  var listEl   = document.getElementById('cp-list');
+  var trigger  = document.getElementById('cp-trigger');
+  if (!overlay || !input || !listEl) return;
+
+  var filtered = [];
+  var activeIdx = 0;
+
+  function open() {
+    overlay.hidden = false;
+    input.value = '';
+    render(PALETTE_ITEMS);
+    input.focus();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+    activeIdx = 0;
+  }
+
+  function render(items) {
+    filtered = items;
+    activeIdx = 0;
+    if (!items.length) {
+      listEl.innerHTML = '<li class="cp-empty">No results</li>';
+      return;
+    }
+    listEl.innerHTML = items.map(function (item, i) {
+      return '<li class="cp-item' + (i === 0 ? ' cp-item--active' : '') + '"' +
+             ' role="option" aria-selected="' + (i === 0) + '"' +
+             ' data-idx="' + i + '">' +
+        '<span class="cp-item-label">' + escapeHtml(item.label) + '</span>' +
+        '<span class="cp-item-desc">' + escapeHtml(item.desc) + '</span>' +
+        '<span class="cp-item-badge cp-item-badge--' + item.type + '">' + item.type + '</span>' +
+      '</li>';
+    }).join('');
+  }
+
+  function setActive(idx) {
+    var items = listEl.querySelectorAll('.cp-item');
+    if (!items.length) return;
+    if (items[activeIdx]) {
+      items[activeIdx].classList.remove('cp-item--active');
+      items[activeIdx].setAttribute('aria-selected', 'false');
+    }
+    activeIdx = (idx + items.length) % items.length;
+    if (items[activeIdx]) {
+      items[activeIdx].classList.add('cp-item--active');
+      items[activeIdx].setAttribute('aria-selected', 'true');
+      items[activeIdx].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function execute(item) {
+    close();
+    if (item.type === 'cmd') {
+      var terminal  = document.getElementById('interactive-terminal');
+      var historyEl = document.getElementById('terminal-history');
+      if (!terminal || !historyEl) return;
+      terminal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function () {
+        handleTerminalCommand(historyEl, item.label);
+        scrollBottom(historyEl);
+      }, 280);
+    } else {
+      if (item.target === 'resume') {
+        var a = document.createElement('a');
+        a.href = 'resume.pdf';
+        a.setAttribute('download', '');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        var el = document.querySelector(item.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  // Open/close keyboard shortcut
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      overlay.hidden ? open() : close();
+      return;
+    }
+    if (overlay.hidden) return;
+
+    if (e.key === 'Escape')    { e.preventDefault(); close(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIdx + 1); return; }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(activeIdx - 1); return; }
+    if (e.key === 'Tab')       { e.preventDefault(); setActive(e.shiftKey ? activeIdx - 1 : activeIdx + 1); return; }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filtered[activeIdx]) execute(filtered[activeIdx]);
+    }
+  });
+
+  // Filter
+  input.addEventListener('input', function () {
+    var q = input.value.toLowerCase().trim();
+    render(q
+      ? PALETTE_ITEMS.filter(function (item) {
+          return item.label.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q);
+        })
+      : PALETTE_ITEMS
+    );
+  });
+
+  // Click item
+  listEl.addEventListener('click', function (e) {
+    var li = e.target.closest('.cp-item');
+    if (!li) return;
+    var idx = parseInt(li.dataset.idx, 10);
+    if (!isNaN(idx) && filtered[idx]) execute(filtered[idx]);
+  });
+
+  // Hover → set active
+  listEl.addEventListener('mousemove', function (e) {
+    var li = e.target.closest('.cp-item');
+    if (!li) return;
+    var idx = parseInt(li.dataset.idx, 10);
+    if (!isNaN(idx)) setActive(idx);
+  });
+
+  // Backdrop click closes
+  overlay.addEventListener('click', function (e) {
+    if (!e.target.closest('.cp-dialog')) close();
+  });
+
+  // Trigger button
+  if (trigger) trigger.addEventListener('click', open);
+}
+
+// ─────────────────────────────────────────────────────────────
 // BOOT — DOMContentLoaded
 // ─────────────────────────────────────────────────────────────
 
@@ -415,6 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (yearEl) yearEl.textContent = new Date().getFullYear();
   initMobileNav();
   initTerminal();
+  initCommandPalette();
   loadProjects();
   initScrollAnimations();
   initContactForm();
