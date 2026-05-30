@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Social Campaign Traced to Single Operator — Anfas Pulari</title>
+  <meta name="description" content="Case study: 23 brand-impersonating social media accounts linked to a single operator through URL infrastructure and metadata patterns." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/case-study.css" />
+</head>
+<body>
+
+  <nav class="cs-nav">
+    <a href="../index.html" class="cs-nav-back">← anfas.sec</a>
+    <span class="cs-nav-sep">/</span>
+    <span class="cs-nav-title">Fake Social Campaign Traced to Single Operator</span>
+  </nav>
+
+  <div class="cs-layout">
+
+    <!-- ── ToC ── -->
+    <aside class="cs-toc" aria-label="Table of contents">
+      <p class="cs-toc-label">Contents</p>
+      <ul class="cs-toc-list">
+        <li><a href="#report"><span class="cs-toc-num">01</span> Initial Report</a></li>
+        <li><a href="#pattern"><span class="cs-toc-num">02</span> Account Pattern Analysis</a></li>
+        <li><a href="#infrastructure"><span class="cs-toc-num">03</span> Link Infrastructure</a></li>
+        <li><a href="#attribution"><span class="cs-toc-num">04</span> Attribution</a></li>
+        <li><a href="#outcome"><span class="cs-toc-num">05</span> Outcome</a></li>
+      </ul>
+    </aside>
+
+    <!-- ── Article ── -->
+    <article class="cs-article">
+
+      <div class="cs-meta">
+        <span class="cs-meta-pill cs-meta-pill--attack">Brand Impersonation</span>
+        <span class="cs-meta-pill cs-meta-pill--medium">Severity: MEDIUM</span>
+        <span class="cs-meta-pill">Tools: OSINT · Reverse Image Search · URLScan · Wayback Machine</span>
+        <span class="cs-meta-pill">Q2 2025</span>
+      </div>
+
+      <h1 class="cs-headline">Fake Social Campaign<br>Traced to Single Operator</h1>
+      <p class="cs-lede">A client-reported cluster of suspicious social media accounts impersonating a financial institution grew from 3 flagged profiles to 23 linked accounts — all operated by a single threat actor using a coordinated rotation strategy to evade platform detection.</p>
+      <p class="cs-disclaimer">Anonymized and sanitized for public disclosure. Platform names, client identity, and account handles have been modified.</p>
+
+      <!-- 01 -->
+      <section class="cs-section" id="report">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">01</span>
+          Initial Report
+        </h2>
+        <p>The client — a mid-size financial institution — flagged three social media accounts on two platforms that were using their logo, brand color palette, and official-sounding handles to promote a fake "customer rewards" campaign. The accounts were directing followers to click links that led to credential harvesting pages.</p>
+        <p>Initial platform reporting had already been filed by the client's marketing team, but the accounts remained live. The investigation began to understand the full scope and determine whether this was isolated activity or a coordinated campaign.</p>
+
+        <div class="cs-finding">
+          <p class="cs-finding-label">Scope at intake</p>
+          <p>3 accounts reported by client. All posting near-identical content with slight variations in handle spelling. Active for 6–14 days at time of report.</p>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="cs-section" id="pattern">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">02</span>
+          Account Pattern Analysis
+        </h2>
+        <p>Reverse image search on the profile photos returned matches across 17 additional accounts on three platforms — all using the same rotation of 4 stock images with minor EXIF modifications. The account creation dates clustered in two waves: one 3 weeks prior and a second wave 9 days before the report.</p>
+        <p>Post cadence analysis showed accounts going silent for 3–4 days then resuming — consistent with a batch-management tool or scheduled posting. Handle analysis showed a clear naming pattern:</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">Handle naming pattern (redacted)</span>
+          <code class="cs-code">Pattern: [BrandName] + [Support|Help|Official|Care] + [2-4 digit suffix]
+Examples:
+  ClientBankSupport22
+  ClientBankOfficial_7
+  ClientBankHelp44
+  OfficialClientBank09
+  ClientBank_Care2025</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <p>The suffix numbers followed no sequential order, suggesting they were generated to avoid obvious incremental patterns — but the prefix/suffix structure itself was consistent enough to search for additional accounts.</p>
+
+        <div class="cs-finding cs-finding--warn">
+          <p class="cs-finding-label">Finding</p>
+          <p>Pattern search across platforms surfaced 23 total accounts (3 initial + 20 discovered). Two creation-date waves suggest the actor pre-stages account batches before campaigns.</p>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section class="cs-section" id="infrastructure">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">03</span>
+          Link Infrastructure
+        </h2>
+        <p>All 23 accounts posted links using the same URL shortener service. Resolving each shortened URL revealed 4 distinct landing page domains — all registered within the same 5-day window as the first account creation wave.</p>
+        <p>One of the URL shortener links had a misconfigured redirect that briefly exposed the shortener's analytics dashboard before the actor corrected it. The cached version in the Wayback Machine showed <strong>click-through data attributed to a single Telegram channel</strong> used for campaign orchestration.</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">Cached analytics snippet (Wayback Machine)</span>
+          <code class="cs-code">Referrer breakdown:
+  t.me/[channel_redacted]    — 847 clicks (61%)
+  Direct                     — 392 clicks (28%)
+  instagram.com              — 112 clicks  (8%)
+  twitter.com                —  37 clicks  (3%)
+
+Top campaign tag: "wave2-fin-en"
+Created by: [UID redacted]</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <p>The Telegram channel was the distribution point: the actor posted the phishing links there first, then seeded them across fake accounts. The channel had 1,200 subscribers and appeared to be a private fraud-as-a-service operation selling phishing kits and campaign services.</p>
+      </section>
+
+      <!-- 04 -->
+      <section class="cs-section" id="attribution">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">04</span>
+          Attribution
+        </h2>
+        <p>The Telegram channel UID and the campaign tag <code>wave2-fin-en</code> were searched against prior intelligence. The UID matched an operator previously observed in a similar brand impersonation campaign targeting a retail chain in the same region six months earlier.</p>
+        <p>The landing page domains shared ASN and registrar patterns with the earlier campaign. The operator appeared to be running a small-scale fraud operation — not a nation-state actor — with a consistent methodology across targets.</p>
+
+        <div class="cs-mitre">
+          <span class="cs-mitre-tag">T1586.001 — Compromise Accounts: Social Media</span>
+          <span class="cs-mitre-tag">T1583.001 — Acquire Domain</span>
+          <span class="cs-mitre-tag">T1056.003 — Web Portal Capture</span>
+          <span class="cs-mitre-tag">T1598.003 — Phishing for Information</span>
+          <span class="cs-mitre-tag">T1566.002 — Spearphishing Link</span>
+        </div>
+
+        <p>Attribution confidence: <strong>MEDIUM</strong>. The same methodology and infrastructure overlaps are strong indicators of the same actor, but without direct access to the Telegram account there's no definitive proof of a single individual vs. a small team using shared tooling.</p>
+      </section>
+
+      <!-- 05 -->
+      <section class="cs-section" id="outcome">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">05</span>
+          Outcome
+        </h2>
+        <p>All 23 accounts were reported to the relevant platforms with full documentation: screenshots, handle list, infrastructure links, and the Telegram channel reference. Platform response times varied significantly — 14 accounts were removed within 24 hours, the remaining 9 within 5 days.</p>
+        <p>The 4 landing page domains were submitted to registrar abuse teams and major threat intel feeds. All 4 were suspended within 48 hours.</p>
+        <p><strong>Client recommendation:</strong> Set up a brand monitoring alert using handle pattern matching to catch the next wave of accounts before they go live. Given the actor's two-wave staging pattern, early detection on wave one prevents the bulk of exposure from wave two.</p>
+
+        <div class="cs-finding">
+          <p class="cs-finding-label">Summary</p>
+          <p>23 accounts across 3 platforms taken down. 4 phishing domains suspended. Operator linked to prior campaign. Client received brand monitoring recommendations and a watchlist of infrastructure indicators for ongoing tracking.</p>
+        </div>
+      </section>
+
+      <footer class="cs-footer">
+        <span class="cs-footer-left">anfaspulari.github.io</span>
+        <div class="cs-footer-right">
+          <a href="lateral-movement-log-correlation.html" class="cs-footer-link">Next: Lateral Movement →</a>
+          <a href="../index.html#case-studies" class="cs-footer-link">← All Case Studies</a>
+        </div>
+      </footer>
+
+    </article>
+  </div>
+
+  <script>
+    document.querySelectorAll('.cs-code').forEach(function (block) {
+      block.addEventListener('click', function () {
+        var hint = this.parentElement.querySelector('.cs-copy-hint');
+        navigator.clipboard.writeText(this.textContent.trim()).then(function () {
+          if (!hint) return;
+          hint.textContent = 'copied!';
+          hint.classList.add('copied');
+          setTimeout(function () {
+            hint.textContent = 'click to copy';
+            hint.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    });
+
+    var sections = document.querySelectorAll('.cs-section');
+    var tocLinks = document.querySelectorAll('.cs-toc-list a');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          tocLinks.forEach(function (link) {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(function (s) { observer.observe(s); });
+  </script>
+</body>
+</html>

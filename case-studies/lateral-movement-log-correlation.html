@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6 Hours from Initial Access to Domain Admin — Anfas Pulari</title>
+  <meta name="description" content="Case study: log correlation surfaces a lateral movement chain missed by automated alerting — SSH brute-force to domain admin in under six hours." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/case-study.css" />
+</head>
+<body>
+
+  <nav class="cs-nav">
+    <a href="../index.html" class="cs-nav-back">← anfas.sec</a>
+    <span class="cs-nav-sep">/</span>
+    <span class="cs-nav-title">6 Hours from Initial Access to Domain Admin</span>
+  </nav>
+
+  <div class="cs-layout">
+
+    <!-- ── ToC ── -->
+    <aside class="cs-toc" aria-label="Table of contents">
+      <p class="cs-toc-label">Contents</p>
+      <ul class="cs-toc-list">
+        <li><a href="#anomaly"><span class="cs-toc-num">01</span> Anomaly Detection</a></li>
+        <li><a href="#timeline"><span class="cs-toc-num">02</span> Timeline Reconstruction</a></li>
+        <li><a href="#escalation"><span class="cs-toc-num">03</span> Privilege Escalation Path</a></li>
+        <li><a href="#mapping"><span class="cs-toc-num">04</span> ATT&amp;CK Mapping</a></li>
+        <li><a href="#containment"><span class="cs-toc-num">05</span> Containment &amp; Outcome</a></li>
+      </ul>
+    </aside>
+
+    <!-- ── Article ── -->
+    <article class="cs-article">
+
+      <div class="cs-meta">
+        <span class="cs-meta-pill cs-meta-pill--attack">Lateral Movement</span>
+        <span class="cs-meta-pill cs-meta-pill--critical">Severity: CRITICAL</span>
+        <span class="cs-meta-pill">Tools: SIEM · LogLens · Windows Event Logs · Splunk</span>
+        <span class="cs-meta-pill">Q3 2025</span>
+      </div>
+
+      <h1 class="cs-headline">6 Hours from Initial Access<br>to Domain Admin</h1>
+      <p class="cs-lede">Automated alerting produced a single low-priority SSH brute-force alert. Manual log correlation revealed that the attacker had already pivoted from that initial access to three internal hosts and achieved domain admin privileges — all within a six-hour window the SIEM had not flagged.</p>
+      <p class="cs-disclaimer">Anonymized and sanitized for public disclosure. Hostnames, IP addresses, usernames, and domain names have been modified.</p>
+
+      <!-- 01 -->
+      <section class="cs-section" id="anomaly">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">01</span>
+          Anomaly Detection
+        </h2>
+        <p>During routine log review, a pattern caught attention that the SIEM had deprioritized: a low-score SSH brute-force alert on an internet-facing jump server, followed 22 minutes later by a <strong>successful authentication from the same external IP</strong>. The success event had not triggered an alert because the SIEM rule required 50+ failed attempts before escalating — this attacker had used a slow-spray approach with only 8 attempts over 18 minutes.</p>
+        <p>The jump server was expected to receive external SSH connections. That, combined with the below-threshold attempt count, meant automated detection missed the pivot entirely.</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">SIEM query — auth events on jump server (condensed)</span>
+          <code class="cs-code">index=wineventlog EventCode=4625 OR EventCode=4624
+  host="jump-srv-01" src_ip="192.0.2.88"
+| table _time, EventCode, user, src_ip, logon_type
+| sort _time
+
+_time                EventCode  user        src_ip        logon_type
+2025-09-03 02:11:04  4625       svc_backup  192.0.2.88    3
+2025-09-03 02:13:41  4625       svc_backup  192.0.2.88    3
+2025-09-03 02:17:09  4625       admin       192.0.2.88    3
+2025-09-03 02:22:38  4625       admin       192.0.2.88    3
+2025-09-03 02:27:14  4625       j.harris    192.0.2.88    3
+2025-09-03 02:29:51  4624       j.harris    192.0.2.88    3   ← SUCCESS</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <div class="cs-finding cs-finding--crit">
+          <p class="cs-finding-label">Critical Gap</p>
+          <p>SIEM threshold of 50 failed attempts before alerting allowed slow-spray brute-force (8 attempts, 18 min spread) to succeed without triggering detection. Success event (4624) was not correlated with preceding failures.</p>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="cs-section" id="timeline">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">02</span>
+          Timeline Reconstruction
+        </h2>
+        <p>Once the initial access was confirmed, the investigation pivoted to trace all subsequent activity from the compromised account <code>j.harris</code>. Pulling authentication events, process creation logs, and network connection logs from the SIEM reconstructed the full 6-hour chain:</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">Reconstructed attack timeline</span>
+          <code class="cs-code">02:29  [INITIAL ACCESS]   SSH login as j.harris from 192.0.2.88 → jump-srv-01
+02:34  [DISCOVERY]       net user /domain (EventID 4661 — SAM query)
+02:38  [DISCOVERY]       net group "Domain Admins" /domain
+02:51  [CREDENTIAL]      sekurlsa::logonpasswords equivalent — LSASS memory read
+                         (EventID 10 — Process access on lsass.exe)
+03:14  [LATERAL MOVE]    Pass-the-hash to internal-srv-04 as svc_deploy
+                         (EventID 4624, LogonType 3, NTLM auth)
+03:29  [LATERAL MOVE]    RDP to dc-backup-01 as svc_deploy (EventID 4624, LogonType 10)
+04:02  [PRIV ESC]        Add j.harris to Domain Admins group (EventID 4728)
+04:11  [PERSISTENCE]     New scheduled task created: "WindowsUpdateHelper"
+                         (EventID 4698)
+08:27  [DISCOVERY]       Detected during routine log review</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <p>The 4-hour gap between domain admin acquisition (04:02) and detection (08:27) meant the attacker had undetected persistence for over 4 hours. The scheduled task <code>WindowsUpdateHelper</code> was confirmed malicious — it executed a PowerShell encoded command that beaconed to an external C2 every 15 minutes.</p>
+      </section>
+
+      <!-- 03 -->
+      <section class="cs-section" id="escalation">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">03</span>
+          Privilege Escalation Path
+        </h2>
+        <p>The escalation path relied entirely on credential material harvested from LSASS memory on the jump server — a technique that succeeds when credential caching is enabled and LSASS isn't protected by Credential Guard.</p>
+        <p>The service account <code>svc_deploy</code> whose NTLM hash was stolen had elevated privileges across multiple systems due to legacy deployment requirements. This is the exact blast-radius failure mode that least-privilege architecture is designed to prevent.</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">EventID 4728 — Group membership change</span>
+          <code class="cs-code">EventID:     4728
+Description: A member was added to a security-enabled global group
+Subject:     svc_deploy (elevated via pass-the-hash)
+Member:      j.harris
+Group:       Domain Admins
+DC:          dc-backup-01
+Time:        2025-09-03 04:02:17</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <div class="cs-finding cs-finding--crit">
+          <p class="cs-finding-label">Root Cause</p>
+          <p><code>svc_deploy</code> had excessive privileges across 14 internal systems with no MFA requirement and credentials cached in LSASS on the jump server. Single stolen hash = full lateral movement chain.</p>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section class="cs-section" id="mapping">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">04</span>
+          ATT&amp;CK Mapping
+        </h2>
+        <p>The full attack chain mapped cleanly to MITRE ATT&CK techniques. The attacker's methodology was not novel — it followed a well-documented playbook for internal network compromise using stolen credentials. What made it effective was the combination of slow-spray delivery below alert thresholds and a privileged service account with no MFA.</p>
+
+        <div class="cs-mitre">
+          <span class="cs-mitre-tag">T1110.003 — Password Spraying</span>
+          <span class="cs-mitre-tag">T1078 — Valid Accounts</span>
+          <span class="cs-mitre-tag">T1003.001 — LSASS Memory Dump</span>
+          <span class="cs-mitre-tag">T1550.002 — Pass the Hash</span>
+          <span class="cs-mitre-tag">T1021.001 — Remote Desktop Protocol</span>
+          <span class="cs-mitre-tag">T1078.002 — Domain Accounts</span>
+          <span class="cs-mitre-tag">T1053.005 — Scheduled Task</span>
+          <span class="cs-mitre-tag">T1071.001 — Web Protocols (C2)</span>
+        </div>
+
+        <p>The slow-spray technique (T1110.003) is specifically designed to stay under volume-based detection thresholds. Correlating success events (EventID 4624) against recent failures on the same account — regardless of attempt count — would have surfaced this within minutes of the successful login.</p>
+      </section>
+
+      <!-- 05 -->
+      <section class="cs-section" id="containment">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">05</span>
+          Containment &amp; Outcome
+        </h2>
+        <p>On confirmation of domain admin access and active C2 beaconing, immediate actions were taken: network isolation of the jump server and <code>dc-backup-01</code>, credential reset for <code>j.harris</code> and <code>svc_deploy</code>, and removal of the scheduled task. The C2 domain was blocked at the perimeter firewall.</p>
+        <p>The attacker had not exfiltrated data at the time of containment — the C2 traffic showed outbound beaconing but no significant data transfer volume in the 4-hour window. Post-incident forensics confirmed no data exfiltration.</p>
+        <p><strong>Remediation recommendations delivered:</strong></p>
+        <ul style="margin: 14px 0 14px 24px; list-style: disc; color: var(--muted); font-size: 0.93rem; line-height: 1.85;">
+          <li>SIEM rule update: correlate 4624 success against any 4625 failures for same account/IP in prior 30 minutes regardless of count</li>
+          <li>Enable Credential Guard on all jump servers to block LSASS memory reads</li>
+          <li>Enforce MFA on all service accounts with cross-system access</li>
+          <li>Audit service account privilege scope — <code>svc_deploy</code> needed access to 3 systems, not 14</li>
+          <li>Disable NTLM authentication where Kerberos is available</li>
+        </ul>
+
+        <div class="cs-finding">
+          <p class="cs-finding-label">Summary</p>
+          <p>Attack contained before data exfiltration. 5 remediation items implemented within 30 days. SIEM rule updated to catch success-after-failure regardless of threshold. Credential Guard deployed on jump server tier.</p>
+        </div>
+      </section>
+
+      <footer class="cs-footer">
+        <span class="cs-footer-left">anfaspulari.github.io</span>
+        <div class="cs-footer-right">
+          <a href="phishing-kit-reuse.html" class="cs-footer-link">← Phishing Kit Reuse</a>
+          <a href="../index.html#case-studies" class="cs-footer-link">← All Case Studies</a>
+        </div>
+      </footer>
+
+    </article>
+  </div>
+
+  <script>
+    document.querySelectorAll('.cs-code').forEach(function (block) {
+      block.addEventListener('click', function () {
+        var hint = this.parentElement.querySelector('.cs-copy-hint');
+        navigator.clipboard.writeText(this.textContent.trim()).then(function () {
+          if (!hint) return;
+          hint.textContent = 'copied!';
+          hint.classList.add('copied');
+          setTimeout(function () {
+            hint.textContent = 'click to copy';
+            hint.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    });
+
+    var sections = document.querySelectorAll('.cs-section');
+    var tocLinks = document.querySelectorAll('.cs-toc-list a');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          tocLinks.forEach(function (link) {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(function (s) { observer.observe(s); });
+  </script>
+</body>
+</html>

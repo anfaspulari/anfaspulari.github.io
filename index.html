@@ -33,6 +33,7 @@
       <ul class="nav-links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
+        <li><a href="#case-studies">Case Studies</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#training">Training</a></li>
@@ -155,6 +156,40 @@
           <li>Built hands-on, scenario-based curricula simulating real SOC environments: alert triage, IOC extraction, SIEM log review, and escalation decision-making.</li>
           <li>Mentored 30+ students through foundational topics including OSINT, detection thinking, and building their first security tools. Focused on making them job-ready, not just exam-ready.</li>
         </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CASE STUDIES ─────────────────────────────────────── -->
+  <section id="case-studies">
+    <div class="container">
+      <p class="section-label">Case Studies</p>
+      <h2 class="section-title">Investigations &amp; Analysis</h2>
+      <p class="section-desc">Real-world security investigations — anonymized and documented.</p>
+
+      <div class="cs-grid">
+
+        <a href="case-studies/phishing-kit-reuse.html" class="cs-card">
+          <span class="cs-pill cs-pill--phishing">Phishing Infrastructure</span>
+          <h3 class="cs-title">Phishing Kit Reuse: One Kit, 47 Domains</h3>
+          <p class="cs-desc">Traced a phishing kit from a single SOC alert through 47 spoofed domains. Identified the kit fingerprint, pivoted on hosting infrastructure, and confirmed attacker reuse across three campaigns.</p>
+          <span class="cs-read">Read case study →</span>
+        </a>
+
+        <a href="case-studies/brand-impersonation-social.html" class="cs-card">
+          <span class="cs-pill cs-pill--brand">Brand Impersonation</span>
+          <h3 class="cs-title">Fake Social Campaign Traced to Single Operator</h3>
+          <p class="cs-desc">Identified 23 fraudulent social media accounts impersonating a financial client. Linked them to a single operator through URL infrastructure overlap and platform metadata patterns.</p>
+          <span class="cs-read">Read case study →</span>
+        </a>
+
+        <a href="case-studies/lateral-movement-log-correlation.html" class="cs-card">
+          <span class="cs-pill cs-pill--lateral">Lateral Movement</span>
+          <h3 class="cs-title">6 Hours from Initial Access to Domain Admin</h3>
+          <p class="cs-desc">Log correlation surfaced a lateral movement chain missed by automated alerting — from SSH brute-force to domain admin privileges in under six hours, reconstructed via Windows Event IDs.</p>
+          <span class="cs-read">Read case study →</span>
+        </a>
+
       </div>
     </div>
   </section>

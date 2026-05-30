@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phishing Kit Reuse: One Kit, 47 Domains — Anfas Pulari</title>
+  <meta name="description" content="Case study: tracing a phishing kit through 47 spoofed domains using kit fingerprinting and infrastructure pivots." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/case-study.css" />
+</head>
+<body>
+
+  <nav class="cs-nav">
+    <a href="../index.html" class="cs-nav-back">← anfas.sec</a>
+    <span class="cs-nav-sep">/</span>
+    <span class="cs-nav-title">Phishing Kit Reuse: One Kit, 47 Domains</span>
+  </nav>
+
+  <div class="cs-layout">
+
+    <!-- ── ToC ── -->
+    <aside class="cs-toc" aria-label="Table of contents">
+      <p class="cs-toc-label">Contents</p>
+      <ul class="cs-toc-list">
+        <li><a href="#signal"><span class="cs-toc-num">01</span> Initial Signal</a></li>
+        <li><a href="#fingerprint"><span class="cs-toc-num">02</span> Kit Fingerprinting</a></li>
+        <li><a href="#pivot"><span class="cs-toc-num">03</span> Infrastructure Pivot</a></li>
+        <li><a href="#attribution"><span class="cs-toc-num">04</span> Campaign Attribution</a></li>
+        <li><a href="#outcome"><span class="cs-toc-num">05</span> Outcome</a></li>
+      </ul>
+    </aside>
+
+    <!-- ── Article ── -->
+    <article class="cs-article">
+
+      <div class="cs-meta">
+        <span class="cs-meta-pill cs-meta-pill--attack">Phishing Infrastructure</span>
+        <span class="cs-meta-pill cs-meta-pill--high">Severity: HIGH</span>
+        <span class="cs-meta-pill">Tools: URLScan · WHOIS · CyberChef · PhishScan</span>
+        <span class="cs-meta-pill">Q1 2025</span>
+      </div>
+
+      <h1 class="cs-headline">Phishing Kit Reuse:<br>One Kit, 47 Domains</h1>
+      <p class="cs-lede">A single SOC alert on a spoofed login portal led to the discovery of 47 active phishing domains deployed from the same kit, linked to a threat actor running at least three distinct credential-harvesting campaigns.</p>
+      <p class="cs-disclaimer">Anonymized and sanitized for public disclosure. IOCs, client names, and identifying infrastructure details have been modified.</p>
+
+      <!-- 01 -->
+      <section class="cs-section" id="signal">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">01</span>
+          Initial Signal
+        </h2>
+        <p>The investigation started with a threat feed alert: a URL flagged by a partner feed as a spoofed login page mimicking a regional bank's online portal. The URL had been live for less than 4 hours — consistent with fast-flux hosting designed to stay ahead of blocklist propagation.</p>
+        <p>Initial triage confirmed the page was a credential harvesting kit — a near-pixel-perfect clone of the bank's login page, with one distinguishing marker: a <strong>non-standard cookie name</strong> set on page load before the form was rendered.</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">HTTP response headers (sanitized)</span>
+          <code class="cs-code">HTTP/1.1 200 OK
+Server: Apache/2.4.51
+Set-Cookie: _ssid_tok=a3f9c2; Path=/; HttpOnly
+Content-Type: text/html; charset=UTF-8
+X-Powered-By: PHP/7.4.28</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <div class="cs-finding">
+          <p class="cs-finding-label">Finding</p>
+          <p>The cookie name <code>_ssid_tok</code> and PHP/7.4.28 fingerprint did not match anything in the legitimate bank's infrastructure. This combination became the first kit fingerprint element.</p>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="cs-section" id="fingerprint">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">02</span>
+          Kit Fingerprinting
+        </h2>
+        <p>Pulling the kit source via CyberChef (base64 decode + URL decode chain) revealed a PHP redirect script pattern. The harvested credentials were exfiltrated via a <strong>Telegram bot API call</strong> embedded in the PHP backend — a common but specific indicator.</p>
+        <p>Three fingerprint elements were extracted from the kit that proved unique enough to search across passive DNS and URLScan historical data:</p>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">Kit fingerprint markers</span>
+          <code class="cs-code">1. Cookie: _ssid_tok (set before form render)
+2. Telegram exfil endpoint: api.telegram[.]org/bot&lt;TOKEN&gt;/sendMessage
+3. HTML comment in source: &lt;!-- v2.4-ENT --&gt;
+4. CSS class collision: .lgin-frm (typo, preserved across all kit variants)
+5. User-agent gate: PHP script checks for "bot" UA and returns 404</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <p>The <code>.lgin-frm</code> typo was the most reliable indicator — it appeared in the kit's stylesheet and was consistent across all variants, suggesting the actor never modified the base template CSS.</p>
+
+        <div class="cs-finding cs-finding--warn">
+          <p class="cs-finding-label">Key Indicator</p>
+          <p>CSS class <code>.lgin-frm</code> (typo for <code>.login-form</code>) present in all 47 identified domains. Searchable via URLScan content search and passive HTML scraping.</p>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section class="cs-section" id="pivot">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">03</span>
+          Infrastructure Pivot
+        </h2>
+        <p>Using the kit fingerprints and the original hosting IP (<code>192.0.2.47</code>), infrastructure pivoting across URLScan, WHOIS, and passive DNS returned a cluster of domains sharing:</p>
+        <ul style="margin: 16px 0 16px 24px; list-style: disc; color: var(--muted); font-size: 0.93rem; line-height: 1.8;">
+          <li>Same registrar (NameCheap), all registered within a 9-day window</li>
+          <li>Identical NS records pointing to a bulletproof hosting AS</li>
+          <li>SSL certificates from the same ACME provider, issued within 48 hours of domain registration</li>
+          <li>Matching <code>Referrer-Policy: no-referrer</code> header — unusual for a legitimate login page</li>
+        </ul>
+
+        <div class="cs-code-wrap">
+          <span class="cs-code-label">WHOIS pattern (representative)</span>
+          <code class="cs-code">Domain:       secure-banklogin-verify[.]com
+Registrar:    NameCheap, Inc.
+Created:      2025-01-14T03:22:00Z
+Name Server:  ns1.hostingcluster-anon[.]net
+Name Server:  ns2.hostingcluster-anon[.]net
+Registrant:   REDACTED FOR PRIVACY</code>
+          <span class="cs-copy-hint">click to copy</span>
+        </div>
+
+        <p>The 9-day registration burst — 47 domains across 3 distinct domain themes (bank, payment processor, parcel delivery) — indicated pre-staging ahead of a multi-target campaign launch.</p>
+
+        <div class="cs-finding cs-finding--crit">
+          <p class="cs-finding-label">Critical Finding</p>
+          <p>47 domains identified across 3 campaign themes. All pre-staged within the same registration window. 31 were not yet live at time of discovery — catch before deployment.</p>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section class="cs-section" id="attribution">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">04</span>
+          Campaign Attribution
+        </h2>
+        <p>Cross-referencing the Telegram bot token against prior IOC databases surfaced a match: the same token had been observed in a credential harvesting campaign targeting a European telecom in Q4 2024. That campaign had been attributed to a financially-motivated actor cluster operating out of Eastern Europe.</p>
+        <p>The kit version tag <code>v2.4-ENT</code> was consistent with a known phishing-as-a-service (PhaaS) kit sold in closed Telegram channels. This suggested the actor was either a kit customer or a reseller operating multiple simultaneous campaigns for different buyers.</p>
+
+        <div class="cs-mitre">
+          <span class="cs-mitre-tag">T1566.002 — Spearphishing Link</span>
+          <span class="cs-mitre-tag">T1078 — Valid Accounts</span>
+          <span class="cs-mitre-tag">T1056.003 — Web Portal Capture</span>
+          <span class="cs-mitre-tag">T1583.001 — Acquire Domain</span>
+          <span class="cs-mitre-tag">T1071.001 — Web Protocols (C2 via Telegram)</span>
+        </div>
+
+        <p>The PhaaS attribution changed the response posture: rather than a one-off takedown, the recommendation was to treat this as ongoing infrastructure and monitor the registrar pattern for new domain batches.</p>
+      </section>
+
+      <!-- 05 -->
+      <section class="cs-section" id="outcome">
+        <h2 class="cs-section-heading">
+          <span class="cs-section-num">05</span>
+          Outcome
+        </h2>
+        <p>All 47 domains were submitted to the relevant registrar abuse team and the hosting provider. 43 were suspended within 72 hours. The 4 remaining domains had already propagated to a secondary hosting cluster but were subsequently actioned within a week.</p>
+        <p>The Telegram bot token was reported to Telegram's abuse team and the bot was disabled. The complete IOC set — domains, IPs, SSL certificate fingerprints, kit hash, and Telegram token — was packaged and shared with the client's security team and two ISACs.</p>
+        <p><strong>Lessons learned:</strong> The bot exfil endpoint was the highest-confidence pivot point and could have been identified 30 minutes into the investigation. Adding Telegram bot token extraction to the standard phishing kit triage runbook was recommended and implemented.</p>
+
+        <div class="cs-finding">
+          <p class="cs-finding-label">Summary</p>
+          <p>47 domains identified → 43 suspended in 72 hrs. IOCs shared with 2 ISACs. Runbook updated with Telegram bot token extraction step. Pre-staged domains caught before deployment reduced victim exposure.</p>
+        </div>
+      </section>
+
+      <footer class="cs-footer">
+        <span class="cs-footer-left">anfaspulari.github.io</span>
+        <div class="cs-footer-right">
+          <a href="brand-impersonation-social.html" class="cs-footer-link">Next: Brand Impersonation →</a>
+          <a href="../index.html#case-studies" class="cs-footer-link">← All Case Studies</a>
+        </div>
+      </footer>
+
+    </article>
+  </div>
+
+  <script>
+    // Copy-on-click for code blocks
+    document.querySelectorAll('.cs-code').forEach(function (block) {
+      block.addEventListener('click', function () {
+        var hint = this.parentElement.querySelector('.cs-copy-hint');
+        navigator.clipboard.writeText(this.textContent.trim()).then(function () {
+          if (!hint) return;
+          hint.textContent = 'copied!';
+          hint.classList.add('copied');
+          setTimeout(function () {
+            hint.textContent = 'click to copy';
+            hint.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    });
+
+    // ToC active section
+    var sections = document.querySelectorAll('.cs-section');
+    var tocLinks = document.querySelectorAll('.cs-toc-list a');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          tocLinks.forEach(function (link) {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(function (s) { observer.observe(s); });
+  </script>
+</body>
+</html>

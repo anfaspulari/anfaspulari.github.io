@@ -400,6 +400,74 @@ nav .container {
   background: rgba(0, 212, 255, 0.06);
 }
 
+/* ── Case Studies ── */
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.cs-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.cs-card:hover {
+  border-color: rgba(0, 212, 255, 0.35);
+  box-shadow: 0 4px 24px rgba(0, 212, 255, 0.07);
+  transform: translateY(-3px);
+  text-decoration: none;
+}
+
+.cs-pill {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 14px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.cs-pill--phishing { color: var(--accent);      border: 1px solid rgba(0, 212, 255, 0.3);   background: rgba(0, 212, 255, 0.06); }
+.cs-pill--brand    { color: var(--accent-warn);  border: 1px solid rgba(251,191,36,0.3);     background: rgba(251,191,36,0.06); }
+.cs-pill--lateral  { color: var(--red);          border: 1px solid rgba(248,113,113,0.3);    background: rgba(248,113,113,0.06); }
+
+.cs-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.cs-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.65;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.cs-read {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.cs-card:hover .cs-read { opacity: 1; }
+
 /* ── Projects ── */
 .projects-grid {
   display: grid;
@@ -761,6 +829,7 @@ footer .container {
   /* Kill hover lifts */
   .btn:hover,
   .project-card:hover,
+  .cs-card:hover,
   .skill-group:hover,
   .training-card:hover,
   .exp-item:hover,
