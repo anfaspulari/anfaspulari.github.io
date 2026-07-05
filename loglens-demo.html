@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LogLens — SIEM Log Correlator</title>
+  <title>LogLens - SIEM Log Correlator</title>
   <meta name="description" content="Interactive SIEM log correlator. Paste syslog/auth.log output to detect brute force, phishing, BEC, lateral movement, and more." />
   <meta name="author" content="Anfas Pulari" />
-  <meta property="og:title" content="LogLens — SIEM Log Correlator" />
-  <meta property="og:description" content="Client-side log correlation — detect brute force, phishing campaigns, BEC, privilege escalation, and lateral movement." />
+  <meta property="og:title" content="LogLens - SIEM Log Correlator" />
+  <meta property="og:description" content="Client-side log correlation - detect brute force, phishing campaigns, BEC, privilege escalation, and lateral movement." />
   <meta property="og:type" content="website" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -294,7 +294,7 @@
   }
 
   /* ================================================================
-     SIGNAL RULES — fires at most once per rule across all entries
+     SIGNAL RULES - fires at most once per rule across all entries
      Each rule: { id, severity, score, test(entries)->entry|null, label(entry)->string }
   ================================================================ */
   var SIGNAL_RULES = [
@@ -497,7 +497,7 @@
   ];
 
   /* ================================================================
-     CORRELATION RULES — fired when required signal IDs all present
+     CORRELATION RULES - fired when required signal IDs all present
   ================================================================ */
   var CORRELATION_RULES = [
     {
@@ -587,14 +587,14 @@
         var us={}, uList=[];
         for (var j=0;j<fails.length;j++) if (!us[fails[j].user]) { us[fails[j].user]=true; uList.push(fails[j].user); }
         findings.push({id:'BRUTE_FORCE', severity:'CRITICAL', score:20,
-          label: ip+' — '+fails.length+' failed SSH attempts targeting: '+uList.join(', ')});
+          label: ip+' - '+fails.length+' failed SSH attempts targeting: '+uList.join(', ')});
 
         if (succsByIp[ip]) {
           var minF = fails[0].tsVal;
           for (var j=1;j<fails.length;j++) if (fails[j].tsVal<minF) minF=fails[j].tsVal;
           var sA = succsByIp[ip].filter(function(s){return s.tsVal>minF;});
           if (sA.length) findings.push({id:'SUCCESS_AFTER_BRUTE', severity:'CRITICAL', score:30,
-            label: ip+' — login accepted after brute force ('+sA[0].user+' on '+sA[0].host+')'});
+            label: ip+' - login accepted after brute force ('+sA[0].user+' on '+sA[0].host+')'});
         }
       }
     }
@@ -607,7 +607,7 @@
         for (var j=1;j<fails.length;j++) if (fails[j].tsVal<minF) minF=fails[j].tsVal;
         var sA = succsByIp[ip].filter(function(s){return s.tsVal>minF;});
         if (sA.length) findings.push({id:'FAIL_THEN_SUCCESS', severity:'HIGH', score:15,
-          label: ip+' — login accepted after '+fails.length+' failed attempt(s) ('+sA[0].user+' on '+sA[0].host+')'});
+          label: ip+' - login accepted after '+fails.length+' failed attempt(s) ('+sA[0].user+' on '+sA[0].host+')'});
       }
     }
 
@@ -631,7 +631,7 @@
         var times=hList.map(function(h){return hMap[h];}), minT=times[0], maxT=times[0];
         for (var j=1;j<times.length;j++){if(times[j]<minT)minT=times[j];if(times[j]>maxT)maxT=times[j];}
         if ((maxT-minT)<=300) findings.push({id:'LATERAL_MOVEMENT', severity:'HIGH', score:30,
-          label: ip+' — accessed '+hList.length+' hosts in '+(maxT-minT)+'s: '+hList.join(', ')});
+          label: ip+' - accessed '+hList.length+' hosts in '+(maxT-minT)+'s: '+hList.join(', ')});
       }
     }
 
@@ -684,10 +684,10 @@
     for (var i=0;i<findings.length;i++) total += findings[i].score;
     total = Math.min(total, 100);
     var verdict, color;
-    if      (total >= 71) { verdict='HIGH RISK — Active Attack Indicators'; color='red';    }
-    else if (total >= 41) { verdict='SUSPICIOUS — Investigate Further';     color='yellow'; }
-    else if (total >= 11) { verdict='LOW RISK — Minor Anomalies';           color='yellow'; }
-    else                  { verdict='CLEAN — No Anomalies Detected';         color='green';  }
+    if      (total >= 71) { verdict='HIGH RISK - Active Attack Indicators'; color='red';    }
+    else if (total >= 41) { verdict='SUSPICIOUS - Investigate Further';     color='yellow'; }
+    else if (total >= 11) { verdict='LOW RISK - Minor Anomalies';           color='yellow'; }
+    else                  { verdict='CLEAN - No Anomalies Detected';         color='green';  }
     return { total:total, verdict:verdict, color:color };
   }
 
@@ -887,7 +887,7 @@
 
   function runAnalysis(rawText, filename) {
     termAnalyzing.innerHTML=''; termReport.innerHTML='';
-    analyzingTitle.textContent='loglens — '+filename;
+    analyzingTitle.textContent='loglens - '+filename;
     showState('analyzing');
 
     appendTo(termAnalyzing, mkLine('','<span class="t-prompt">anfas@sec:~$</span> loglens '+escHtml(filename)));
@@ -922,7 +922,7 @@
           var clone=termAnalyzing.cloneNode(true);
           while(clone.firstChild) termReport.appendChild(clone.firstChild);
 
-          reportTitle.textContent='loglens — '+filename+' ['+scoreObj.verdict+']';
+          reportTitle.textContent='loglens - '+filename+' ['+scoreObj.verdict+']';
           showState('report');
           addLines(termReport, reportNodes, 15);
         } catch(err) {

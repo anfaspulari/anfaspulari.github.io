@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Case study: escalating a routine trademark alert into a FERPA, child-safety, and ban-evasion filing across multiple GitHub abuse channels." />
+  <title>Trademark Alert to FERPA Escalation - Case Study | Anfas Pulari</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <nav class="cs-nav">
+    <div class="container">
+      <a href="../index.html" class="nav-logo">~/anfas.sec</a>
+      <a href="../index.html#case-studies" class="cs-nav-back">← All case studies</a>
+    </div>
+  </nav>
+
+  <main id="main" class="case-study">
+    <div class="cs-layout">
+
+      <aside class="cs-toc" aria-label="On this page">
+        <p class="cs-toc-label">// On this page</p>
+        <ul>
+          <li><a href="#the-alert">The Alert</a></li>
+          <li><a href="#what-i-saw">What I Saw</a></li>
+          <li><a href="#how-i-investigated">How I Investigated</a></li>
+          <li><a href="#what-it-turned-into">What It Turned Into</a></li>
+          <li><a href="#what-id-do-differently">What I'd Do Differently</a></li>
+          <li><a href="#appendix-a">A · Violation Layers</a></li>
+          <li><a href="#appendix-b">B · Filing Strategy</a></li>
+          <li><a href="#appendix-c">C · Serial Evasion</a></li>
+          <li><a href="#appendix-d">D · Regulatory Framework</a></li>
+        </ul>
+      </aside>
+
+      <article class="cs-body">
+        <a href="../index.html#case-studies" class="cs-back">← Back to case studies</a>
+        <p class="section-label">Case Study</p>
+        <h1>Escalating a Trademark Alert into a FERPA Violation and Serial Ban-Evasion Pattern on GitHub</h1>
+
+        <div class="cs-meta" aria-label="Case metadata">
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Timeframe</span>
+            <span class="cs-meta-val">Q2 2026</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Role</span>
+            <span class="cs-meta-val">Tier 2 Analyst · Brand &amp; platform abuse</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Attack type</span>
+            <span class="cs-meta-val is-threat">Trademark to FERPA + ban evasion</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Outcome</span>
+            <span class="cs-meta-val is-ok">Multi-channel GitHub abuse filing</span>
+          </div>
+        </div>
+
+        <p class="cs-lead">
+          A routine trademark alert on a GitHub repo turned out to be serving scraped student data from a real school district, and the username's "3" told me it wasn't the operator's first account.
+        </p>
+
+        <section id="the-alert">
+          <h2>The Alert</h2>
+          <p>
+            A brand monitoring alert flagged a GitHub repository using a client LMS platform trademark in both the repository name and username: <strong>[client-platform]scraper3/[client-platform]scraper3.github.io</strong>. On the surface, a standard trademark case, unauthorized use of the product name in a third-party tool.
+          </p>
+          <p>
+            What made it non-routine: the repository wasn't just using the brand name. It was a GitHub Pages site actively serving scraped data, and the file listing referenced real school districts and student grade levels by name. That shifted the assessment from trademark triage into something significantly more serious.
+          </p>
+        </section>
+
+        <section id="what-i-saw">
+          <h2>What I Saw</h2>
+          <p>
+            The repository file listing on the main branch:
+          </p>
+          <pre class="cs-code" data-copy-label="click to copy">[client-platform]scraper3/[client-platform]scraper3.github.io
+├── 2025-09-14.json
+├── all[redacted-district]9thgrade-v1.json
+├── all[redacted-district]9thgrade.html
+├── data-march-2026-test.html
+├── gp-photos-db.txt
+├── gp-photos.html
+├── index.html
+├── onrender-[client-platform]scraper.html
+└── [client-platform]-scraper-how-it-started.js
+
+45 commits · main branch · HTML 100% · 0 stars · 0 forks
+Username:   [client-platform]scraper3
+Hosted via: GitHub Pages (publicly accessible)</pre>
+          <p>
+            Three things escalated this beyond trademark. First, <strong>all[redacted-district]9thgrade</strong> - the district abbreviation mapped to a real California school district; 9th graders are 14-15 year old minors. This repository was publicly exposing scraped student data from a real school district. Second, <strong>gp-photos-db.txt</strong> and <strong>gp-photos.html</strong> - a photo database and display page, potentially containing images of minors scraped from the platform. Third, the repository description referenced instructions to "keep moving 1 number up if we detect that Security is blocking the current version" - explicit guidance for bypassing the platform's security controls.
+          </p>
+        </section>
+
+        <section id="how-i-investigated">
+          <h2>How I Investigated</h2>
+          <ol>
+            <li><strong>Pivoted on the username suffix, not the repository content.</strong> The "3" in <code>[client-platform]scraper3</code> was the first non-obvious signal. GitHub usernames are unique, so a "3" suffix strongly implies <code>[client-platform]scraper</code> and <code>[client-platform]scraper2</code> existed previously and were terminated. I flagged this as a serial ban-evasion pattern rather than a first-time violation, which changes the enforcement strategy: GitHub Trust &amp; Safety can investigate linked accounts and implement broader blocks rather than just removing a single repository. This is the difference between whack-a-mole and permanent resolution.</li>
+            <li><strong>Classified the file names against real-world entities.</strong> The district abbreviation in the filename wasn't a generic test string; it mapped to a real publicly funded school district in California. The <code>-v1</code> suffix on the JSON file indicated iterative scraping runs. <code>data-march-2026-test.html</code> confirmed the tool was actively maintained as recently as March 2026, so this wasn't an abandoned experiment. I verified the district name to confirm the data referenced real minors, not synthetic test data.</li>
+            <li><strong>Assessed the photo database for child-safety risk.</strong> The <code>gp-photos-db.txt</code> and <code>gp-photos.html</code> files indicated the scraper was collecting not just text data but potentially student photographs. Combined with the 9th-grade targeting, this elevated the case from a data-privacy concern to a child-safety concern, which changes the reporting priority and the response timeline from GitHub.</li>
+            <li><strong>Identified the security bypass as a circumvention tool.</strong> The referenced instruction to increment version numbers to evade security blocking isn't a vulnerability disclosure or legitimate security research; it's an explicit circumvention tutorial. Under GitHub's Acceptable Use Policies, tools designed to bypass platform security controls without authorization are prohibited. This gave the filing a third independent violation category beyond trademark and data privacy.</li>
+            <li><strong>Mapped the violation layers to separate GitHub reporting channels.</strong> A single trademark report goes through GitHub's legal/DMCA queue, which can take days to weeks. By decomposing the case into its constituent violations, I identified three parallel filing paths with different priority levels and response teams, ensuring the fastest possible takedown through the channel most likely to act immediately.</li>
+            <li><strong>Identified the secondary hosting reference.</strong> The file <code>onrender-[client-platform]scraper.html</code> referenced deployment on Render (a cloud hosting platform), indicating the scraping tool itself runs on infrastructure outside GitHub. This meant the GitHub takedown would remove the data display layer but not the scraping engine, requiring a parallel abuse report to Render to fully disrupt the operation.</li>
+          </ol>
+        </section>
+
+        <section id="what-it-turned-into">
+          <h2>What It Turned Into</h2>
+          <p>
+            Filed abuse reports through three parallel GitHub channels: trademark infringement (DMCA/trademark form, client platform trademark in repo name and username), child-safety/FERPA violation (Trust &amp; Safety, exposed student data and potential photos of minors from a real California school district), and security-policy violation (abuse report, circumvention tool with explicit bypass instructions).
+          </p>
+          <p>
+            Flagged the serial ban-evasion pattern (username suffix "3") for account-level investigation rather than single-repo removal. Recommended a parallel abuse filing to Render for the secondary hosting infrastructure referenced in the repository. The multi-channel filing strategy ensured the child-safety report, which carries the highest priority at GitHub, would trigger immediate review rather than waiting in the standard DMCA queue.
+          </p>
+        </section>
+
+        <section id="what-id-do-differently">
+          <h2>What I'd Do Differently</h2>
+          <p>
+            The initial assessment took longer than it should have because I started with the trademark angle and only discovered the FERPA and child-safety dimensions after examining the file listing in detail. On a similar case now, I'd front-load the file-level content assessment before even evaluating the trademark claim; a repository's file names and commit history reveal the actual threat faster than the brand string in the URL.
+          </p>
+          <p>
+            The lesson is broader than this case: when a brand monitoring alert fires on a code repository, the trademark violation is usually the least important thing happening. The code, the data, and the commit pattern tell you what the real threat is.
+          </p>
+        </section>
+
+        <section id="appendix-a">
+          <h2>Appendix A · Violation Layer Decomposition</h2>
+          <pre class="cs-code" data-copy-label="click to copy">LAYER           VIOLATION                       EVIDENCE                          SEVERITY
+─────────────── ─────────────────────────────── ───────────────────────────────  ────────
+Trademark       Unauthorized use of client      Username + repo name + tool name  Medium
+                platform trademark in tool      "[client-platform]scraper3"
+                identity
+
+FERPA           Public exposure of scraped      all[redacted-district]9thgrade    HIGH
+                student records from real       -v1.json / .html
+                California school district      data-march-2026-test.html
+
+Child Safety    Potential photos of minors      gp-photos-db.txt                  CRITICAL
+                publicly accessible             gp-photos.html
+                                                (9th grade = 14-15 year olds)
+
+Security        Explicit circumvention tool     "keep moving 1 number up if       HIGH
+Bypass          with bypass instructions        we detect Security is blocking"
+
+Ban Evasion     Serial account recreation       Username suffix "3" implies       HIGH
+                after prior terminations        [client-platform]scraper 1 &amp; 2
+
+Secondary       Scraping engine hosted on       onrender-[client-platform]        Medium
+Infrastructure  Render, outside GitHub          scraper.html</pre>
+        </section>
+
+        <section id="appendix-b">
+          <h2>Appendix B · Multi-Channel Filing Strategy</h2>
+          <pre class="cs-code" data-copy-label="click to copy">CHANNEL                        GROUNDS                    EXPECTED RESPONSE
+─────────────────────────────  ─────────────────────────  ──────────────────────────
+GitHub Child Safety Report     Exposed minor student      FASTEST (hours)
+                               data + potential photos    GitHub prioritizes child
+                               of 14-15 year olds         safety above all categories
+
+GitHub Abuse Report            Security bypass tool +     FAST (24-48h)
+(Report Repository button)     ban evasion pattern        Trust &amp; Safety review queue
+                               (username suffix "3")
+
+GitHub DMCA / Trademark Form   Client platform trademark  STANDARD (days-weeks)
+                               in repo name and username  Legal review queue
+
+Render Abuse Report            Secondary hosting of       STANDARD (24-72h)
+(parallel filing)              scraping engine            Separate provider</pre>
+        </section>
+
+        <section id="appendix-c">
+          <h2>Appendix C · Serial Evasion Pattern</h2>
+          <pre class="cs-code" data-copy-label="click to copy">Account Timeline (Inferred):
+
+  [client-platform]scraper    → Created → Reported → Terminated
+                                                         │
+  [client-platform]scraper2   → Created → Reported → Terminated
+                                                         │
+  [client-platform]scraper3   → Created → 45 commits → ACTIVE
+  (current)                     Files date 2025-09-14 through March 2026
+                                (6+ months of activity)
+
+  Key Indicators:
+  • Identical naming pattern with incrementing suffix
+  • Identical repository structure (.github.io pages site)
+  • Identical tool purpose (client platform data scraping)
+  • Operator anticipates takedowns and pre-plans resurrection
+  • "keep moving 1 number up" instruction mirrors own account
+    evasion behavior, version incrementing as a core pattern
+
+  Recommendation:
+  • Flag to GitHub Trust &amp; Safety for account-level
+    investigation, not just repository-level removal
+  • Request IP/email correlation across accounts 1, 2, and 3
+  • Monitor for [client-platform]scraper4 post-takedown</pre>
+        </section>
+
+        <section id="appendix-d">
+          <h2>Appendix D · Regulatory Framework</h2>
+          <pre class="cs-code" data-copy-label="click to copy">FERPA (Family Educational Rights and Privacy Act)
+20 U.S.C. § 1232g; 34 CFR Part 99
+
+  Applies because:
+  • Affected institution is a federally funded
+    educational entity in California
+  • Student records scraped from the client LMS
+    constitute "education records" under FERPA
+  • Public posting on GitHub Pages = unauthorized
+    disclosure to third parties
+  • No parental consent obtained for disclosure
+  • 9th grade students are minors (14-15 years old)
+
+  FERPA violations can result in:
+  • Loss of federal funding for the school district
+  • Civil liability for the data handler
+  • Enforcement action by the U.S. Department of Education
+
+COPPA (Children's Online Privacy Protection Act)
+15 U.S.C. §§ 6501-6506
+
+  Potentially applies if:
+  • Any scraped students are under 13 years old
+  • Photo database contains images of children under 13
+  • Data collected without verifiable parental consent
+
+GitHub Acceptable Use Policies
+  Violations:
+  • Trademark infringement
+  • Active malware / exploit distribution (security bypass)
+  • Ban evasion (Terms of Service)
+  • Privacy violation (exposing PII without consent)</pre>
+        </section>
+
+        <p class="cs-disclaimer">
+          Details anonymized for demonstration. Domains, headers, hashes, client names, and timing altered to remove client-identifying information. The investigation patterns are real.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ── COMMAND PALETTE (Cmd/Ctrl+K) ──────────────────── -->
+  <div id="cmd-palette" class="cmd-palette" role="dialog" aria-modal="true" aria-label="Command palette" aria-hidden="true" hidden>
+    <div class="cmd-palette-backdrop" data-cmd-close></div>
+    <div class="cmd-palette-panel">
+      <div class="cmd-palette-input-line">
+        <span class="cmd-palette-prompt">›</span>
+        <input id="cmd-palette-input"
+               type="text"
+               autocomplete="off"
+               spellcheck="false"
+               placeholder="search commands… (whoami · skills · status · analyze phishing_case)"
+               aria-label="Command search"
+               aria-controls="cmd-palette-list" />
+        <kbd class="cmd-palette-hint">esc</kbd>
+      </div>
+      <ul id="cmd-palette-list" class="cmd-palette-list" role="listbox" aria-label="Available commands"></ul>
+      <div id="cmd-palette-output" class="cmd-palette-output" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

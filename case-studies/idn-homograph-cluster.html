@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Case study: mapping a 16-domain phishing cluster through IDN homograph evolution and social-engineering diversification." />
+  <title>16-Domain IDN Homograph Cluster - Case Study | Anfas Pulari</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <nav class="cs-nav">
+    <div class="container">
+      <a href="../index.html" class="nav-logo">~/anfas.sec</a>
+      <a href="../index.html#case-studies" class="cs-nav-back">← All case studies</a>
+    </div>
+  </nav>
+
+  <main id="main" class="case-study">
+    <div class="cs-layout">
+
+      <aside class="cs-toc" aria-label="On this page">
+        <p class="cs-toc-label">// On this page</p>
+        <ul>
+          <li><a href="#the-alert">The Alert</a></li>
+          <li><a href="#what-i-saw">What I Saw</a></li>
+          <li><a href="#how-i-investigated">How I Investigated</a></li>
+          <li><a href="#what-it-turned-into">What It Turned Into</a></li>
+          <li><a href="#what-id-do-differently">What I'd Do Differently</a></li>
+          <li><a href="#appendix-a">A · Domain Inventory</a></li>
+          <li><a href="#appendix-b">B · Homograph Evolution</a></li>
+          <li><a href="#appendix-c">C · Social Engineering</a></li>
+          <li><a href="#appendix-d">D · Shared Infrastructure</a></li>
+        </ul>
+      </aside>
+
+      <article class="cs-body">
+        <a href="../index.html#case-studies" class="cs-back">← Back to case studies</a>
+        <p class="section-label">Case Study</p>
+        <h1>Mapping a 16-Domain Phishing Cluster Using IDN Homograph Evolution and Social-Engineering Diversification</h1>
+
+        <div class="cs-meta" aria-label="Case metadata">
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Timeframe</span>
+            <span class="cs-meta-val">Q2 2026</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Role</span>
+            <span class="cs-meta-val">Tier 2 Analyst · IDN &amp; institutional phishing</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Attack type</span>
+            <span class="cs-meta-val is-threat">IDN homograph + institutional phishing</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-key">Outcome</span>
+            <span class="cs-meta-val is-ok">16-domain coordinated takedown filed</span>
+          </div>
+        </div>
+
+        <p class="cs-lead">
+          One low-confidence parked-domain alert unfolded into a 16-domain cluster on shared infrastructure, with the operator's homograph technique visibly evolving to defeat progressively better detection.
+        </p>
+
+        <section id="the-alert">
+          <h2>The Alert</h2>
+          <p>
+            A single brand-impersonation alert fired on a parked domain on the <code>.ph</code> ccTLD containing the client bank's trademark verbatim. On its own, a low-confidence hit: the domain served ParkLogic parking-page content, no credential harvesting was observed, and the HTTP 200 response returned generic JavaScript redirect scaffolding.
+          </p>
+          <p>
+            What kept me from closing it as routine squatting: the <code>.ph</code> TLD specifically targets the Philippine market where the client bank maintains an authorized branch presence. That geographic overlap elevated the consumer-confusion risk beyond generic domain parking.
+          </p>
+        </section>
+
+        <section id="what-i-saw">
+          <h2>What I Saw</h2>
+          <p>
+            The initial signal from the first domain:
+          </p>
+          <pre class="cs-code" data-copy-label="click to copy">=== DNS Resolution ===
+Timestamp (UTC): [redacted]
+Query: [client-bank]isube.ph → A record
+Result: [x.x.x.x]
+
+=== Reverse DNS ===
+Query: [x.x.x.x] → PTR
+Result: [parking-node].parklogic.com
+
+=== HTTP Request ===
+Target: [client-bank]isube.ph
+Response Code: 200 OK
+Server: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.5.38
+Body: JavaScript redirect to /page/bouncy.php with obfuscated
+      bpae= parameter (ParkLogic parking monetization script).</pre>
+          <p>
+            A parked domain on ParkLogic infrastructure, hosted on Linode/Akamai. The parking content alone isn't conclusive, ParkLogic legitimately monetizes unused domains. What made me pivot instead of close: the domain wasn't typosquatting or using a generic keyword. It embedded the client bank trademark verbatim and paired it with a <code>.ph</code> ccTLD that maps to a real client operating geography. That combination warranted infrastructure-level investigation, not just content-level triage.
+          </p>
+        </section>
+
+        <section id="how-i-investigated">
+          <h2>How I Investigated</h2>
+          <ol>
+            <li><strong>Pivoted on the IP, not the domain.</strong> I ran reverse DNS on the hosting IP and confirmed the PTR record pointed to ParkLogic's Philippine-targeted Kubernetes lander cluster. I chose to pivot on IP rather than domain registrant because ParkLogic parking infrastructure often clusters domains from the same buyer on the same IP block, making the IP a better pivot point for discovering sibling domains than WHOIS alone.</li>
+            <li><strong>Identified sibling domains through alert-queue correlation and passive DNS.</strong> Cross-referencing the IP against the broader alert queue surfaced additional <code>[client-bank]*.ph</code> domains resolving to the same address. Each new domain I found, I resolved DNS for both apex and <code>www</code> subdomain to confirm identical infrastructure. This grew the cluster from 1 to 16 domains across several investigative sessions.</li>
+            <li><strong>Decoded all Punycode/IDN domains to identify homograph substitutions.</strong> Five of the sixteen domains used <code>xn--</code> Punycode encoding. I decoded each and ran character-by-character Unicode comparison against the legitimate client trademark string. This revealed a deliberate homograph evolution pattern: the operator progressed from naive single-block Latin Extended-A substitutions to advanced cross-script (Greek + Latin) and intra-Latin cross-block (Latin Extended-A + Latin Extended Additional + Latin Extended-B) techniques designed to evade progressively more sophisticated homograph detection filters.</li>
+            <li><strong>Probed HTTP and TLS on every domain to assess operational readiness.</strong> I ran HTTP GET requests and HTTPS probes with TLS certificate inspection against all 16 domains. Results split into three categories: one domain serving live parking content (HTTP 200), the rest returning 503/timeout with origin connection refused, but 13 of 15 non-live domains had active TLS certificates configured (30-day validity, non-wildcard, exact CN match). This confirmed the dormant domains weren't abandoned registrations; they were pre-activation infrastructure with TLS readiness, awaiting deployment.</li>
+            <li><strong>Classified the institutional domain suffixes by social-engineering intent.</strong> Seven domains shared a <code>[client-bank]conflictresolution</code> prefix and diverged only at the suffix: <code>reporting</code>, <code>compliance</code>, <code>reconciliation</code>, <code>litigation</code>, <code>reparation</code>, <code>guidelines</code>, <code>experts</code>. Rather than treating these as duplicates, I mapped each suffix to the psychological pressure it applies: fear (litigation, compliance), hope (reconciliation, reparation), trust (guidelines, experts), duty (reporting). This revealed a professionally designed social-engineering matrix covering the full victim-psychology spectrum, not random domain generation.</li>
+            <li><strong>Mapped to MITRE ATT&amp;CK and documented the full cluster for coordinated takedown.</strong> Final mapping: T1583.001 (Acquire Infrastructure: Domains), T1328 (Buy Domain Name), T1566.002 (Phishing: Spearphishing Link), T1036 (Masquerading), T1056.003 (Input Capture: Web Portal Capture). Compiled the full 16-domain set with per-domain DNS, HTTP, TLS, and obfuscation analysis into a single intelligence package for coordinated abuse filing.</li>
+          </ol>
+        </section>
+
+        <section id="what-it-turned-into">
+          <h2>What It Turned Into</h2>
+          <p>
+            Coordinated takedown requests filed against all 16 domains targeting three providers simultaneously: Linode/Akamai (hosting abuse), ParkLogic (parking-infrastructure abuse), and the <code>.ph</code> registry (trademark complaint).
+          </p>
+          <p>
+            The investigation also produced a reusable Punycode homograph detection methodology, specifically the finding that intra-Latin cross-block substitutions (e.g., Latin Extended-A + Latin Extended Additional) evade the majority of commercial IDN homograph filters that only check for cross-script mixing (Latin vs Greek vs Cyrillic). That detection gap was documented and flagged for integration into monitoring rulesets. One domain in the cluster included a per-victim <code>?entity=[redacted]</code> tracking parameter, confirming at least one domain was configured for targeted spearphishing rather than broadcast distribution.
+          </p>
+        </section>
+
+        <section id="what-id-do-differently">
+          <h2>What I'd Do Differently</h2>
+          <p>
+            Initial investigation was linear; I fully analyzed each domain before moving to the next, which meant the cluster picture emerged slowly over multiple sessions. On a similar case now, I'd front-load a batch DNS + HTTP sweep of all candidate domains against the pivot IP first to establish cluster scope before deep-diving individual domains.
+          </p>
+          <p>
+            I'd also automate the Punycode decode-and-compare step. Manually running character-level Unicode comparison across five IDN domains was accurate but slow. A lightweight script that decodes, diffs against the target trademark, and flags the Unicode block of each substituted character would cut the homograph analysis phase from about 15 minutes per domain to under a minute.
+          </p>
+        </section>
+
+        <section id="appendix-a">
+          <h2>Appendix A · Full Domain Inventory</h2>
+          <pre class="cs-code" data-copy-label="click to copy">#   Domain                                            Technique             HTTP  TLS
+──  ────────────────────────────────────────────────  ─────────────────     ───   ────
+1   [client-bank]isube.ph                             Brand + descriptor    200   N/T
+2   xn--[client-bank-idn-v1].ph                       Homograph v1          503   Fail
+    └ [client-bank-à].ph                              (à U+00E0)
+3   [client-bank]-com-login-update-info-login0in.ph   Leet + keyword stack  T/O   WC✓
+4   [client-bank]conflictresolutionreporting.ph       Institutional         503   ✓
+5   xn--[client-bank-idn-v2].ph                       Homograph v2          T/O   HS✓
+    └ [client-bank-ϝ-ì].ph                            (ϝ U+03DD, ì U+00EC)
+6   [client-bank]conflictresolutioncompliance.ph      Institutional         503   ✓
+7   com[client-bank].ph                               TLD prefix inversion  503   ✓
+8   xn--[client-bank-idn-v3].ph                       Homograph v3          503   ✓
+    └ [client-bank-ń-ạ].ph                            (ń U+0144, ạ U+1EA1)
+9   [client-bank]conflictresolutionreconciliation.ph  Institutional         503   ✓
+10  xn--[client-bank-idn-v4].ph                       Homograph v4          503   ✓
+    └ [client-bank-ȧ-ì].ph                            (ȧ U+0227, ì U+00EC)
+11  [client-bank]conflictresolutionlitigation.ph      Institutional         503   ✓
+12  [client-bank]conflictresolutionreparation.ph      Institutional         503   ✓
+13  [client-bank]conflictresolutionguidelines.ph      Institutional         503   ✓
+14  [client-bank]conflictresolutionexperts.ph         Institutional         503   ✓
+15  xn--[client-bank-idn-v5].ph                       Homograph v5          503   ✓
+    └ [client-bank-à-ĕ].ph                            (à U+00E0, ĕ U+0115)</pre>
+        </section>
+
+        <section id="appendix-b">
+          <h2>Appendix B · Homograph Evolution Map</h2>
+          <pre class="cs-code" data-copy-label="click to copy">Detection Evasion
+       ▲
+ HIGH  │                          ██ v3 (ń,ạ)     ██ v4 (ȧ,ì)    ██ v5 (à,ĕ)
+       │                          Ext-A + Ext-Add  Ext-B + Ext-A   Ext-A + Ext-A
+       │
+ MED   │            ██ v2 (ϝ,ì)
+       │            Greek + Ext-A
+       │
+ LOW   │  ██ v1 (à,1)
+       │  Ext-A + ASCII
+       │
+       └──────────────────────────────────────────────────────────────────► Iteration
+          Early                                                         Late
+
+Unicode blocks exploited across cluster:
+  Latin Extended-A .............. 4 domains   (à ń ì ĕ)
+  Latin Extended Additional ..... 2 domains   (ạ)
+  Latin Extended-B .............. 1 domain    (ȧ)
+  Greek ......................... 1 domain    (ϝ)</pre>
+        </section>
+
+        <section id="appendix-c">
+          <h2>Appendix C · Social Engineering Matrix</h2>
+          <pre class="cs-code" data-copy-label="click to copy">Victim Psychology     Suffix           Lure Framing
+──────────────────    ──────────────   ───────────────────────────────────────
+FEAR                  litigation       "Legal action initiated, respond now"
+FEAR                  compliance       "Regulatory compliance action required"
+HOPE                  reconciliation   "Account reconciliation ready for review"
+HOPE                  reparation       "You are eligible for reparation payment"
+TRUST                 guidelines       "Updated policy requires acknowledgment"
+TRUST                 experts          "A specialist has been assigned to your case"
+DUTY                  reporting        "File your conflict resolution report"</pre>
+        </section>
+
+        <section id="appendix-d">
+          <h2>Appendix D · Shared Infrastructure</h2>
+          <pre class="cs-code" data-copy-label="click to copy">All 16 domains → [x.x.x.x]
+                  │
+                  ├─ PTR: [parking-provider-k8s].parklogic.net
+                  ├─ ASN: Linode / Akamai Technologies
+                  ├─ Range: [x.x.0.0/16]
+                  └─ Region: US Southeast
+
+TLS Configuration (13 of 15 non-live domains):
+  Protocol:  TLSv1.3
+  Cipher:    TLS_AES_256_GCM_SHA384 / X25519 / RSASSA-PSS
+  Cert type: Non-wildcard, exact CN match per domain
+  Validity:  30-day rotation</pre>
+        </section>
+
+        <p class="cs-disclaimer">
+          Details anonymized for demonstration. Domains, headers, hashes, client names, and timing altered to remove client-identifying information. The investigation patterns are real.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ── COMMAND PALETTE (Cmd/Ctrl+K) ──────────────────── -->
+  <div id="cmd-palette" class="cmd-palette" role="dialog" aria-modal="true" aria-label="Command palette" aria-hidden="true" hidden>
+    <div class="cmd-palette-backdrop" data-cmd-close></div>
+    <div class="cmd-palette-panel">
+      <div class="cmd-palette-input-line">
+        <span class="cmd-palette-prompt">›</span>
+        <input id="cmd-palette-input"
+               type="text"
+               autocomplete="off"
+               spellcheck="false"
+               placeholder="search commands… (whoami · skills · status · analyze phishing_case)"
+               aria-label="Command search"
+               aria-controls="cmd-palette-list" />
+        <kbd class="cmd-palette-hint">esc</kbd>
+      </div>
+      <ul id="cmd-palette-list" class="cmd-palette-list" role="listbox" aria-label="Available commands"></ul>
+      <div id="cmd-palette-output" class="cmd-palette-output" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>

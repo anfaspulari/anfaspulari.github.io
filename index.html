@@ -153,7 +153,7 @@
       <div class="exp-item">
         <div class="exp-header">
           <span class="exp-role">Cybersecurity Training Lead</span>
-          <span class="exp-period">2023 – Present</span>
+          <span class="exp-period">2023 - Present</span>
         </div>
         <p class="exp-company">Independent - Cybersecurity Training &amp; Mentorship Initiative</p>
         <ul class="exp-points">
@@ -170,28 +170,28 @@
     <div class="container">
       <p class="section-label">Case Studies</p>
       <h2 class="section-title">Investigations</h2>
-      <p class="section-desc">Selected SOC cases — simulated and anonymized for demonstration. The pattern matters more than the IOCs.</p>
+      <p class="section-desc">Selected threat-investigation work in brand protection, fraud, and phishing infrastructure. Details anonymized throughout: domains, headers, hashes, client names, and timing altered to remove client-identifying information. Investigation patterns are real.</p>
 
       <div class="cs-grid">
+
+        <a href="case-studies/github-trademark-ferpa.html" class="cs-card">
+          <span class="cs-pill cs-pill--threat">Trademark to FERPA</span>
+          <h3 class="cs-card-title">Escalating a Trademark Alert into a FERPA &amp; Ban-Evasion Filing</h3>
+          <p class="cs-card-takeaway">A routine trademark hit on a GitHub repo was serving scraped student data, and the username's "3" exposed a serial ban-evasion pattern.</p>
+          <span class="cs-card-cta">Read case study →</span>
+        </a>
+
+        <a href="case-studies/idn-homograph-cluster.html" class="cs-card">
+          <span class="cs-pill cs-pill--threat">IDN Homograph</span>
+          <h3 class="cs-card-title">Mapping a 16-Domain Phishing Cluster via IDN Homograph Evolution</h3>
+          <p class="cs-card-takeaway">One low-confidence parked domain unfolded into a 16-domain cluster, with the operator's homograph technique visibly evolving to beat detection.</p>
+          <span class="cs-card-cta">Read case study →</span>
+        </a>
 
         <a href="case-studies/phishing-kit-reuse.html" class="cs-card">
           <span class="cs-pill cs-pill--threat">Phishing</span>
           <h3 class="cs-card-title">Credential-Harvest Kit Reused Across Three Brands</h3>
-          <p class="cs-card-takeaway">Same kit signature, same hosting fingerprint — three different brand impersonations linked back to one operator cluster.</p>
-          <span class="cs-card-cta">Read case study →</span>
-        </a>
-
-        <a href="case-studies/brand-impersonation-social.html" class="cs-card">
-          <span class="cs-pill cs-pill--threat">Brand Impersonation</span>
-          <h3 class="cs-card-title">Executive Spoofing on Social Media</h3>
-          <p class="cs-card-takeaway">A fake exec profile pushing a fake "internal portal" — the IOCs were posted before the impersonation account had any followers.</p>
-          <span class="cs-card-cta">Read case study →</span>
-        </a>
-
-        <a href="case-studies/lateral-movement-log-correlation.html" class="cs-card">
-          <span class="cs-pill cs-pill--threat">Lateral Movement</span>
-          <h3 class="cs-card-title">Lateral Movement Surfaced via Log Correlation</h3>
-          <p class="cs-card-takeaway">Three "noisy" auth events that wouldn't have triggered alone — correlating them across hosts revealed a real escalation path.</p>
+          <p class="cs-card-takeaway">Same kit signature, same hosting fingerprint, three different brand impersonations linked back to one operator cluster.</p>
           <span class="cs-card-cta">Read case study →</span>
         </a>
 
@@ -273,7 +273,7 @@
               <path d="M9 3h6"/>
             </svg>
           </div>
-          <p class="project-title">PhishScan — Phishing Detection CLI</p>
+          <p class="project-title">PhishScan - Phishing Detection CLI</p>
           <p class="project-origin">Built after spending hours manually parsing phishing emails in SOC workflows. Automates the parts that don't need human attention.</p>
           <p class="project-desc">Python CLI that parses .eml files, applies 8 detection rules (SPF/DKIM/Reply-To mismatch, URL patterns, urgency triggers), extracts IOCs, and outputs a scored incident report.</p>
           <div class="project-metrics">
@@ -291,7 +291,7 @@
             <a href="https://github.com/anfaspulari/phishscan-cli" target="_blank" rel="noopener" class="project-link">GitHub →</a>
             <a href="phishscan-demo.html" class="project-cta">Live demo →</a>
           </div>
-          <p class="project-disclaimer">Simulated/anonymized data only — no client material is reproduced.</p>
+          <p class="project-disclaimer">Simulated/anonymized data only - no client material is reproduced.</p>
         </div>
 
         <div class="project-card">
@@ -307,7 +307,7 @@
               <path d="M7.5 13l3-2"/>
             </svg>
           </div>
-          <p class="project-title">ThreatBoard — IOC Dashboard</p>
+          <p class="project-title">ThreatBoard - IOC Dashboard</p>
           <p class="project-origin">Born from the need to see attacker infrastructure as a connected graph, not a flat list of indicators.</p>
           <p class="project-desc">A browser-based threat intelligence dashboard for visualizing IOC clusters, campaign timelines, and attacker infrastructure relationships.</p>
           <div class="project-metrics">
@@ -325,7 +325,7 @@
             <a href="https://github.com/anfaspulari/threatboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
             <a href="https://anfaspulari.github.io/threatboard" target="_blank" rel="noopener" class="project-cta">Live demo →</a>
           </div>
-          <p class="project-disclaimer">Simulated/anonymized data only — no client material is reproduced.</p>
+          <p class="project-disclaimer">Simulated/anonymized data only - no client material is reproduced.</p>
         </div>
 
         <div class="project-card">
@@ -338,7 +338,7 @@
               <path d="M19 18l3 3"/>
             </svg>
           </div>
-          <p class="project-title">LogLens — SIEM Log Correlator</p>
+          <p class="project-title">LogLens - SIEM Log Correlator</p>
           <p class="project-origin">Written to cut down the time spent eyeballing raw log exports when looking for lateral movement patterns.</p>
           <p class="project-desc">A Bash/Python pipeline for parsing and correlating SIEM log exports. Identifies anomalous login patterns, privilege escalations, and lateral movement indicators.</p>
           <div class="project-metrics">
@@ -356,7 +356,7 @@
             <a href="https://github.com/anfaspulari" target="_blank" rel="noopener" class="project-link">GitHub →</a>
             <a href="loglens-demo.html" class="project-cta">Live demo →</a>
           </div>
-          <p class="project-disclaimer">Simulated/anonymized data only — no client material is reproduced.</p>
+          <p class="project-disclaimer">Simulated/anonymized data only - no client material is reproduced.</p>
         </div>
 
       </div>

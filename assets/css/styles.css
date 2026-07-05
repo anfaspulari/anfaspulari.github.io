@@ -18,7 +18,7 @@
   --accent-warn:   #fbbf24;
   --accent-ok:     #4ade80;
 
-  /* Legacy aliases — kept so existing rules keep working */
+  /* Legacy aliases - kept so existing rules keep working */
   --cyan:   var(--accent);
   --amber:  var(--accent-warn);
   --green:  var(--accent-ok);
@@ -571,7 +571,7 @@ nav .container {
   cursor: default;
 }
 
-/* Diagonal shimmer sweep — passes through card on hover */
+/* Diagonal shimmer sweep - passes through card on hover */
 .skill-group::before {
   content: '';
   position: absolute;
@@ -664,7 +664,7 @@ nav .container {
   cursor: default;
 }
 
-/* Radial glow orb — rises from below card center on hover */
+/* Radial glow orb - rises from below card center on hover */
 .project-card::before {
   content: '';
   position: absolute;
@@ -1036,7 +1036,7 @@ nav .container {
   margin-bottom: 28px !important;
 }
 
-/* Code blocks — copy-on-click */
+/* Code blocks - copy-on-click */
 .cs-code {
   display: block;
   position: relative;
@@ -1104,7 +1104,7 @@ nav .container {
   cursor: default;
 }
 
-/* Left border charge — grows from bottom to top on hover */
+/* Left border charge - grows from bottom to top on hover */
 .training-card::before {
   content: '';
   position: absolute;
@@ -1117,7 +1117,7 @@ nav .container {
   pointer-events: none;
 }
 
-/* Top accent line — appears simultaneously */
+/* Top accent line - appears simultaneously */
 .training-card::after {
   content: '';
   position: absolute;
@@ -1377,7 +1377,7 @@ footer .container {
     transform: none !important;
   }
 
-  /* Terminal cursor — stop blink */
+  /* Terminal cursor - stop blink */
   .t-cursor {
     animation: none !important;
   }
