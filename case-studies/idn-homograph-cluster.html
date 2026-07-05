@@ -74,7 +74,7 @@
             A single brand-impersonation alert fired on a parked domain on the <code>.ph</code> ccTLD containing the client bank's trademark verbatim. On its own, a low-confidence hit: the domain served ParkLogic parking-page content, no credential harvesting was observed, and the HTTP 200 response returned generic JavaScript redirect scaffolding.
           </p>
           <p>
-            What kept me from closing it as routine squatting: the <code>.ph</code> TLD specifically targets the Philippine market where the client bank maintains an authorized branch presence. That geographic overlap elevated the consumer-confusion risk beyond generic domain parking.
+            What kept me from closing it as routine squatting: the <code>.ph</code> ccTLD maps to a market where the client maintains authorized operations. That geographic overlap elevated the consumer-confusion risk beyond generic domain parking.
           </p>
         </section>
 
@@ -85,7 +85,7 @@
           </p>
           <pre class="cs-code" data-copy-label="click to copy">=== DNS Resolution ===
 Timestamp (UTC): [redacted]
-Query: [client-bank]isube.ph → A record
+Query: [client-bank][redacted].ph → A record
 Result: [x.x.x.x]
 
 === Reverse DNS ===
@@ -93,7 +93,7 @@ Query: [x.x.x.x] → PTR
 Result: [parking-node].parklogic.com
 
 === HTTP Request ===
-Target: [client-bank]isube.ph
+Target: [client-bank][redacted].ph
 Response Code: 200 OK
 Server: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/5.5.38
 Body: JavaScript redirect to /page/bouncy.php with obfuscated
@@ -106,11 +106,11 @@ Body: JavaScript redirect to /page/bouncy.php with obfuscated
         <section id="how-i-investigated">
           <h2>How I Investigated</h2>
           <ol>
-            <li><strong>Pivoted on the IP, not the domain.</strong> I ran reverse DNS on the hosting IP and confirmed the PTR record pointed to ParkLogic's Philippine-targeted Kubernetes lander cluster. I chose to pivot on IP rather than domain registrant because ParkLogic parking infrastructure often clusters domains from the same buyer on the same IP block, making the IP a better pivot point for discovering sibling domains than WHOIS alone.</li>
+            <li><strong>Pivoted on the IP, not the domain.</strong> I ran reverse DNS on the hosting IP and confirmed the PTR record pointed to ParkLogic's region-specific Kubernetes lander cluster matching the <code>.ph</code> ccTLD. I chose to pivot on IP rather than domain registrant because ParkLogic parking infrastructure often clusters domains from the same buyer on the same IP block, making the IP a better pivot point for discovering sibling domains than WHOIS alone.</li>
             <li><strong>Identified sibling domains through alert-queue correlation and passive DNS.</strong> Cross-referencing the IP against the broader alert queue surfaced additional <code>[client-bank]*.ph</code> domains resolving to the same address. Each new domain I found, I resolved DNS for both apex and <code>www</code> subdomain to confirm identical infrastructure. This grew the cluster from 1 to 16 domains across several investigative sessions.</li>
             <li><strong>Decoded all Punycode/IDN domains to identify homograph substitutions.</strong> Five of the sixteen domains used <code>xn--</code> Punycode encoding. I decoded each and ran character-by-character Unicode comparison against the legitimate client trademark string. This revealed a deliberate homograph evolution pattern: the operator progressed from naive single-block Latin Extended-A substitutions to advanced cross-script (Greek + Latin) and intra-Latin cross-block (Latin Extended-A + Latin Extended Additional + Latin Extended-B) techniques designed to evade progressively more sophisticated homograph detection filters.</li>
             <li><strong>Probed HTTP and TLS on every domain to assess operational readiness.</strong> I ran HTTP GET requests and HTTPS probes with TLS certificate inspection against all 16 domains. Results split into three categories: one domain serving live parking content (HTTP 200), the rest returning 503/timeout with origin connection refused, but 13 of 15 non-live domains had active TLS certificates configured (30-day validity, non-wildcard, exact CN match). This confirmed the dormant domains weren't abandoned registrations; they were pre-activation infrastructure with TLS readiness, awaiting deployment.</li>
-            <li><strong>Classified the institutional domain suffixes by social-engineering intent.</strong> Seven domains shared a <code>[client-bank]conflictresolution</code> prefix and diverged only at the suffix: <code>reporting</code>, <code>compliance</code>, <code>reconciliation</code>, <code>litigation</code>, <code>reparation</code>, <code>guidelines</code>, <code>experts</code>. Rather than treating these as duplicates, I mapped each suffix to the psychological pressure it applies: fear (litigation, compliance), hope (reconciliation, reparation), trust (guidelines, experts), duty (reporting). This revealed a professionally designed social-engineering matrix covering the full victim-psychology spectrum, not random domain generation.</li>
+            <li><strong>Classified the institutional domain suffixes by social-engineering intent.</strong> Seven domains shared a <code>[client-bank]conflictresolution</code> prefix and diverged only at the suffix. Three representative examples: <code>litigation</code>, <code>reconciliation</code>, and <code>reporting</code> (remaining suffixes generalized for anonymization). Rather than treating these as duplicates, I mapped each suffix to the psychological pressure it applies - fear (e.g., litigation), hope (e.g., reconciliation), trust (authority and expertise framing), and duty (e.g., reporting). This revealed a professionally designed social-engineering matrix covering the full victim-psychology spectrum, not random domain generation.</li>
             <li><strong>Mapped to MITRE ATT&amp;CK and documented the full cluster for coordinated takedown.</strong> Final mapping: T1583.001 (Acquire Infrastructure: Domains), T1328 (Buy Domain Name), T1566.002 (Phishing: Spearphishing Link), T1036 (Masquerading), T1056.003 (Input Capture: Web Portal Capture). Compiled the full 16-domain set with per-domain DNS, HTTP, TLS, and obfuscation analysis into a single intelligence package for coordinated abuse filing.</li>
           </ol>
         </section>
@@ -139,7 +139,7 @@ Body: JavaScript redirect to /page/bouncy.php with obfuscated
           <h2>Appendix A · Full Domain Inventory</h2>
           <pre class="cs-code" data-copy-label="click to copy">#   Domain                                            Technique             HTTP  TLS
 ──  ────────────────────────────────────────────────  ─────────────────     ───   ────
-1   [client-bank]isube.ph                             Brand + descriptor    200   N/T
+1   [client-bank][redacted].ph                        Brand + descriptor    200   N/T
 2   xn--[client-bank-idn-v1].ph                       Homograph v1          503   Fail
     └ [client-bank-à].ph                              (à U+00E0)
 3   [client-bank]-com-login-update-info-login0in.ph   Leet + keyword stack  T/O   WC✓
@@ -189,12 +189,12 @@ Unicode blocks exploited across cluster:
           <pre class="cs-code" data-copy-label="click to copy">Victim Psychology     Suffix           Lure Framing
 ──────────────────    ──────────────   ───────────────────────────────────────
 FEAR                  litigation       "Legal action initiated, respond now"
-FEAR                  compliance       "Regulatory compliance action required"
 HOPE                  reconciliation   "Account reconciliation ready for review"
-HOPE                  reparation       "You are eligible for reparation payment"
-TRUST                 guidelines       "Updated policy requires acknowledgment"
-TRUST                 experts          "A specialist has been assigned to your case"
-DUTY                  reporting        "File your conflict resolution report"</pre>
+DUTY                  reporting        "File your conflict resolution report"
+TRUST                 (generalized)    Authority / expertise framing
+
+(remaining suffixes generalized for anonymization; the full set spanned
+ the fear / hope / trust / duty spectrum)</pre>
         </section>
 
         <section id="appendix-d">
