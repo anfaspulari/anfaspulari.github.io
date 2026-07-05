@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Anfas Pulari - Cybersecurity Analyst">
+  <rect width="1200" height="630" fill="#0d0d0d"/>
+  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="#00d4ff" stroke-opacity="0.25" stroke-width="2"/>
+  <rect x="60" y="60" width="120" height="4" fill="#00d4ff"/>
+  <text x="60" y="150" font-family="'JetBrains Mono', monospace" font-size="30" fill="#00d4ff" letter-spacing="4">// Cybersecurity Analyst</text>
+  <text x="60" y="330" font-family="'Inter', sans-serif" font-size="112" font-weight="700" fill="#e0e0e0">Anfas Pulari</text>
+  <text x="60" y="420" font-family="'Inter', sans-serif" font-size="44" font-weight="500" fill="#888888">Cybersecurity Analyst</text>
+  <text x="60" y="560" font-family="'JetBrains Mono', monospace" font-size="26" fill="#00d4ff">anfas@sec:~$ <tspan fill="#4ade80">whoami</tspan></text>
+</svg>

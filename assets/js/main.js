@@ -53,6 +53,7 @@ var COMMANDS = {
       { text: '  Priority HIGH  : 2',                  type: 'warn' },
       { text: '  Assigned to me : 3',                  type: 'out'  },
       { text: '  Avg close time : 18 min',             type: 'out'  },
+      { text: '  Snapshot     : shift handoff (static demo)', type: 'out' },
     ];
   },
 

@@ -609,6 +609,9 @@ nav .container {
 .skill-group:hover::after  { opacity: 1; }
 
 .skill-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -619,6 +622,9 @@ nav .container {
 }
 
 .skill-group:hover .skill-group-title { color: var(--cyan); }
+
+.skill-icon { display: inline-flex; flex-shrink: 0; color: var(--cyan); }
+.skill-icon svg { width: 16px; height: 16px; }
 
 /* Active tags brighten when parent is hovered */
 .skill-group:hover .tag.active {

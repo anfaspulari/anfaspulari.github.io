@@ -12,7 +12,8 @@
   <!-- Open Graph -->
   <meta property="og:title" content="Anfas Pulari | Cybersecurity Analyst" />
   <meta property="og:description" content="Tier 2 SOC Analyst handling phishing campaigns, threat intelligence, and digital risk investigations at an enterprise DRP platform." />
-  <meta property="og:image" content="assets/images/preview.png" />
+  <!-- og:image must be raster (PNG/JPG); OG crawlers do not render SVG. Export assets/images/preview.svg to this PNG. -->
+  <meta property="og:image" content="assets/images/preview.png" data-todo="export preview.svg to preview.png (1200x630)" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://anfaspulari.github.io" />
 
@@ -60,7 +61,7 @@
 
       <div class="btn-row">
         <a href="#projects" class="btn btn-fill">View My Work</a>
-        <a href="resume.pdf" class="btn btn-outline" download>Download Resume</a>
+        <a href="#" data-todo="add resume.pdf" class="btn btn-outline">Download Resume</a>
       </div>
 
       <!-- Interactive Terminal -->
@@ -208,7 +209,14 @@
 
       <div class="skills-grid">
         <div class="skill-group">
-          <p class="skill-group-title">🛡️ Security</p>
+          <p class="skill-group-title">
+            <span class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </span>
+            Security
+          </p>
           <div class="tags">
             <span class="tag active">Phishing Analysis</span>
             <span class="tag active">Threat Intelligence</span>
@@ -225,7 +233,14 @@
         </div>
 
         <div class="skill-group">
-          <p class="skill-group-title">🔧 Tools</p>
+          <p class="skill-group-title">
+            <span class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </span>
+            Tools
+          </p>
           <div class="tags">
             <span class="tag active">Splunk</span>
             <span class="tag active">DRP Platforms</span>
@@ -241,7 +256,15 @@
         </div>
 
         <div class="skill-group">
-          <p class="skill-group-title">💻 Programming</p>
+          <p class="skill-group-title">
+            <span class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </span>
+            Programming
+          </p>
           <div class="tags">
             <span class="tag active">Python</span>
             <span class="tag active">Bash</span>
@@ -468,7 +491,7 @@
       <div class="footer-links">
         <a href="https://github.com/anfaspulari" target="_blank" rel="noopener">GitHub</a>
         <a href="https://linkedin.com/in/anfas-pulari" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="resume.pdf" download>Resume</a>
+        <a href="#" data-todo="add resume.pdf">Resume</a>
       </div>
     </div>
   </footer>

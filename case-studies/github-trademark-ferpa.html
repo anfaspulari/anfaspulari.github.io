@@ -98,15 +98,15 @@
 Username:   [client-platform]scraper3
 Hosted via: GitHub Pages (publicly accessible)</pre>
           <p>
-            Three things escalated this beyond trademark. First, <strong>all[redacted-district]9thgrade</strong> - the district abbreviation mapped to a real California school district; 9th graders are 14-15 year old minors. This repository was publicly exposing scraped student data from a real school district. Second, <strong>gp-photos-db.txt</strong> and <strong>gp-photos.html</strong> - a photo database and display page, potentially containing images of minors scraped from the platform. Third, the repository description referenced instructions to "keep moving 1 number up if we detect that Security is blocking the current version" - explicit guidance for bypassing the platform's security controls.
+            Three things escalated this beyond trademark. First, <strong>all[redacted-district]9thgrade</strong> - the district abbreviation mapped to a real U.S. public school district; 9th graders are 14-15 year old minors. This repository was publicly exposing scraped student data from a real school district. Second, <strong>gp-photos-db.txt</strong> and <strong>gp-photos.html</strong> - a photo database and display page, potentially containing images of minors scraped from the platform. Third, the repository description referenced instructions to "keep moving 1 number up if we detect that Security is blocking the current version" - explicit guidance for bypassing the platform's security controls.
           </p>
         </section>
 
         <section id="how-i-investigated">
           <h2>How I Investigated</h2>
           <ol>
-            <li><strong>Pivoted on the username suffix, not the repository content.</strong> The "3" in <code>[client-platform]scraper3</code> was the first non-obvious signal. GitHub usernames are unique, so a "3" suffix strongly implies <code>[client-platform]scraper</code> and <code>[client-platform]scraper2</code> existed previously and were terminated. I flagged this as a serial ban-evasion pattern rather than a first-time violation, which changes the enforcement strategy: GitHub Trust &amp; Safety can investigate linked accounts and implement broader blocks rather than just removing a single repository. This is the difference between whack-a-mole and permanent resolution.</li>
-            <li><strong>Classified the file names against real-world entities.</strong> The district abbreviation in the filename wasn't a generic test string; it mapped to a real publicly funded school district in California. The <code>-v1</code> suffix on the JSON file indicated iterative scraping runs. <code>data-march-2026-test.html</code> confirmed the tool was actively maintained as recently as March 2026, so this wasn't an abandoned experiment. I verified the district name to confirm the data referenced real minors, not synthetic test data.</li>
+            <li><strong>Pivoted on the username suffix, not the repository content.</strong> The "3" in <code>[client-platform]scraper3</code> was the first non-obvious signal. GitHub usernames are unique, so a "3" suffix strongly implies <code>[client-platform]scraper</code> and <code>[client-platform]scraper2</code> existed previously and were terminated (an inference to be confirmed via GitHub's account-linkage investigation, not an established fact). I flagged this as a serial ban-evasion pattern rather than a first-time violation, which changes the enforcement strategy: GitHub Trust &amp; Safety can investigate linked accounts and implement broader blocks rather than just removing a single repository. This is the difference between whack-a-mole and permanent resolution.</li>
+            <li><strong>Classified the file names against real-world entities.</strong> The district abbreviation in the filename wasn't a generic test string; it mapped to a real U.S. public school district. The <code>-v1</code> suffix on the JSON file indicated iterative scraping runs. <code>data-march-2026-test.html</code> confirmed the tool was actively maintained as recently as March 2026, so this wasn't an abandoned experiment. I verified the district name to confirm the data referenced real minors, not synthetic test data.</li>
             <li><strong>Assessed the photo database for child-safety risk.</strong> The <code>gp-photos-db.txt</code> and <code>gp-photos.html</code> files indicated the scraper was collecting not just text data but potentially student photographs. Combined with the 9th-grade targeting, this elevated the case from a data-privacy concern to a child-safety concern, which changes the reporting priority and the response timeline from GitHub.</li>
             <li><strong>Identified the security bypass as a circumvention tool.</strong> The referenced instruction to increment version numbers to evade security blocking isn't a vulnerability disclosure or legitimate security research; it's an explicit circumvention tutorial. Under GitHub's Acceptable Use Policies, tools designed to bypass platform security controls without authorization are prohibited. This gave the filing a third independent violation category beyond trademark and data privacy.</li>
             <li><strong>Mapped the violation layers to separate GitHub reporting channels.</strong> A single trademark report goes through GitHub's legal/DMCA queue, which can take days to weeks. By decomposing the case into its constituent violations, I identified three parallel filing paths with different priority levels and response teams, ensuring the fastest possible takedown through the channel most likely to act immediately.</li>
@@ -117,7 +117,7 @@ Hosted via: GitHub Pages (publicly accessible)</pre>
         <section id="what-it-turned-into">
           <h2>What It Turned Into</h2>
           <p>
-            Filed abuse reports through three parallel GitHub channels: trademark infringement (DMCA/trademark form, client platform trademark in repo name and username), child-safety/FERPA violation (Trust &amp; Safety, exposed student data and potential photos of minors from a real California school district), and security-policy violation (abuse report, circumvention tool with explicit bypass instructions).
+            Filed abuse reports through three parallel GitHub channels: trademark infringement (DMCA/trademark form, client platform trademark in repo name and username), child-safety/FERPA violation (Trust &amp; Safety, exposed student data and potential photos of minors from a real U.S. public school district), and security-policy violation (abuse report, circumvention tool with explicit bypass instructions).
           </p>
           <p>
             Flagged the serial ban-evasion pattern (username suffix "3") for account-level investigation rather than single-repo removal. Recommended a parallel abuse filing to Render for the secondary hosting infrastructure referenced in the repository. The multi-channel filing strategy ensured the child-safety report, which carries the highest priority at GitHub, would trigger immediate review rather than waiting in the standard DMCA queue.
@@ -144,7 +144,7 @@ Trademark       Unauthorized use of client      Username + repo name + tool name
 
 FERPA           Public exposure of scraped      all[redacted-district]9thgrade    HIGH
                 student records from real       -v1.json / .html
-                California school district      data-march-2026-test.html
+                U.S. public school district     data-march-2026-test.html
 
 Child Safety    Potential photos of minors      gp-photos-db.txt                  CRITICAL
                 publicly accessible             gp-photos.html
@@ -213,7 +213,7 @@ Render Abuse Report            Secondary hosting of       STANDARD (24-72h)
 
   Applies because:
   • Affected institution is a federally funded
-    educational entity in California
+    U.S. public educational entity
   • Student records scraped from the client LMS
     constitute "education records" under FERPA
   • Public posting on GitHub Pages = unauthorized
