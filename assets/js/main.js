@@ -1,7 +1,7 @@
 'use strict';
 
 // ─────────────────────────────────────────────────────────────
-// TERMINAL — commands registry
+// TERMINAL - commands registry
 // ─────────────────────────────────────────────────────────────
 
 var COMMANDS = {
@@ -71,7 +71,7 @@ var COMMANDS = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// TERMINAL — init + handlers
+// TERMINAL - init + handlers
 // ─────────────────────────────────────────────────────────────
 
 function initTerminal() {
@@ -146,7 +146,7 @@ function appendBlank(container) {
 function scrollBottom(el) { el.scrollTop = el.scrollHeight; }
 
 // ─────────────────────────────────────────────────────────────
-// PROJECTS — fetch from JSON, render cards
+// PROJECTS - fetch from JSON, render cards
 // ─────────────────────────────────────────────────────────────
 
 async function loadProjects() {
@@ -160,11 +160,11 @@ async function loadProjects() {
     renderProjects(grid, projects);
   } catch (err) {
     console.warn('[portfolio] projects.json unavailable, static fallback active:', err.message);
-    // Static HTML cards already in the DOM — no further action needed
+    // Static HTML cards already in the DOM - no further action needed
   }
 }
 
-// Inline-SVG icons reused by .project-icon (1.5 stroke, currentColor — matches case-study/mc-icon style)
+// Inline-SVG icons reused by .project-icon (1.5 stroke, currentColor - matches case-study/mc-icon style)
 var PROJECT_ICONS = {
   phishing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
               '<path d="M12 3v9"/>' +
@@ -216,7 +216,7 @@ function renderProjects(grid, projects) {
         '<div class="project-metrics">' + metrics + '</div>' +
         '<div class="project-tags">'    + tags + '</div>' +
         '<div class="project-footer">'  + ghLink + demoBtn + '</div>' +
-        '<p class="project-disclaimer">Simulated/anonymized data only — no client material is reproduced.</p>' +
+        '<p class="project-disclaimer">Simulated/anonymized data only - no client material is reproduced.</p>' +
       '</div>'
     );
   }).join('');
@@ -293,7 +293,7 @@ function observeElements(elements) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// CONTACT FORM — Formspree AJAX submission
+// CONTACT FORM - Formspree AJAX submission
 // ─────────────────────────────────────────────────────────────
 
 function initContactForm() {
@@ -384,7 +384,7 @@ function resetBtn(btn, text) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// RESUME — graceful disable if file missing
+// RESUME - graceful disable if file missing
 // ─────────────────────────────────────────────────────────────
 
 function checkResume() {
@@ -408,7 +408,7 @@ function disableResumeLinks(links) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// COMMAND PALETTE — Cmd+K / Ctrl+K
+// COMMAND PALETTE - Cmd+K / Ctrl+K
 // Reuses the COMMANDS registry above; does not duplicate it.
 // ─────────────────────────────────────────────────────────────
 
@@ -518,7 +518,7 @@ function initCommandPalette() {
     outputEl.scrollTop = outputEl.scrollHeight;
   }
 
-  // Global key handler — Cmd/Ctrl+K toggles, Esc closes, arrows navigate.
+  // Global key handler - Cmd/Ctrl+K toggles, Esc closes, arrows navigate.
   document.addEventListener('keydown', function (e) {
     var isCmdK = (e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K');
     if (isCmdK) {
@@ -553,7 +553,7 @@ function initCommandPalette() {
       return;
     }
 
-    // Focus trap — bounce Tab back to the only focusable element (the input).
+    // Focus trap - bounce Tab back to the only focusable element (the input).
     if (e.key === 'Tab') { e.preventDefault(); inputEl.focus(); }
   });
 
@@ -580,7 +580,7 @@ function initCommandPalette() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// CASE STUDY — copy-on-click for .cs-code blocks
+// CASE STUDY - copy-on-click for .cs-code blocks
 // ─────────────────────────────────────────────────────────────
 
 function initCopyOnClick() {
@@ -634,7 +634,7 @@ function escapeHtml(str) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// BOOT — DOMContentLoaded
+// BOOT - DOMContentLoaded
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function () {

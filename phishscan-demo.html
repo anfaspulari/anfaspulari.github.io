@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PhishScan Analyzer — Interactive Email Analysis</title>
+  <title>PhishScan Analyzer - Interactive Email Analysis</title>
   <meta name="description" content="Interactive phishing email analyzer. Upload a .eml file or paste raw email text for a full terminal-style security report." />
   <meta name="author" content="Anfas Pulari" />
   <meta property="og:title" content="PhishScan Analyzer" />
-  <meta property="og:description" content="Client-side phishing email analyzer — extract IOCs, check authentication, score risk." />
+  <meta property="og:description" content="Client-side phishing email analyzer - extract IOCs, check authentication, score risk." />
   <meta property="og:type" content="website" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -546,7 +546,7 @@
     }
 
     var received = getAllHeaders(headers, 'received');
-    // Gmail API relay detection — business email via gmailapi.google.com is suspicious
+    // Gmail API relay detection - business email via gmailapi.google.com is suspicious
     var gmail_api_hops = received.filter(function(r) { return /gmailapi\.google\.com/i.test(r); });
     var gmail_api_relay = gmail_api_hops.length > 0;
     var repeated_sends  = gmail_api_hops.length > 1;
